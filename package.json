@@ -13,17 +13,18 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "decimal.js": "^10.6.0",
+    "lucide-react": "^0.577.0",
     "next": "16.2.9",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "decimal.js": "^10.6.0",
-    "lucide-react": "^0.577.0"
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
     "@types/node": "^22",
     "@types/react": "^19",
-    "@types/react-dom": "^19"
+    "@types/react-dom": "^19",
+    "railway": "3.16.0",
+    "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@11.11.0",
   "type": "module"

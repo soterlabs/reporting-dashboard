@@ -51,4 +51,4 @@ Contract: [Settlement and reporting dashboard API](https://github.com/soterlabs/
 
 ## Railway
 
-`railway.json` builds with Railpack and runs Next.js on Railway's supplied `PORT`. Health check: `/api/health` (application readiness, independent of financial-data availability). Set only `REPORTING_API_URL` if a different reporting host is needed. Do not copy database, RPC, or GitHub credentials from other projects.
+`.railway/railway.ts` defines the Railpack build, start command, and health check using Railway Infrastructure as Code. Apply infrastructure changes with `railway config plan` followed by `railway config apply`. Pushes to `main` deploy automatically. Next.js uses Railway’s supplied `PORT`. Health check: `/api/health` (application readiness, independent of financial-data availability). Set only `REPORTING_API_URL` if a different reporting host is needed. Do not copy database, RPC, or GitHub credentials from other projects.
