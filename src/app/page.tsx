@@ -1,64 +1,741 @@
-import Link from 'next/link';
-import { ArrowDownToLine, ArrowUpRight, Banknote, Building2, CalendarDays, ChevronRight, CircleHelp, FileText, Landmark } from 'lucide-react';
-import { allReports, history } from '@/lib/api';
-import { accruedIncome, amount, cleanLabel, dailyChange, money, name, period, PRIMES, type Prime, type Publication, type ReadResult, type Venue } from '@/lib/reporting';
-import { Controls } from './controls';
+import Link from "next/link";
+import {
+  ArrowDownToLine,
+  ArrowUpRight,
+  Banknote,
+  Building2,
+  CalendarDays,
+  ChevronRight,
+  CircleHelp,
+  FileText,
+  Landmark,
+} from "lucide-react";
+import { allReports, history } from "@/lib/api";
+import {
+  accruedIncome,
+  amount,
+  cleanLabel,
+  dailyChange,
+  money,
+  name,
+  period,
+  PRIMES,
+  type Prime,
+  type Publication,
+  type ReadResult,
+  type Venue,
+} from "@/lib/reporting";
+import { Controls } from "./controls";
 
-export const dynamic = 'force-dynamic';
-const tabs = [{ id: 'prime', label: 'Prime Agent Revenues', icon: Building2 }, { id: 'daily', label: 'Daily Revenue', icon: CalendarDays }, { id: 'sky', label: 'Sky Net Revenue', icon: Landmark }];
-const date = (value: string) => new Date(`${value}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+export const dynamic = "force-dynamic";
+const tabs = [
+  { id: "prime", label: "Prime Agent Revenues", icon: Building2 },
+  { id: "daily", label: "Daily Revenue", icon: CalendarDays },
+  { id: "sky", label: "Sky Net Revenue", icon: Landmark },
+];
+const date = (value: string) =>
+  new Date(`${value}T00:00:00Z`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 type Search = Record<string, string | string[] | undefined>;
-const param = (s: Search, key: string) => typeof s[key] === 'string' ? s[key] as string : undefined;
-function Value({ value }: { value?: string | null }) { return <span className={value == null ? 'tbd' : value.startsWith('-') ? 'negative' : ''}>{money(value)}</span>; }
-function Card({ title, sub }: { title: string; sub: string }) { return <article className="metric"><span>{title}</span><strong className="tbd">TBD</strong><small>{sub}</small></article>; }
+const param = (s: Search, key: string) =>
+  typeof s[key] === "string" ? (s[key] as string) : undefined;
+function Value({ value }: { value?: string | null }) {
+  return (
+    <span
+      className={
+        value == null ? "tbd" : value.startsWith("-") ? "negative" : ""
+      }
+    >
+      {money(value)}
+    </span>
+  );
+}
+function Card({ title, sub }: { title: string; sub: string }) {
+  return (
+    <article className="metric">
+      <span>{title}</span>
+      <strong className="tbd">TBD</strong>
+      <small>{sub}</small>
+    </article>
+  );
+}
 function Statement({ sky = false }: { sky?: boolean }) {
-  const rows = sky ? [
-    ['Prime-agent portfolio income', 'Income earned on external investments'], ['Other Sky income', 'Income outside prime-agent portfolios'], ['Consolidation adjustments', 'Intragroup income and overlapping positions'], ['Total revenue', 'Accrual basis', 'subtotal'], ['Savings interest expense', 'Interest owed to depositors'], ['Agent fees and incentives', 'External fees and incentive expenses'], ['Operating expenses', 'Protocol and administrative costs'], ['Credit loss expense', 'Expected losses and impairments'], ['Net revenue', 'After expenses and consolidation', 'total'],
-  ] : [
-    ['Portfolio income', 'Income earned during the period'], ['Funding expense', 'Interest on borrowed capital'], ['Net interest income', 'Portfolio income less funding expense', 'subtotal'], ['Fees and incentive income', 'Earned management fees and incentives'], ['Operating expenses', 'Management and administrative costs'], ['Credit loss expense', 'Expected losses and impairments'], ['Net income', 'After expenses', 'total'],
-  ];
-  return <section className="panel"><div className="panel-heading"><div><h2>{sky ? 'Consolidated income statement' : 'Pro forma income statement'}</h2><p>Accrual basis · USD · Month to date</p></div><span className="badge">Pro forma</span></div><div className="table-wrap"><table className="statement"><thead><tr><th>Line item</th><th>Basis</th><th>Amount</th></tr></thead><tbody>{rows.map(([label, basis, kind]) => <tr key={label} className={kind || ''}><td>{label}</td><td>{basis}</td><td><Value /></td></tr>)}</tbody></table></div></section>;
+  const rows = sky
+    ? [
+        [
+          "Prime-agent portfolio income",
+          "Income earned on external investments",
+        ],
+        ["Other Sky income", "Income outside prime-agent portfolios"],
+        [
+          "Consolidation adjustments",
+          "Intragroup income and overlapping positions",
+        ],
+        ["Total revenue", "Accrual basis", "subtotal"],
+        ["Savings interest expense", "Interest owed to depositors"],
+        ["Agent fees and incentives", "External fees and incentive expenses"],
+        ["Operating expenses", "Protocol and administrative costs"],
+        ["Credit loss expense", "Expected losses and impairments"],
+        ["Net revenue", "After expenses and consolidation", "total"],
+      ]
+    : [
+        ["Portfolio income", "Income earned during the period"],
+        ["Funding expense", "Interest on borrowed capital"],
+        [
+          "Net interest income",
+          "Portfolio income less funding expense",
+          "subtotal",
+        ],
+        ["Fees and incentive income", "Earned management fees and incentives"],
+        ["Operating expenses", "Management and administrative costs"],
+        ["Credit loss expense", "Expected losses and impairments"],
+        ["Net income", "After expenses", "total"],
+      ];
+  return (
+    <section className="panel">
+      <div className="panel-heading">
+        <div>
+          <h2>
+            {sky
+              ? "Consolidated income statement"
+              : "Pro forma income statement"}
+          </h2>
+          <p>Accrual basis · USD · Month to date</p>
+        </div>
+        <span className="badge">Pro forma</span>
+      </div>
+      <div className="table-wrap">
+        <table className="statement">
+          <thead>
+            <tr>
+              <th>Line item</th>
+              <th>Basis</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(([label, basis, kind]) => (
+              <tr key={label} className={kind || ""}>
+                <td>{label}</td>
+                <td>{basis}</td>
+                <td>
+                  <Value />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
 }
 function AllocationTable({ rows }: { rows: { prime: Prime; venue: Venue }[] }) {
-  return <section className="panel"><div className="panel-heading"><div><h2>Portfolio allocations</h2><p>Individual positions · No aggregate portfolio total</p></div><span className="count">{rows.length} allocations</span></div><div className="table-wrap"><table><thead><tr><th>Allocation</th><th>Prime agent</th><th>Carrying value</th><th>Reported income <small>MTD</small></th><th>Accrued income <small>MTD</small></th><th>Interest receivable</th><th>Cash income received <small>MTD</small></th><th>Funding expense</th><th>Net yield</th></tr></thead><tbody>{rows.map(({ prime, venue: v }) => <tr key={`${prime}-${v.venue_id}`}><td><div className="allocation-name">{cleanLabel(v.label)}</div><small>{v.status === 'unavailable' ? 'Pending inputs' : v.status === 'not_started' ? 'Not yet active' : 'Published position'}</small></td><td><span className={`dot ${prime}`} />{name(prime)}</td><td><Value value={amount(v, 'position_value_usd')} /></td><td><Value value={amount(v, 'income_usd')} /></td><td><Value value={accruedIncome(v)} /></td><td><Value value={amount(v, 'unpaid_income_usd')} /></td><td><Value value={amount(v, 'cash_received_usd')} /></td><td><Value /></td><td className="tbd">TBD</td></tr>)}{!rows.length && <tr><td colSpan={9} className="empty">TBD · No published allocations for this selection</td></tr>}</tbody></table></div><div className="panel-note">Reported income follows each allocation’s published method. Accrual treatment is unconfirmed unless explicitly supported.</div></section>;
+  return (
+    <section className="panel">
+      <div className="panel-heading">
+        <div>
+          <h2>Portfolio allocations</h2>
+          <p>Individual positions · No aggregate portfolio total</p>
+        </div>
+        <span className="count">{rows.length} allocations</span>
+      </div>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Allocation</th>
+              <th>Prime agent</th>
+              <th>Carrying value</th>
+              <th>
+                Reported income <small>MTD</small>
+              </th>
+              <th>
+                Accrued income <small>MTD</small>
+              </th>
+              <th>Interest receivable</th>
+              <th>
+                Cash income received <small>MTD</small>
+              </th>
+              <th>Funding expense</th>
+              <th>Net yield</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(({ prime, venue: v }) => (
+              <tr key={`${prime}-${v.venue_id}`}>
+                <td>
+                  <div className="allocation-name">{cleanLabel(v.label)}</div>
+                  <small>
+                    {v.status === "unavailable"
+                      ? "Pending inputs"
+                      : v.status === "not_started"
+                        ? "Not yet active"
+                        : "Published position"}
+                  </small>
+                </td>
+                <td>
+                  <span className={`dot ${prime}`} />
+                  {name(prime)}
+                </td>
+                <td>
+                  <Value value={amount(v, "position_value_usd")} />
+                </td>
+                <td>
+                  <Value value={amount(v, "income_usd")} />
+                </td>
+                <td>
+                  <Value value={accruedIncome(v)} />
+                </td>
+                <td>
+                  <Value value={amount(v, "unpaid_income_usd")} />
+                </td>
+                <td>
+                  <Value value={amount(v, "cash_received_usd")} />
+                </td>
+                <td>
+                  <Value />
+                </td>
+                <td className="tbd">TBD</td>
+              </tr>
+            ))}
+            {!rows.length && (
+              <tr>
+                <td colSpan={9} className="empty">
+                  TBD · No published allocations for this selection
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="panel-note">
+        Reported income follows each allocation’s published method. Accrual
+        treatment is unconfirmed unless explicitly supported.
+      </div>
+    </section>
+  );
 }
 function SourceDetails({ reports }: { reports: [Prime, ReadResult][] }) {
-  return <details className="source-details"><summary><FileText size={15} /> Sources & accounting basis <ChevronRight size={15} /></summary><div className="source-body"><p>Pro forma estimates, unaudited. Amounts in USD. TBD means unavailable or unconfirmed; a reported zero remains zero. Positions and income may overlap. Consolidated totals require an approved perimeter and elimination policy.</p><p>Accrued income is shown only for confirmed loan-accrual methods. Other reported income may include cash distributions or position-only holdings. Expenses and allocation yields await API support. Signed interest receivables may include prepayments.</p><a href="https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md" target="_blank" rel="noreferrer">Reporting API methodology <ArrowUpRight size={13} /></a>{reports.map(([p, r]) => <div key={p} className="source-row"><strong>{name(p)}</strong>{r.report ? <><span>Cutoff: {r.report.data.cutoff} · Verified: {r.verifiedAt}</span><span>Publication: {r.report.data.computed_at}</span><span>Revision: {r.report.data.revision_id}</span><span>View hash: {r.report.data.view_hash}</span><span>Excluded inputs: {r.report.data.excluded_inputs.join(', ') || 'None declared'}</span>{r.report.data.result.venues.filter(v => v.reason && v.enabled).map(v => <span key={v.venue_id}>{cleanLabel(v.label)}: {v.reason}</span>)}</> : <span>{r.message}</span>}</div>)}</div></details>;
+  return (
+    <details className="source-details">
+      <summary>
+        <FileText size={15} /> Sources & accounting basis{" "}
+        <ChevronRight size={15} />
+      </summary>
+      <div className="source-body">
+        <p>
+          Pro forma estimates, unaudited. Amounts in USD. TBD means unavailable
+          or unconfirmed; a reported zero remains zero. Positions and income may
+          overlap. Consolidated totals require an approved perimeter and
+          elimination policy.
+        </p>
+        <p>
+          Accrued income is shown only for confirmed loan-accrual methods. Other
+          reported income may include cash distributions or position-only
+          holdings. Expenses and allocation yields await API support. Signed
+          interest receivables may include prepayments.
+        </p>
+        <a
+          href="https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Reporting API methodology <ArrowUpRight size={13} />
+        </a>
+        {reports.map(([p, r]) => (
+          <div key={p} className="source-row">
+            <strong>{name(p)}</strong>
+            {r.report ? (
+              <>
+                <span>
+                  Cutoff: {r.report.data.cutoff} · Verified: {r.verifiedAt}
+                </span>
+                <span>Publication: {r.report.data.computed_at}</span>
+                <span>Revision: {r.report.data.revision_id}</span>
+                <span>View hash: {r.report.data.view_hash}</span>
+                <span>
+                  Excluded inputs:{" "}
+                  {r.report.data.excluded_inputs.join(", ") || "None declared"}
+                </span>
+                {r.report.data.result.venues
+                  .filter((v) => v.reason && v.enabled)
+                  .map((v) => (
+                    <span key={v.venue_id}>
+                      {cleanLabel(v.label)}: {v.reason}
+                    </span>
+                  ))}
+              </>
+            ) : (
+              <span>{r.message}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </details>
+  );
 }
-export default async function Page({ searchParams }: { searchParams: Promise<Search> }) {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<Search>;
+}) {
   const search = await searchParams;
-  const tab = tabs.find(t => t.id === param(search, 'tab')) || tabs[0];
-  const selectedPeriod = period(param(search, 'month'));
+  const tab = tabs.find((t) => t.id === param(search, "tab")) || tabs[0];
+  const selectedPeriod = period(param(search, "month"));
   const { month, start, cutoff, latestMonth } = selectedPeriod;
-  const selected = param(search, 'prime');
-  const prime: Prime | 'all' = tab.id === 'sky' ? 'all' : PRIMES.includes(selected as Prime) ? selected as Prime : tab.id === 'daily' ? 'obex' : 'all';
+  const selected = param(search, "prime");
+  const prime: Prime | "all" =
+    tab.id === "sky"
+      ? "all"
+      : PRIMES.includes(selected as Prime)
+        ? (selected as Prime)
+        : tab.id === "daily"
+          ? "obex"
+          : "all";
   const data = await allReports(cutoff);
-  const reports = (prime === 'all' ? PRIMES : [prime]).map(p => [p, data[p]] as [Prime, ReadResult]);
-  const rows = reports.flatMap(([p, r]) => (r.report?.data.result.venues || []).filter(v => v.enabled).map(venue => ({ prime: p, venue })));
+  const reports = (prime === "all" ? PRIMES : [prime]).map(
+    (p) => [p, data[p]] as [Prime, ReadResult],
+  );
+  const rows = reports.flatMap(([p, r]) =>
+    (r.report?.data.result.venues || [])
+      .filter((v) => v.enabled)
+      .map((venue) => ({ prime: p, venue })),
+  );
   const ready = reports.filter(([, r]) => r.report).length;
-  const query = (id: string) => `/?${new URLSearchParams({ tab: id, month, prime: prime === 'all' && id === 'daily' ? 'obex' : prime })}`;
-  const issues = reports.filter(([, r]) => !r.report || r.retained || r.report.freshness.stale || !r.report.data.result.complete || r.report.latest_attempt?.status === 'failed');
-  const hist = tab.id === 'daily' && prime !== 'all' ? await history(prime, start, cutoff) : null;
+  const query = (id: string) =>
+    `/?${new URLSearchParams({ tab: id, month, prime: prime === "all" && id === "daily" ? "obex" : prime })}`;
+  const issues = reports.filter(
+    ([, r]) =>
+      !r.report ||
+      r.retained ||
+      r.report.freshness.stale ||
+      !r.report.data.result.complete ||
+      r.report.latest_attempt?.status === "failed",
+  );
+  const hist =
+    tab.id === "daily" && prime !== "all"
+      ? await history(prime, start, cutoff)
+      : null;
   const publications = hist?.publications || [];
-  const allocationChoices = Array.from(new Map([...rows.map(r => r.venue), ...publications.flatMap(p => p.result.venues.filter(v => v.enabled))].map(v => [v.venue_id, v])).values());
-  const allocation = allocationChoices.find(v => v.venue_id === param(search, 'allocation')) || allocationChoices[0];
+  const allocationChoices = Array.from(
+    new Map(
+      [
+        ...rows.map((r) => r.venue),
+        ...publications.flatMap((p) =>
+          p.result.venues.filter((v) => v.enabled),
+        ),
+      ].map((v) => [v.venue_id, v]),
+    ).values(),
+  );
+  const allocation =
+    allocationChoices.find((v) => v.venue_id === param(search, "allocation")) ||
+    allocationChoices[0];
   const daily = Array.from({ length: Number(cutoff.slice(8)) }, (_, i) => {
-    const day = `${month}-${String(i + 1).padStart(2, '0')}`;
-    const pub = publications.find(p => p.cutoff === day);
-    const prev = publications.find(p => p.cutoff === `${month}-${String(i).padStart(2, '0')}`);
-    return { day, pub, change: allocation ? dailyChange(pub, prev, allocation.venue_id) : null, accrual: allocation ? dailyChange(pub, prev, allocation.venue_id, true) : null };
+    const day = `${month}-${String(i + 1).padStart(2, "0")}`;
+    const pub = publications.find((p) => p.cutoff === day);
+    const prev = publications.find(
+      (p) => p.cutoff === `${month}-${String(i).padStart(2, "0")}`,
+    );
+    return {
+      day,
+      pub,
+      change: allocation ? dailyChange(pub, prev, allocation.venue_id) : null,
+      accrual: allocation
+        ? dailyChange(pub, prev, allocation.venue_id, true)
+        : null,
+    };
   });
-  const exportQuery = new URLSearchParams({ tab: tab.id, month, prime, ...(allocation ? { allocation: allocation.venue_id } : {}) });
-  return <div className="app-shell"><aside className="sidebar"><Link href="/" className="brand"><img className="brand-mark" src="/soter-labs.png" width="29" height="31" alt="" /><span>Soter Labs</span></Link><div className="nav-label">REPORTS</div><nav>{tabs.map(t => <Link key={t.id} href={query(t.id)} className={tab.id === t.id ? 'active' : ''} aria-current={tab.id === t.id ? 'page' : undefined}><t.icon size={18} /><span>{t.label}</span>{tab.id === t.id && <ChevronRight size={14} />}</Link>)}</nav><div className="sidebar-bottom"><span className="sky-symbol">✦</span><div><strong>Sky ecosystem</strong><small>Financial reporting</small></div></div></aside><div className="workspace"><header className="topbar"><span>Reports <ChevronRight size={13} /> <strong>{tab.label}</strong></span><Controls /></header><main><div className="page-title"><div><div className="eyebrow">SKY ECOSYSTEM <span>/</span> FINANCIAL REPORTING</div><h1>{tab.label}</h1><p>{tab.id === 'prime' ? 'Portfolio income and expenses by prime agent.' : tab.id === 'daily' ? 'Daily movement in individual allocation income.' : 'Consolidated income and expenses across Sky.'}</p></div><a className="button export" href={`/api/export?${exportQuery}`}><ArrowDownToLine size={15} />Export CSV</a></div><div className="toolbar"><form method="get"><input type="hidden" name="tab" value={tab.id} /><label><span>Reporting month</span><input type="month" name="month" defaultValue={month} max={latestMonth} min="2020-01" required /></label>{tab.id !== 'sky' && <label><span>Prime agent</span><select name="prime" defaultValue={prime}>{tab.id !== 'daily' && <option value="all">All prime agents</option>}{PRIMES.map(p => <option key={p} value={p}>{name(p)}</option>)}</select></label>}<button className="button primary" type="submit">Apply</button></form><div className="period-label"><span className="badge">Provisional</span><span>{date(start)} – {date(cutoff)} · UTC</span></div></div>{issues.length > 0 && tab.id !== 'sky' && <div className="notice" role="status"><CircleHelp size={16} /><span>{issues.map(([p, r]) => `${name(p)}: ${r.message || (r.report?.freshness.stale ? 'Publication is stale' : r.report?.latest_attempt?.status === 'failed' ? 'Latest publication attempt failed' : 'Some allocations await inputs')}`).join(' · ')}.</span></div>}
-    {tab.id === 'prime' && <><div className="metrics"><Card title="Accrued portfolio income" sub="Month to date" /><Card title="Funding expense" sub="Month to date" /><Card title="Net income" sub="After expenses" /><Card title="Portfolio carrying value" sub="After consolidation adjustments" /></div><div className="section-title"><h2>Prime agents</h2><span>{ready} of {reports.length} reporting views published</span></div><div className="prime-grid">{reports.map(([p, r]) => <Link className="prime-card" key={p} href={`/?${new URLSearchParams({ tab: 'prime', prime: p, month })}`}><div><span className={`dot ${p}`} /><strong>{name(p)}</strong><ArrowUpRight size={14} /></div><span className="prime-status">{!r.report ? 'TBD · Awaiting publication' : !r.report.data.result.venues.some(v => v.enabled) ? 'TBD · No allocations' : `${r.report.data.result.venues.filter(v => v.enabled).length} allocations`}</span></Link>)}</div><AllocationTable rows={rows} /><Statement /></>}
-    {tab.id === 'sky' && <><div className="metrics"><Card title="Accrued revenue" sub="After consolidation adjustments" /><Card title="Total expenses" sub="Month to date" /><Card title="Net revenue" sub="After expenses" /><Card title="Net revenue margin" sub="Net revenue / accrued revenue" /></div><div className="notice"><CircleHelp size={16} /><span>TBD · Consolidated accrual income, expenses, and intercompany eliminations are not provided by the reporting API.</span></div><Statement sky /><section className="panel"><div className="panel-heading"><div><h2>Reporting perimeter</h2><p>Sky and prime-agent portfolios</p></div></div><div className="table-wrap"><table><thead><tr><th>Entity</th><th>Accrued income</th><th>Expenses</th><th>Net contribution</th></tr></thead><tbody>{['Sky', ...PRIMES.map(name)].map(p => <tr key={p}><td>{p}</td><td><Value /></td><td><Value /></td><td><Value /></td></tr>)}</tbody></table></div></section></>}
-    {tab.id === 'daily' && <>{hist?.message && <div className="notice" role="status"><CircleHelp size={16} />{hist.message}</div>}<section className="panel"><div className="panel-heading"><div><h2>Income by day</h2><p>Individual allocation · USD</p></div><form method="get" className="allocation-select"><input type="hidden" name="tab" value="daily" /><input type="hidden" name="prime" value={prime} /><input type="hidden" name="month" value={month} /><label className="sr-only" htmlFor="allocation">Allocation</label><select id="allocation" name="allocation" defaultValue={allocation?.venue_id}>{allocationChoices.map(v => <option key={v.venue_id} value={v.venue_id}>{cleanLabel(v.label)}</option>)}</select><button className="button" type="submit" disabled={!allocation}>View</button></form></div><div className="daily-strip"><Banknote size={20} /><div><strong>{allocation ? cleanLabel(allocation.label) : 'TBD · No allocation published'}</strong><p>Reported income movement can include revisions. Confirmed accrued income is shown separately.</p></div></div><DailyChart daily={daily} /><div className="table-wrap"><table><thead><tr><th>Date · UTC</th><th>Change in reported income</th><th>Accrued income</th><th>Carrying value</th><th>Publication</th></tr></thead><tbody>{[...daily].reverse().map(d => <tr key={d.day}><td>{date(d.day)}</td><td><Value value={d.change} /></td><td><Value value={d.accrual} /></td><td><Value value={d.pub && allocation ? amount(d.pub.result.venues.find(v => v.venue_id === allocation.venue_id) || allocationUnavailable(allocation), 'position_value_usd') : null} /></td><td><span className="badge quiet">{d.pub ? 'Provisional' : 'TBD'}</span></td></tr>)}</tbody></table></div><div className="panel-note">Missing days remain TBD. Month-to-date income is differenced only across consecutive dates using the latest published revision for each date.</div></section></>}
-    <SourceDetails reports={reports} /><footer><span>Pro forma · Unaudited · USD</span><span>Source: Reporting API</span></footer></main></div></div>;
+  const exportQuery = new URLSearchParams({
+    tab: tab.id,
+    month,
+    prime,
+    ...(allocation ? { allocation: allocation.venue_id } : {}),
+  });
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <Link href="/" className="brand">
+          <img
+            className="brand-mark"
+            src="/soter-labs.png"
+            width="29"
+            height="31"
+            alt=""
+          />
+          <span>Soter Labs</span>
+        </Link>
+        <div className="nav-label">REPORTS</div>
+        <nav>
+          {tabs.map((t) => (
+            <Link
+              key={t.id}
+              href={query(t.id)}
+              className={tab.id === t.id ? "active" : ""}
+              aria-current={tab.id === t.id ? "page" : undefined}
+            >
+              <t.icon size={18} />
+              <span>{t.label}</span>
+              {tab.id === t.id && <ChevronRight size={14} />}
+            </Link>
+          ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <span className="sky-symbol">✦</span>
+          <div>
+            <strong>Sky ecosystem</strong>
+            <small>Financial reporting</small>
+          </div>
+        </div>
+      </aside>
+      <div className="workspace">
+        <header className="topbar">
+          <span>
+            Reports <ChevronRight size={13} /> <strong>{tab.label}</strong>
+          </span>
+          <Controls />
+        </header>
+        <main>
+          <div className="page-title">
+            <div>
+              <div className="eyebrow">
+                SKY ECOSYSTEM <span>/</span> FINANCIAL REPORTING
+              </div>
+              <h1>{tab.label}</h1>
+              <p>
+                {tab.id === "prime"
+                  ? "Portfolio income and expenses by prime agent."
+                  : tab.id === "daily"
+                    ? "Daily movement in individual allocation income."
+                    : "Consolidated income and expenses across Sky."}
+              </p>
+            </div>
+            <a className="button export" href={`/api/export?${exportQuery}`}>
+              <ArrowDownToLine size={15} />
+              Export CSV
+            </a>
+          </div>
+          <div className="toolbar">
+            <form method="get">
+              <input type="hidden" name="tab" value={tab.id} />
+              <label>
+                <span>Reporting month</span>
+                <input
+                  type="month"
+                  name="month"
+                  defaultValue={month}
+                  max={latestMonth}
+                  min="2020-01"
+                  required
+                />
+              </label>
+              {tab.id !== "sky" && (
+                <label>
+                  <span>Prime agent</span>
+                  <select name="prime" defaultValue={prime}>
+                    {tab.id !== "daily" && (
+                      <option value="all">All prime agents</option>
+                    )}
+                    {PRIMES.map((p) => (
+                      <option key={p} value={p}>
+                        {name(p)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              <button className="button primary" type="submit">
+                Apply
+              </button>
+            </form>
+            <div className="period-label">
+              <span className="badge">Provisional</span>
+              <span>
+                {date(start)} – {date(cutoff)} · UTC
+              </span>
+            </div>
+          </div>
+          {issues.length > 0 && tab.id !== "sky" && (
+            <div className="notice" role="status">
+              <CircleHelp size={16} />
+              <span>
+                {issues
+                  .map(
+                    ([p, r]) =>
+                      `${name(p)}: ${r.message || (r.report?.freshness.stale ? "Publication is stale" : r.report?.latest_attempt?.status === "failed" ? "Latest publication attempt failed" : "Some allocations await inputs")}`,
+                  )
+                  .join(" · ")}
+                .
+              </span>
+            </div>
+          )}
+          {tab.id === "prime" && (
+            <>
+              <div className="metrics">
+                <Card title="Accrued portfolio income" sub="Month to date" />
+                <Card title="Funding expense" sub="Month to date" />
+                <Card title="Net income" sub="After expenses" />
+                <Card
+                  title="Portfolio carrying value"
+                  sub="After consolidation adjustments"
+                />
+              </div>
+              <div className="section-title">
+                <h2>Prime agents</h2>
+                <span>
+                  {ready} of {reports.length} reporting views published
+                </span>
+              </div>
+              <div className="prime-grid">
+                {reports.map(([p, r]) => (
+                  <Link
+                    className="prime-card"
+                    key={p}
+                    href={`/?${new URLSearchParams({ tab: "prime", prime: p, month })}`}
+                  >
+                    <div>
+                      <span className={`dot ${p}`} />
+                      <strong>{name(p)}</strong>
+                      <ArrowUpRight size={14} />
+                    </div>
+                    <span className="prime-status">
+                      {!r.report
+                        ? "TBD · Awaiting publication"
+                        : !r.report.data.result.venues.some((v) => v.enabled)
+                          ? "TBD · No allocations"
+                          : `${r.report.data.result.venues.filter((v) => v.enabled).length} allocations`}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+              <AllocationTable rows={rows} />
+              <Statement />
+            </>
+          )}
+          {tab.id === "sky" && (
+            <>
+              <div className="metrics">
+                <Card
+                  title="Accrued revenue"
+                  sub="After consolidation adjustments"
+                />
+                <Card title="Total expenses" sub="Month to date" />
+                <Card title="Net revenue" sub="After expenses" />
+                <Card
+                  title="Net revenue margin"
+                  sub="Net revenue / accrued revenue"
+                />
+              </div>
+              <div className="notice">
+                <CircleHelp size={16} />
+                <span>
+                  TBD · Consolidated accrual income, expenses, and intercompany
+                  eliminations are not provided by the reporting API.
+                </span>
+              </div>
+              <Statement sky />
+              <section className="panel">
+                <div className="panel-heading">
+                  <div>
+                    <h2>Reporting perimeter</h2>
+                    <p>Sky and prime-agent portfolios</p>
+                  </div>
+                </div>
+                <div className="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Entity</th>
+                        <th>Accrued income</th>
+                        <th>Expenses</th>
+                        <th>Net contribution</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {["Sky", ...PRIMES.map(name)].map((p) => (
+                        <tr key={p}>
+                          <td>{p}</td>
+                          <td>
+                            <Value />
+                          </td>
+                          <td>
+                            <Value />
+                          </td>
+                          <td>
+                            <Value />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </>
+          )}
+          {tab.id === "daily" && (
+            <>
+              {hist?.message && (
+                <div className="notice" role="status">
+                  <CircleHelp size={16} />
+                  {hist.message}
+                </div>
+              )}
+              <section className="panel">
+                <div className="panel-heading">
+                  <div>
+                    <h2>Income by day</h2>
+                    <p>Individual allocation · USD</p>
+                  </div>
+                  <form method="get" className="allocation-select">
+                    <input type="hidden" name="tab" value="daily" />
+                    <input type="hidden" name="prime" value={prime} />
+                    <input type="hidden" name="month" value={month} />
+                    <label className="sr-only" htmlFor="allocation">
+                      Allocation
+                    </label>
+                    <select
+                      id="allocation"
+                      name="allocation"
+                      defaultValue={allocation?.venue_id}
+                    >
+                      {allocationChoices.map((v) => (
+                        <option key={v.venue_id} value={v.venue_id}>
+                          {cleanLabel(v.label)}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className="button"
+                      type="submit"
+                      disabled={!allocation}
+                    >
+                      View
+                    </button>
+                  </form>
+                </div>
+                <div className="daily-strip">
+                  <Banknote size={20} />
+                  <div>
+                    <strong>
+                      {allocation
+                        ? cleanLabel(allocation.label)
+                        : "TBD · No allocation published"}
+                    </strong>
+                    <p>
+                      Reported income movement can include revisions. Confirmed
+                      accrued income is shown separately.
+                    </p>
+                  </div>
+                </div>
+                <DailyChart daily={daily} />
+                <div className="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Date · UTC</th>
+                        <th>Change in reported income</th>
+                        <th>Accrued income</th>
+                        <th>Carrying value</th>
+                        <th>Publication</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...daily].reverse().map((d) => (
+                        <tr key={d.day}>
+                          <td>{date(d.day)}</td>
+                          <td>
+                            <Value value={d.change} />
+                          </td>
+                          <td>
+                            <Value value={d.accrual} />
+                          </td>
+                          <td>
+                            <Value
+                              value={
+                                d.pub && allocation
+                                  ? amount(
+                                      d.pub.result.venues.find(
+                                        (v) =>
+                                          v.venue_id === allocation.venue_id,
+                                      ) || allocationUnavailable(allocation),
+                                      "position_value_usd",
+                                    )
+                                  : null
+                              }
+                            />
+                          </td>
+                          <td>
+                            <span className="badge quiet">
+                              {d.pub ? "Provisional" : "TBD"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="panel-note">
+                  Missing days remain TBD. Month-to-date income is differenced
+                  only across consecutive dates using the latest published
+                  revision for each date.
+                </div>
+              </section>
+            </>
+          )}
+          <SourceDetails reports={reports} />
+          <footer>
+            <span>Pro forma · Unaudited · USD</span>
+            <span>Source: Reporting API</span>
+          </footer>
+        </main>
+      </div>
+    </div>
+  );
 }
-function allocationUnavailable(row: Venue): Venue { return { ...row, status: 'unavailable' }; }
-function DailyChart({ daily }: { daily: { day: string; pub: Publication | undefined; change: string | null }[] }) {
+function allocationUnavailable(row: Venue): Venue {
+  return { ...row, status: "unavailable" };
+}
+function DailyChart({
+  daily,
+}: {
+  daily: { day: string; pub: Publication | undefined; change: string | null }[];
+}) {
   // Floating point is used for pixel geometry only, after exact financial calculations.
-  const values = daily.flatMap(d => d.change === null ? [] : [Math.abs(Number(d.change))]);
+  const values = daily.flatMap((d) =>
+    d.change === null ? [] : [Math.abs(Number(d.change))],
+  );
   const max = Math.max(...values, 1);
-  return <div className="chart" role="img" aria-label="Daily changes in reported income; missing days are marked TBD"><div className="chart-label">CHANGE IN REPORTED INCOME</div><div className="bars">{daily.map(d => <div className="bar-slot" key={d.day}><div className={`bar ${d.change === null ? 'missing' : Number(d.change) < 0 ? 'down' : ''}`} style={{ height: d.change === null ? 3 : `${Math.max(Math.abs(Number(d.change)) / max * 100, 1)}%` }} title={`${d.day}: ${money(d.change)}`} /><span>{d.day.slice(8)}</span>{d.change === null && <small>TBD</small>}</div>)}</div><div className="chart-caption">Hover a bar for the USD amount · Negative movements shown in red</div></div>;
+  return (
+    <div
+      className="chart"
+      role="img"
+      aria-label="Daily changes in reported income; missing days are marked TBD"
+    >
+      <div className="chart-label">CHANGE IN REPORTED INCOME</div>
+      <div className="bars">
+        {daily.map((d) => (
+          <div className="bar-slot" key={d.day}>
+            <div
+              className={`bar ${d.change === null ? "missing" : Number(d.change) < 0 ? "down" : ""}`}
+              style={{
+                height:
+                  d.change === null
+                    ? 3
+                    : `${Math.max((Math.abs(Number(d.change)) / max) * 100, 1)}%`,
+              }}
+              title={`${d.day}: ${money(d.change)}`}
+            />
+            <span>{d.day.slice(8)}</span>
+            {d.change === null && <small>TBD</small>}
+          </div>
+        ))}
+      </div>
+      <div className="chart-caption">
+        Hover a bar for the USD amount · Negative movements shown in red
+      </div>
+    </div>
+  );
 }
