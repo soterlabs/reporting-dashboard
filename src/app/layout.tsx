@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Sky · Financial reporting",
   description:
-    "Pro forma financial reporting for Sky and its prime-agent portfolios.",
+    "Draft financial reporting for Sky and its prime-agent portfolios; accrual basis where supported.",
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

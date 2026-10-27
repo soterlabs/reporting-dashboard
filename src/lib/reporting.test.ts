@@ -4,6 +4,7 @@ import {
   accruedIncome,
   amount,
   dailyChange,
+  loanIncomeBalances,
   money,
   period,
   validatePublication,
@@ -73,6 +74,30 @@ test("unavailable loan can disclose known cash without substituting it for accru
   assert.equal(amount(row, "position_value_usd"), null);
   assert.equal(accruedIncome(row), null);
   assert.equal(amount({ ...row, enabled: false }, "cash_received_usd"), null);
+});
+test("loan income balances separate receivables from advance receipts without inventing missing balances", () => {
+  assert.deepEqual(loanIncomeBalances(venue({ unpaid_income_usd: "123.45" })), {
+    interestReceivable: "123.45",
+    incomeReceivedInAdvance: "0",
+  });
+  assert.deepEqual(loanIncomeBalances(venue({ unpaid_income_usd: "-12.34" })), {
+    interestReceivable: "0",
+    incomeReceivedInAdvance: "12.34",
+  });
+  assert.deepEqual(loanIncomeBalances(venue({ unpaid_income_usd: "0" })), {
+    interestReceivable: "0",
+    incomeReceivedInAdvance: "0",
+  });
+  for (const row of [
+    venue({ unpaid_income_usd: null }),
+    venue({ status: "unavailable" }),
+    venue({ method: "existing" }),
+  ]) {
+    assert.deepEqual(loanIncomeBalances(row), {
+      interestReceivable: null,
+      incomeReceivedInAdvance: null,
+    });
+  }
 });
 test("daily movement uses exact decimals and refuses missing days or method changes", () => {
   const current = pub(

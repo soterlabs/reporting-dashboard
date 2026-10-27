@@ -151,6 +151,23 @@ export function accruedIncome(row: Venue): string | null {
   // `existing` does not certify accrual recognition. Never infer it from a label.
   return row.method === "loan_accrual" ? amount(row, "income_usd") : null;
 }
+export function loanIncomeBalances(row: Venue): {
+  interestReceivable: string | null;
+  incomeReceivedInAdvance: string | null;
+} {
+  const unpaid =
+    row.method === "loan_accrual" ? amount(row, "unpaid_income_usd") : null;
+  if (unpaid === null)
+    return { interestReceivable: null, incomeReceivedInAdvance: null };
+  const balance = new Decimal(unpaid);
+  // An advance receipt is a separate credit balance, not a negative asset.
+  return {
+    interestReceivable: balance.isNegative() ? "0" : unpaid,
+    incomeReceivedInAdvance: balance.isNegative()
+      ? balance.abs().toString()
+      : "0",
+  };
+}
 export function dailyChange(
   current: Publication | undefined,
   previous: Publication | undefined,

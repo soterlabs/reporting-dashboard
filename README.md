@@ -1,6 +1,6 @@
 # Sky reporting dashboard
 
-Pro forma financial reporting for Sky and its prime-agent portfolios. Styled after [soterlabs/msc-dashboard](https://github.com/soterlabs/msc-dashboard).
+Draft management reporting for Sky and its prime-agent portfolios, with accrual-basis income where supported. Styled after [soterlabs/msc-dashboard](https://github.com/soterlabs/msc-dashboard).
 
 ## Run
 
@@ -33,11 +33,12 @@ Contract: [Settlement and reporting dashboard API](https://github.com/soterlabs/
 
 ## Accounting treatment
 
-- All statements are pro forma, provisional, and unaudited. USD values use exact decimal arithmetic, rounded to cents only for display. CSV exports retain source precision and publication identifiers.
-- Cutoffs are completed UTC days. Income is month to date; carrying values are closing balances.
-- Reported income is disclosed per allocation. The API's `existing` method does **not** certify accrual accounting. Only available `loan_accrual` income is shown as confirmed accrued income.
+- Statements are draft, provisional, and unaudited. They are not IFRS/US GAAP financial statements or a completed accrual ledger. They are not pro forma statements: there is no defined hypothetical transaction or adjustment bridge. USD values use exact decimal arithmetic, rounded to cents only for display. CSV exports retain source precision and publication identifiers.
+- Cutoffs are completed UTC days. Income is month to date; reported position values are closing API valuations, not accounting carrying amounts under an established measurement policy.
+- Reported income is disclosed per allocation. The API's `existing` method does **not** certify accrual accounting. Only available `loan_accrual` income is shown as investment income on an accrual basis.
 - No portfolio values or income rows are summed. Holdings, savings vaults, incentive claims, and cash receipts can overlap; an approved consolidation map is required.
-- Funding costs, fees, operating expenses, credit losses, consolidated net income, and allocation yields remain **TBD** until the reporting API supplies confirmed inputs. The unmerged allocation-capital-cost PR is not consumed.
+- Interest expense, fees, operating expenses, credit impairment, consolidated income before tax, and allocation yields remain **TBD** until the reporting API supplies confirmed inputs. The unmerged allocation-capital-cost PR is not consumed.
+- Loan income balances distinguish interest receivable (earned and unpaid) from income received in advance. Negative unpaid loan income is presented as a positive advance balance, not as a negative receivable. These balances do not establish a complete accounting statement of financial position.
 - Missing/null data is **TBD**, never zero. Known cash income remains separately exportable even when loan accrual is unavailable. Disabled allocations are excluded.
 - Daily changes use consecutive published MTD values within a month. First-of-month values begin the new month. Gaps or method changes produce TBD. The latest revision per cutoff is used; differences may contain revisions. Both revision identities are exported. These are daily movements in reported income, not certified daily earnings.
 - Historical screens use frozen reporting rows, never current venue configuration. No fabricated or demonstration figures appear in the application.

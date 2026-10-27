@@ -3,6 +3,7 @@ import {
   accruedIncome,
   amount,
   dailyChange,
+  loanIncomeBalances,
   period,
   PRIMES,
   type Prime,
@@ -33,15 +34,15 @@ export async function GET(request: Request) {
       "Basis",
     ]);
     for (const line of [
-      "Prime-agent portfolio income",
+      "Prime-agent investment income",
       "Other Sky income",
       "Consolidation adjustments",
-      "Total revenue",
-      "Savings interest expense",
+      "Total income",
+      "Interest expense",
       "Agent fees and incentives",
       "Operating expenses",
-      "Credit loss expense",
-      "Net revenue",
+      "Credit impairment expense",
+      "Income before tax",
     ])
       rows.push([
         "Sky consolidated",
@@ -49,7 +50,7 @@ export async function GET(request: Request) {
         cutoff,
         line,
         "TBD",
-        "Pro forma accrual; reporting API does not provide consolidated totals",
+        "Draft accrual statement; reporting API does not provide consolidated totals",
       ]);
   } else if (tab === "daily" && prime !== "all") {
     const h = await history(prime, start, cutoff);
@@ -59,13 +60,13 @@ export async function GET(request: Request) {
       "Date UTC",
       "Allocation",
       "Change in reported income USD",
-      "Accrued income USD",
-      "Carrying value USD",
+      "Investment income (accrual basis) USD",
+      "Reported position value USD",
       "Revision",
       "Previous revision",
       "View hash",
       "Computed at",
-      "History verified at",
+      "History API checked at",
       "Refresh status",
       "Accounting basis",
     ]);
@@ -88,7 +89,7 @@ export async function GET(request: Request) {
         current?.view_hash,
         current?.computed_at,
         h.verifiedAt,
-        h.message || "Verified",
+        h.message || "API response checked",
         "Latest revision per date; reported movement includes revisions; accrual only where confirmed",
       ]);
     }
@@ -98,13 +99,14 @@ export async function GET(request: Request) {
       "Prime agent",
       "Cutoff",
       "Allocation",
-      "Carrying value USD",
-      "Reported income MTD USD",
-      "Accrued income MTD USD",
+      "Reported position value USD",
+      "Reported investment income MTD USD",
+      "Investment income (accrual basis) MTD USD",
       "Interest receivable USD",
+      "Income received in advance USD",
       "Known cash income MTD USD",
-      "Funding expense USD",
-      "Net yield",
+      "Interest expense USD",
+      "Net investment yield",
       "Recognition method",
       "Status",
       "Reason",
@@ -112,7 +114,7 @@ export async function GET(request: Request) {
       "View hash",
       "Source result hash",
       "Computed at",
-      "Verified at",
+      "API checked at",
       "Refresh status",
       "Excluded inputs",
     ]);
@@ -133,13 +135,14 @@ export async function GET(request: Request) {
           "TBD",
           "TBD",
           "TBD",
+          "TBD",
           message || "No reporting allocations",
           report?.data.revision_id,
           report?.data.view_hash,
           report?.data.source_result_hash,
           report?.data.computed_at,
           verifiedAt,
-          message || "Verified",
+          message || "API response checked",
           report?.data.excluded_inputs.join("; "),
         ]);
       for (const v of venues)
@@ -150,7 +153,8 @@ export async function GET(request: Request) {
           amount(v, "position_value_usd"),
           amount(v, "income_usd"),
           accruedIncome(v),
-          amount(v, "unpaid_income_usd"),
+          loanIncomeBalances(v).interestReceivable,
+          loanIncomeBalances(v).incomeReceivedInAdvance,
           amount(v, "cash_received_usd"),
           "TBD",
           "TBD",
@@ -162,7 +166,7 @@ export async function GET(request: Request) {
           report?.data.source_result_hash,
           report?.data.computed_at,
           verifiedAt,
-          message || "Verified",
+          message || "API response checked",
           report?.data.excluded_inputs.join("; "),
         ]);
     }
@@ -172,7 +176,7 @@ export async function GET(request: Request) {
     {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": `attachment; filename="sky-${tab === "daily" ? "daily-income" : tab === "sky" ? "net-revenue" : "portfolio"}-${month}.csv"`,
+        "Content-Disposition": `attachment; filename="sky-${tab === "daily" ? "daily-income" : tab === "sky" ? "income-statement" : "portfolio"}-${month}.csv"`,
         "Cache-Control": "no-store",
       },
     },

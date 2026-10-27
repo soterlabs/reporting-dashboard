@@ -16,6 +16,7 @@ import {
   amount,
   cleanLabel,
   dailyChange,
+  loanIncomeBalances,
   money,
   name,
   period,
@@ -29,9 +30,9 @@ import { Controls } from "./controls";
 
 export const dynamic = "force-dynamic";
 const tabs = [
-  { id: "prime", label: "Prime Agent Revenues", icon: Building2 },
-  { id: "daily", label: "Daily Revenue", icon: CalendarDays },
-  { id: "sky", label: "Sky Net Revenue", icon: Landmark },
+  { id: "prime", label: "Prime Agent Income", icon: Building2 },
+  { id: "daily", label: "Daily Income", icon: CalendarDays },
+  { id: "sky", label: "Sky Income Statement", icon: Landmark },
 ];
 const date = (value: string) =>
   new Date(`${value}T00:00:00Z`).toLocaleDateString("en-US", {
@@ -67,7 +68,7 @@ function Statement({ sky = false }: { sky?: boolean }) {
   const rows = sky
     ? [
         [
-          "Prime-agent portfolio income",
+          "Prime-agent investment income",
           "Income earned on external investments",
         ],
         ["Other Sky income", "Income outside prime-agent portfolios"],
@@ -75,25 +76,29 @@ function Statement({ sky = false }: { sky?: boolean }) {
           "Consolidation adjustments",
           "Intragroup income and overlapping positions",
         ],
-        ["Total revenue", "Accrual basis", "subtotal"],
-        ["Savings interest expense", "Interest owed to depositors"],
+        ["Total income", "Accrual basis", "subtotal"],
+        ["Interest expense", "External borrowings and savings funding"],
         ["Agent fees and incentives", "External fees and incentive expenses"],
         ["Operating expenses", "Protocol and administrative costs"],
-        ["Credit loss expense", "Expected losses and impairments"],
-        ["Net revenue", "After expenses and consolidation", "total"],
+        ["Credit impairment expense", "Expected credit losses"],
+        [
+          "Income before tax",
+          "After expenses and consolidation; before tax",
+          "total",
+        ],
       ]
     : [
-        ["Portfolio income", "Income earned during the period"],
-        ["Funding expense", "Interest on borrowed capital"],
+        ["Investment income", "Income earned during the period"],
+        ["Interest expense", "Interest on borrowed capital"],
         [
-          "Net interest income",
-          "Portfolio income less funding expense",
+          "Investment income less interest expense",
+          "Before fees, operating expenses and credit impairment",
           "subtotal",
         ],
         ["Fees and incentive income", "Earned management fees and incentives"],
         ["Operating expenses", "Management and administrative costs"],
-        ["Credit loss expense", "Expected losses and impairments"],
-        ["Net income", "After expenses", "total"],
+        ["Credit impairment expense", "Expected credit losses"],
+        ["Income before tax", "Before income tax", "total"],
       ];
   return (
     <section className="panel">
@@ -101,12 +106,12 @@ function Statement({ sky = false }: { sky?: boolean }) {
         <div>
           <h2>
             {sky
-              ? "Consolidated income statement"
-              : "Pro forma income statement"}
+              ? "Draft consolidated income statement"
+              : "Draft income statement"}
           </h2>
-          <p>Accrual basis · USD · Month to date</p>
+          <p>Accrual basis intended · USD · Month to date</p>
         </div>
-        <span className="badge">Pro forma</span>
+        <span className="badge">Draft</span>
       </div>
       <div className="table-wrap">
         <table className="statement">
@@ -149,19 +154,20 @@ function AllocationTable({ rows }: { rows: { prime: Prime; venue: Venue }[] }) {
             <tr>
               <th>Allocation</th>
               <th>Prime agent</th>
-              <th>Carrying value</th>
+              <th>Reported position value</th>
               <th>
-                Reported income <small>MTD</small>
+                Reported investment income <small>MTD</small>
               </th>
               <th>
-                Accrued income <small>MTD</small>
+                Investment income <small>Accrual basis · MTD</small>
               </th>
               <th>Interest receivable</th>
+              <th>Income received in advance</th>
               <th>
                 Cash income received <small>MTD</small>
               </th>
-              <th>Funding expense</th>
-              <th>Net yield</th>
+              <th>Interest expense</th>
+              <th>Net investment yield</th>
             </tr>
           </thead>
           <tbody>
@@ -191,7 +197,12 @@ function AllocationTable({ rows }: { rows: { prime: Prime; venue: Venue }[] }) {
                   <Value value={accruedIncome(v)} />
                 </td>
                 <td>
-                  <Value value={amount(v, "unpaid_income_usd")} />
+                  <Value value={loanIncomeBalances(v).interestReceivable} />
+                </td>
+                <td>
+                  <Value
+                    value={loanIncomeBalances(v).incomeReceivedInAdvance}
+                  />
                 </td>
                 <td>
                   <Value value={amount(v, "cash_received_usd")} />
@@ -204,7 +215,7 @@ function AllocationTable({ rows }: { rows: { prime: Prime; venue: Venue }[] }) {
             ))}
             {!rows.length && (
               <tr>
-                <td colSpan={9} className="empty">
+                <td colSpan={10} className="empty">
                   TBD · No published allocations for this selection
                 </td>
               </tr>
@@ -228,16 +239,19 @@ function SourceDetails({ reports }: { reports: [Prime, ReadResult][] }) {
       </summary>
       <div className="source-body">
         <p>
-          Pro forma estimates, unaudited. Amounts in USD. TBD means unavailable
-          or unconfirmed; a reported zero remains zero. Positions and income may
-          overlap. Consolidated totals require an approved perimeter and
-          elimination policy.
+          Draft management accounts, unaudited. Amounts in USD. TBD means
+          unavailable or unconfirmed; a reported zero remains zero. Positions
+          and income may overlap. Consolidated totals require an approved
+          perimeter and elimination policy.
         </p>
         <p>
-          Accrued income is shown only for confirmed loan-accrual methods. Other
-          reported income may include cash distributions or position-only
-          holdings. Expenses and allocation yields await API support. Signed
-          interest receivables may include prepayments.
+          Accrual-basis investment income is shown only for available
+          loan-accrual methods. Other reported income may include cash
+          distributions or position-only holdings. Expenses and allocation
+          yields await API support. Interest receivable is earned but unpaid
+          interest; income received in advance is shown separately. Position
+          values are API valuations; an accounting measurement policy is not yet
+          established.
         </p>
         <a
           href="https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md"
@@ -475,11 +489,14 @@ export default async function Page({
           {tab.id === "prime" && (
             <>
               <div className="metrics">
-                <Card title="Accrued portfolio income" sub="Month to date" />
-                <Card title="Funding expense" sub="Month to date" />
-                <Card title="Net income" sub="After expenses" />
                 <Card
-                  title="Portfolio carrying value"
+                  title="Investment income (accrual basis)"
+                  sub="Month to date"
+                />
+                <Card title="Interest expense" sub="Month to date" />
+                <Card title="Income before tax" sub="Before income tax" />
+                <Card
+                  title="Total portfolio value"
                   sub="After consolidation adjustments"
                 />
               </div>
@@ -519,14 +536,14 @@ export default async function Page({
             <>
               <div className="metrics">
                 <Card
-                  title="Accrued revenue"
+                  title="Total income (accrual basis)"
                   sub="After consolidation adjustments"
                 />
                 <Card title="Total expenses" sub="Month to date" />
-                <Card title="Net revenue" sub="After expenses" />
+                <Card title="Income before tax" sub="Before income tax" />
                 <Card
-                  title="Net revenue margin"
-                  sub="Net revenue / accrued revenue"
+                  title="Pre-tax income margin"
+                  sub="Income before tax / total income"
                 />
               </div>
               <div className="notice">
@@ -549,7 +566,7 @@ export default async function Page({
                     <thead>
                       <tr>
                         <th>Entity</th>
-                        <th>Accrued income</th>
+                        <th>Income (accrual basis)</th>
                         <th>Expenses</th>
                         <th>Net contribution</th>
                       </tr>
@@ -625,8 +642,8 @@ export default async function Page({
                         : "TBD · No allocation published"}
                     </strong>
                     <p>
-                      Reported income movement can include revisions. Confirmed
-                      accrued income is shown separately.
+                      Reported income movement can include revisions.
+                      Accrual-basis income is shown separately.
                     </p>
                   </div>
                 </div>
@@ -637,8 +654,8 @@ export default async function Page({
                       <tr>
                         <th>Date · UTC</th>
                         <th>Change in reported income</th>
-                        <th>Accrued income</th>
-                        <th>Carrying value</th>
+                        <th>Income (accrual basis)</th>
+                        <th>Reported position value</th>
                         <th>Publication</th>
                       </tr>
                     </thead>
@@ -687,7 +704,7 @@ export default async function Page({
           )}
           <SourceDetails reports={reports} />
           <footer>
-            <span>Pro forma · Unaudited · USD</span>
+            <span>Draft · Unaudited · USD</span>
             <span>Source: Reporting API</span>
           </footer>
         </main>
