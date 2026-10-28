@@ -1,5 +1,10 @@
-import { financialStatements, financialPortfolio } from "@/lib/api";
-import { financialLine } from "@/lib/financial";
+import { financialStatements, financialPortfolio, report } from "@/lib/api";
+import {
+  FINANCIAL_EXPORT_HEADERS,
+  financialExportMetadata,
+  portfolioSummaryCsv,
+  statementCsvRows,
+} from "@/lib/financial-export";
 import { annualReports, portfolioReports } from "@/lib/report-data";
 import {
   chooseMonth,
@@ -8,8 +13,6 @@ import {
   sourceCatalog,
   sourceIncome,
   sourceRows,
-  statementLines,
-  totalLabel,
   yearMonths,
   type Scope,
 } from "@/lib/prime-reports";
@@ -37,7 +40,51 @@ export async function GET(request: Request) {
   const source = q.get("dataset") === "source";
   const rows: unknown[][] = [];
   if (positions) {
-    const reports = await portfolioReports(prime, scope, month);
+    const sourceRevision = q.get("source_revision");
+    const sourceCutoff = q.get("source_cutoff");
+    const portfolioRevision = q.get("portfolio_revision");
+    if (scope !== "individual" && (sourceRevision || portfolioRevision))
+      return Response.json(
+        { error: "Revision selections require individual scope" },
+        { status: 400 },
+      );
+    if (
+      portfolioRevision &&
+      portfolioRevision !== "none" &&
+      !/^[a-f0-9]{64}$/.test(portfolioRevision)
+    )
+      return Response.json(
+        { error: "Invalid financial portfolio revision" },
+        { status: 400 },
+      );
+    let reports;
+    if (sourceRevision) {
+      if (
+        sourceRevision !== "none" &&
+        (!/^[a-f0-9]{64}$/.test(sourceRevision) ||
+          !sourceCutoff ||
+          !/^\d{4}-\d{2}-\d{2}$/.test(sourceCutoff) ||
+          sourceCutoff.slice(0, 7) !== month.key)
+      )
+        return Response.json(
+          { error: "Invalid retained source selection" },
+          { status: 400 },
+        );
+      const read =
+        sourceRevision === "none"
+          ? {
+              report: null,
+              retained: false,
+              verifiedAt: null,
+              message: "No source publication in the selected screen",
+            }
+          : await report(prime, sourceCutoff!, sourceRevision);
+      if (sourceRevision !== "none" && !read.report)
+        return Response.json({ error: read.message }, { status: 503 });
+      reports = [
+        { prime, month, read, actualCutoff: read.report?.data.cutoff || null },
+      ];
+    } else reports = await portfolioReports(prime, scope, month);
     rows.push([
       "Requested scope",
       "Data basis",
@@ -62,17 +109,31 @@ export async function GET(request: Request) {
       "API checked at",
       "Publication freshness",
       "Excluded inputs",
+      ...FINANCIAL_EXPORT_HEADERS,
     ]);
     for (const p of reports) {
       const financial =
-        scope === "individual" && p.read.report
+        scope === "individual" && month.cutoff && portfolioRevision !== "none"
           ? await financialPortfolio(
               p.prime,
               month.key,
-              p.read.report.data.revision_id,
+              p.read.report?.data.revision_id,
               p.actualCutoff || undefined,
+              portfolioRevision || undefined,
             )
           : null;
+      if (
+        portfolioRevision &&
+        portfolioRevision !== "none" &&
+        !financial?.report
+      )
+        return Response.json(
+          {
+            error:
+              financial?.message || "Retained financial portfolio unavailable",
+          },
+          { status: 503 },
+        );
       const publishedRows = sourceRows([p]);
       const metadata = [
         p.read.report?.data.revision_id,
@@ -89,6 +150,10 @@ export async function GET(request: Request) {
               : "TBD",
         p.read.report?.data.excluded_inputs.join("; "),
       ];
+      if (scope === "individual")
+        rows.push(
+          portfolioSummaryCsv(scope, p.prime, month.key, financial, metadata),
+        );
       if (!publishedRows.length)
         rows.push([
           scope,
@@ -101,6 +166,7 @@ export async function GET(request: Request) {
           "TBD",
           p.read.message || "No enabled source positions",
           ...metadata,
+          ...financialExportMetadata(financial, "position"),
         ]);
       for (const { venue: v } of publishedRows)
         rows.push([
@@ -124,6 +190,13 @@ export async function GET(request: Request) {
           v.status,
           v.reason || p.read.message || "",
           ...metadata,
+          ...financialExportMetadata(
+            financial,
+            "position",
+            financial?.report?.portfolio.positions.find(
+              (row) => row.source_venue_id === v.venue_id,
+            )?.income,
+          ),
         ]);
     }
   } else if (source) {
@@ -212,47 +285,16 @@ export async function GET(request: Request) {
         },
         { status: 503 },
       );
-    rows.push([
-      "Scope",
-      "Prime agent",
-      "Line item",
-      ...months.map(
-        (m) =>
-          `${m.label} ${year}${m.state === "partial" ? " MTD" : m.state === "future" ? " future" : ""}`,
-      ),
-      totalLabel(months),
-      "Accounting basis",
-      "Actual monthly cutoffs UTC",
-      "Financial report hash",
-      "Financial report selection",
-      "Source manifest",
-    ]);
-    for (const r of statementLines(scope === "combined" ? null : prime, scope))
-      rows.push([
+    rows.push(
+      ...statementCsvRows(
+        prime,
         scope,
-        scope === "combined" ? "All prime agents" : prime,
-        r.label,
-        ...months.map((m) =>
-          r.kind === "section"
-            ? ""
-            : (financialLine(financial?.report, r.id)?.values[m.key]?.value ??
-              "TBD"),
-        ),
-        r.kind === "section"
-          ? ""
-          : (financialLine(financial?.report, r.id)?.total.value ?? "TBD"),
-        financialLine(financial?.report, r.id)?.values[month.key]?.basis ||
-          "Classification or inputs not yet available",
-        JSON.stringify(
-          financial?.report?.periods.map((p) => ({
-            month: p.key,
-            cutoff: p.actual_cutoff,
-          })) || [],
-        ),
-        financial?.report?.report_hash,
-        financial?.report?.selection,
-        JSON.stringify(financial?.report?.source_manifest || {}),
-      ]);
+        year,
+        month.key,
+        months,
+        financial?.report,
+      ),
+    );
   }
   return new Response(
     "\uFEFF" + rows.map((row) => row.map(cell).join(",")).join("\r\n"),

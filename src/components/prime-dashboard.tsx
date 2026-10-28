@@ -1,3 +1,4 @@
+import { statementTotalLabel } from "@/lib/financial";
 import { financialStatements, financialPortfolio } from "@/lib/api";
 import Link from "next/link";
 import {
@@ -111,9 +112,7 @@ export async function PrimeDashboard({
       : null;
   const sourcePortfolio = portfolios[0];
   const positionFinancial =
-    scope === "individual" &&
-    view === "positions" &&
-    month.cutoff
+    scope === "individual" && view === "positions" && month.cutoff
       ? await financialPortfolio(
           prime,
           month.key,
@@ -132,6 +131,18 @@ export async function PrimeDashboard({
   });
   if (financial?.report)
     query.set("financial_revision", financial.report.selection);
+  if (view === "positions" && scope === "individual") {
+    query.set(
+      "source_revision",
+      sourcePortfolio?.read.report?.data.revision_id || "none",
+    );
+    if (sourcePortfolio?.actualCutoff)
+      query.set("source_cutoff", sourcePortfolio.actualCutoff);
+    query.set(
+      "portfolio_revision",
+      positionFinancial?.report?.financial_revision || "none",
+    );
+  }
   const anyStale = portfolios.some(
     (p) => p.read.retained || p.read.report?.freshness.stale,
   );
@@ -293,7 +304,7 @@ export async function PrimeDashboard({
             <span className="badge">Draft · Unaudited</span>
             <span>
               {view === "income"
-                ? `${year} · Monthly columns · ${totalLabel(months)}`
+                ? `${year} · Monthly columns · ${statementTotalLabel(financial?.report, totalLabel(months))}`
                 : `${month.label} ${year} · Closing positions`}
             </span>
             <span>

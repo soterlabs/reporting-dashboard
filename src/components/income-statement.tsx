@@ -1,7 +1,12 @@
 "use client";
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { financialLine, type FinancialStatement } from "@/lib/financial";
+import {
+  financialLine,
+  statementMonths,
+  statementTotalLabel,
+  type FinancialStatement,
+} from "@/lib/financial";
 import { money } from "@/lib/reporting";
 import {
   totalLabel,
@@ -11,7 +16,7 @@ import {
 
 export function IncomeStatement({
   rows,
-  months,
+  months: calendarMonths,
   title,
   financial,
 }: {
@@ -20,6 +25,7 @@ export function IncomeStatement({
   title: string;
   financial?: FinancialStatement | null;
 }) {
+  const months = statementMonths(financial, calendarMonths);
   const [collapsed, setCollapsed] = useState<Set<string>>(
     () => new Set(["gains", "operating", "other-expenses", "incentives"]),
   );
@@ -94,7 +100,7 @@ export function IncomeStatement({
                 </th>
               ))}
               <th scope="col" className="year-total">
-                {totalLabel(months)}
+                {statementTotalLabel(financial, totalLabel(months))}
               </th>
             </tr>
           </thead>
@@ -142,7 +148,9 @@ export function IncomeStatement({
                         )}
                   </td>
                 ))}
-                <td className="tbd year-total">
+                <td
+                  className={`${financialLine(financial, row.id)?.total.value != null ? "" : "tbd "}year-total`}
+                >
                   {row.kind === "section"
                     ? ""
                     : money(

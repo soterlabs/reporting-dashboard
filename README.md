@@ -72,7 +72,13 @@ revision as its venue rows. This is not entity assets or NAV. Additional unrevie
 positions make the aggregate partial; the known portion is labelled separately.
 
 Statement CSV downloads pin the exact annual selection returned for the screen,
-including missing months, and preserve raw decimals and source metadata. Missing
+including missing months, and preserve raw decimals and source metadata. Retained
+statement month and YTD labels follow the saved API period when the calendar advances.
+Individual positions CSVs pin both venue and financial revisions (including missing
+publications), include the tracked aggregate as a separate `portfolio_summary` record,
+and label member records `position`. Do not add summary records to their members.
+Financial source hashes, policy, cutoff, refresh status and partial known values are
+included alongside the original venue metadata. Missing
 history keeps YTD unavailable. Backend policy and API details:
 [financial API guide](https://github.com/soterlabs/settlement-cycle/blob/docs/reporting-dashboard-financial-api-prd/docs/pipeline/financial-reporting-api.md).
 

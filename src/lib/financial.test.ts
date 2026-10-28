@@ -52,3 +52,55 @@ test("portfolio validates prime, month, and matching v2 source revision", () => 
   bad.portfolio.closing_value.value = "NaN";
   assert.throws(() => validatePortfolio(bad, "obex", "2026-10"));
 });
+
+test("reject inconsistent periods, unbacked values and complete YTD over missing months", () => {
+  for (const mutate of [
+    (v: typeof statement) => {
+      v.periods[9].actual_cutoff = "2026-09-26";
+    },
+    (v: typeof statement) => {
+      v.periods[9].financial_revision = null;
+    },
+    (v: typeof statement) => {
+      v.periods[9].stale = false;
+    },
+    (v: typeof statement) => {
+      v.periods[8].actual_cutoff = "2026-09-29";
+      v.periods[8].financial_revision = "c".repeat(64);
+    },
+    (v: typeof statement) => {
+      v.lines[0].values["2026-11"] = structuredClone(
+        v.lines[0].values["2026-10"],
+      );
+    },
+    (v: typeof statement) => {
+      v.lines[0].total = structuredClone(v.lines[0].values["2026-10"]);
+    },
+  ]) {
+    const bad = structuredClone(statement);
+    mutate(bad);
+    assert.throws(() => validateStatement(bad, "obex", 2026));
+  }
+  assert.throws(() =>
+    validateStatement(statement, "obex", 2026, "different-selection"),
+  );
+});
+
+test("portfolio exact cutoff and revision must match; duplicate members are rejected", () => {
+  assert.throws(() =>
+    validatePortfolio(portfolio, "obex", "2026-10", undefined, "2026-10-27"),
+  );
+  assert.throws(() =>
+    validatePortfolio(
+      portfolio,
+      "obex",
+      "2026-10",
+      undefined,
+      undefined,
+      "c".repeat(64),
+    ),
+  );
+  const bad = structuredClone(portfolio);
+  bad.portfolio.positions.push(structuredClone(bad.portfolio.positions[0]));
+  assert.throws(() => validatePortfolio(bad, "obex", "2026-10"));
+});
