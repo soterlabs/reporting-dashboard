@@ -36,10 +36,11 @@ npm start
 
 The authoritative guide in settlement-cycle is [`docs/pipeline/settlement-reporting-api.md`](https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md).
 
-Only **v2 reporting** data is consumed, server-side:
+Only reporting data is consumed, server-side:
 
 - `/v2/reporting/{prime}/latest` for the latest publication in an incomplete current month.
 - `/v2/reporting/{prime}/at/{cutoff}` for exact historical month ends.
+- `/v3/reporting/statements` and `/v3/reporting/portfolio` for approved financial components and tracked allocation aggregates.
 
 `REPORTING_API_URL` defaults to `https://settle-api-production.up.railway.app`. No API key is currently required. Requests read stored publications and cannot start calculations. There are no settlement, blockchain, database, spreadsheet-import or alternate financial-data dependencies.
 

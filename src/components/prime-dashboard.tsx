@@ -113,12 +113,12 @@ export async function PrimeDashboard({
   const positionFinancial =
     scope === "individual" &&
     view === "positions" &&
-    sourcePortfolio?.read.report
+    month.cutoff
       ? await financialPortfolio(
           prime,
           month.key,
-          sourcePortfolio.read.report.data.revision_id,
-          sourcePortfolio.actualCutoff || undefined,
+          sourcePortfolio?.read.report?.data.revision_id,
+          sourcePortfolio?.actualCutoff || undefined,
         )
       : null;
   const rows = sourceRows(portfolios);
