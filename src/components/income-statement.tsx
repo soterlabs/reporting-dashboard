@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { financialLine, type FinancialStatement } from "@/lib/financial";
 import { money } from "@/lib/reporting";
 import {
   totalLabel,
@@ -12,20 +13,15 @@ export function IncomeStatement({
   rows,
   months,
   title,
+  financial,
 }: {
   rows: StatementLine[];
   months: Month[];
   title: string;
+  financial?: FinancialStatement | null;
 }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(
-    () =>
-      new Set([
-        "interest",
-        "gains",
-        "operating",
-        "other-expenses",
-        "incentives",
-      ]),
+    () => new Set(["gains", "operating", "other-expenses", "incentives"]),
   );
   const hasChildren = (id: string) => rows.some((r) => r.parent === id);
   function visible(row: StatementLine): boolean {
@@ -78,6 +74,17 @@ export function IncomeStatement({
                 <th scope="col" key={m.key}>
                   {m.label} {m.key.slice(0, 4)}
                   <small>
+                    {financial?.periods.find((p) => p.key === m.key)
+                      ?.actual_cutoff && (
+                      <span>
+                        Through{" "}
+                        {
+                          financial.periods.find((p) => p.key === m.key)!
+                            .actual_cutoff
+                        }
+                        <br />
+                      </span>
+                    )}
                     {m.state === "partial"
                       ? "MTD"
                       : m.state === "future"
@@ -113,12 +120,34 @@ export function IncomeStatement({
                   )}
                 </th>
                 {months.map((m) => (
-                  <td key={m.key} className="tbd">
-                    {row.kind === "section" ? "" : money(null)}
+                  <td
+                    key={m.key}
+                    className={
+                      financialLine(financial, row.id)?.values[m.key]?.value !=
+                      null
+                        ? ""
+                        : "tbd"
+                    }
+                    title={
+                      financialLine(financial, row.id)?.values[m.key]?.reason ||
+                      financialLine(financial, row.id)?.values[m.key]?.basis ||
+                      "Classification or inputs not yet available"
+                    }
+                  >
+                    {row.kind === "section"
+                      ? ""
+                      : money(
+                          financialLine(financial, row.id)?.values[m.key]
+                            ?.value ?? null,
+                        )}
                   </td>
                 ))}
                 <td className="tbd year-total">
-                  {row.kind === "section" ? "" : "TBD"}
+                  {row.kind === "section"
+                    ? ""
+                    : money(
+                        financialLine(financial, row.id)?.total.value ?? null,
+                      )}
                 </td>
               </tr>
             ))}
@@ -126,8 +155,11 @@ export function IncomeStatement({
         </table>
       </div>
       <div className="panel-note">
-        TBD = unavailable or unconfirmed. Subtotals require complete
-        classifications and expense data. Future months are not forecasts.
+        First slice: AR, Sky funding components and Obex Maple net investment
+        income. Maple income is after embedded vault fees. These components do
+        not certify their parent totals. TBD = unavailable or unconfirmed.
+        Subtotals require complete classifications and expense data. Future
+        months are not forecasts.
       </div>
     </section>
   );

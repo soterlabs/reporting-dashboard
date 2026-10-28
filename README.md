@@ -54,9 +54,26 @@ Successful responses are validated and cached for five minutes. Failed refreshes
 - Current-month schedules use the latest publication only if its cutoff belongs to the selected month and is a completed UTC day. Its actual cutoff and delayed-publication status are visible. Historical months require the exact closing date; an incomplete publication is never substituted for a month end.
 - Monthly income is the API's month-to-date figure, not a sum of daily MTD snapshots. Opening and closing position values are used directly.
 - Reported position values are API valuations, not accounting carrying amounts under an approved measurement policy. Interest receivable and income received in advance are disclosed separately for supported loan methods. Receivables must not be added to a closing position that already includes them.
-- Only available `loan_accrual` income is presented as accrual-basis income. Other source income is explicitly labelled reported income with an unconfirmed basis. These two views are not additive.
+- Available `loan_accrual` income and the explicitly approved Obex V1 net vault income from v3 are presented as accrual-basis income. Other source income is explicitly labelled reported income with an unconfirmed basis. These two views are not additive.
 - Portfolios, savings holdings and incentive claims can overlap. No cross-allocation or cross-prime sum is presented as consolidated portfolio value or revenue. Group and combined screens show source positions explicitly before consolidation.
 - CSV exports follow the selected scope and view. Source exports preserve decimal precision, actual cutoff, revision IDs, hashes and publication timestamps. UI amounts are rounded to cents using decimal arithmetic.
+
+## First financial slice
+
+Individual statements read `/v3/reporting/statements`: AR and Sky funding components
+for each prime, plus Obex Maple syrupUSDC net investment income after embedded
+vault fees. The broad parent lines remain TBD. Gross funding and its reimbursement
+are the bridge to net funding, not additional expenses to add to net funding.
+
+The Obex positions page reads `/v3/reporting/portfolio` for a one-position tracked
+allocation aggregate and approved accrued income, matched to the same saved source
+revision as its venue rows. This is not entity assets or NAV. Additional unreviewed
+positions make the aggregate partial; the known portion is labelled separately.
+
+Statement CSV downloads pin the exact annual selection returned for the screen,
+including missing months, and preserve raw decimals and source metadata. Missing
+history keeps YTD unavailable. Backend policy and API details:
+[financial API guide](https://github.com/soterlabs/settlement-cycle/blob/docs/reporting-dashboard-financial-api-prd/docs/pipeline/financial-reporting-api.md).
 
 ## Pending inputs
 

@@ -1,4 +1,11 @@
 import {
+  validateStatement,
+  validatePortfolio,
+  type FinancialStatement,
+  type FinancialPortfolio,
+  type FinancialRead,
+} from "./financial.ts";
+import {
   validatePublication,
   validateReport,
   type Prime,
@@ -113,6 +120,50 @@ export async function latestReport(prime: Prime): Promise<ReadResult> {
       retained: false,
       verifiedAt: null,
       message: e instanceof Error ? e.message : "Reporting API unavailable",
+    };
+  }
+}
+
+export async function financialStatements(
+  prime: Prime,
+  year: number,
+  revision?: string,
+) {
+  return financialRead<FinancialStatement>(
+    `/v3/reporting/statements?${new URLSearchParams({ prime, year: String(year), ...(revision ? { revision } : {}) })}`,
+    (v) => validateStatement(v, prime, year),
+  );
+}
+export async function financialPortfolio(
+  prime: Prime,
+  month: string,
+  source_revision?: string,
+  cutoff?: string,
+) {
+  return financialRead<FinancialPortfolio>(
+    `/v3/reporting/portfolio?${new URLSearchParams({ prime, month, ...(source_revision ? { source_revision } : {}), ...(cutoff ? { cutoff } : {}) })}`,
+    (v) => validatePortfolio(v, prime, month, source_revision),
+  );
+}
+async function financialRead<T>(
+  path: string,
+  validate: (v: unknown) => T,
+): Promise<FinancialRead<T>> {
+  try {
+    const result = await read(path, validate);
+    return {
+      report: result.value as T,
+      retained: result.retained,
+      message: result.retained
+        ? "Refresh failed; showing retained financial publication"
+        : null,
+    };
+  } catch (e) {
+    return {
+      report: null,
+      retained: false,
+      message:
+        e instanceof Error ? e.message : "Financial reporting unavailable",
     };
   }
 }

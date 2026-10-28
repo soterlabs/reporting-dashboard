@@ -187,8 +187,25 @@ export function statementLines(
       );
     });
   }
+  if (prime === "obex" && scope === "individual")
+    rows.push(
+      line(
+        "obex-maple",
+        "Maple syrupUSDC — net investment income",
+        2,
+        "interest",
+      ),
+    );
   rows.push(
     line("interest-expense", "Interest expense (cost of funding)"),
+    line("sky-funding", "Sky funding interest, net", 2, "interest-expense"),
+    line("sky-funding-gross", "Before spread reimbursement", 3, "sky-funding"),
+    line(
+      "sky-funding-reimbursement",
+      "Spread reimbursement (deduction)",
+      3,
+      "sky-funding",
+    ),
     line("net-interest", "Net interest income", 0, undefined, "subtotal"),
     line("net-revenue", "Total net revenue", 0, undefined, "subtotal"),
     line("expenses", "Expenses", 0, undefined, "section"),

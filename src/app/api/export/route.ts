@@ -1,6 +1,7 @@
+import { financialStatements, financialPortfolio } from "@/lib/api";
+import { financialLine } from "@/lib/financial";
 import { annualReports, portfolioReports } from "@/lib/report-data";
 import {
-  annualAmount,
   chooseMonth,
   parsePrime,
   reportingYear,
@@ -63,6 +64,15 @@ export async function GET(request: Request) {
       "Excluded inputs",
     ]);
     for (const p of reports) {
+      const financial =
+        scope === "individual" && p.read.report
+          ? await financialPortfolio(
+              p.prime,
+              month.key,
+              p.read.report.data.revision_id,
+              p.actualCutoff || undefined,
+            )
+          : null;
       const publishedRows = sourceRows([p]);
       const metadata = [
         p.read.report?.data.revision_id,
@@ -102,7 +112,10 @@ export async function GET(request: Request) {
           v.label,
           amount(v, "opening_position_value_usd"),
           amount(v, "position_value_usd"),
-          v.method === "loan_accrual" ? amount(v, "income_usd") : null,
+          financial?.report?.portfolio.positions.find(
+            (p) => p.source_venue_id === v.venue_id,
+          )?.income.value ??
+            (v.method === "loan_accrual" ? amount(v, "income_usd") : null),
           loanIncomeBalances(v).interestReceivable,
           loanIncomeBalances(v).incomeReceivedInAdvance,
           amount(v, "cash_received_usd"),
@@ -184,6 +197,21 @@ export async function GET(request: Request) {
         ]);
     }
   } else {
+    const financial =
+      scope === "individual"
+        ? await financialStatements(
+            prime,
+            year,
+            q.get("financial_revision") || undefined,
+          )
+        : null;
+    if (q.get("financial_revision") && !financial?.report)
+      return Response.json(
+        {
+          error: financial?.message || "Retained financial report unavailable",
+        },
+        { status: 503 },
+      );
     rows.push([
       "Scope",
       "Prime agent",
@@ -194,15 +222,36 @@ export async function GET(request: Request) {
       ),
       totalLabel(months),
       "Accounting basis",
+      "Actual monthly cutoffs UTC",
+      "Financial report hash",
+      "Financial report selection",
+      "Source manifest",
     ]);
     for (const r of statementLines(scope === "combined" ? null : prime, scope))
       rows.push([
         scope,
         scope === "combined" ? "All prime agents" : prime,
         r.label,
-        ...months.map(() => (r.kind === "section" ? "" : "TBD")),
-        r.kind === "section" ? "" : annualAmount(Array(12).fill(null), months),
-        "Draft accrual statement; classifications, costs, entity scope and eliminations unconfirmed",
+        ...months.map((m) =>
+          r.kind === "section"
+            ? ""
+            : (financialLine(financial?.report, r.id)?.values[m.key]?.value ??
+              "TBD"),
+        ),
+        r.kind === "section"
+          ? ""
+          : (financialLine(financial?.report, r.id)?.total.value ?? "TBD"),
+        financialLine(financial?.report, r.id)?.values[month.key]?.basis ||
+          "Classification or inputs not yet available",
+        JSON.stringify(
+          financial?.report?.periods.map((p) => ({
+            month: p.key,
+            cutoff: p.actual_cutoff,
+          })) || [],
+        ),
+        financial?.report?.report_hash,
+        financial?.report?.selection,
+        JSON.stringify(financial?.report?.source_manifest || {}),
       ]);
   }
   return new Response(

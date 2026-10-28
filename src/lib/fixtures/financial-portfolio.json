@@ -1,0 +1,91 @@
+{
+  "schema_version": "3.0",
+  "policy_version": "prime-management.first-slice.v1",
+  "prime": "obex",
+  "scope": "individual",
+  "cutoff": "2026-10-26",
+  "financial_revision": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16",
+  "report_hash": "96911f5e15ca982c9c45e357533e034b064c546140e28951f06d941f7e73b5c3",
+  "source": {
+    "revision_id": "acae4218fa4311f9f845e0c28b17e0876b5e808750a6773c61f29027ea851711",
+    "result_hash": "acae4218fa4311f9f845e0c28b17e0876b5e808750a6773c61f29027ea851711",
+    "code_version": null,
+    "configuration_version": null,
+    "input_revision": null,
+    "computed_at": null,
+    "provisional": true,
+    "excluded_inputs": null
+  },
+  "source_lag": false,
+  "freshness": {
+    "stale": true
+  },
+  "portfolio": {
+    "measure": "tracked_allocations",
+    "perimeter_id": "obex.maple-only.v1",
+    "positions": [
+      {
+        "position_id": "obex.maple_syrup_usdc",
+        "source_venue_id": "V1",
+        "label": "Maple syrupUSDC",
+        "opening_value": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "valuation",
+          "basis": "reported_usd_vault_valuation",
+          "reason": null,
+          "source_paths": []
+        },
+        "closing_value": {
+          "value": "1100",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "valuation",
+          "basis": "reported_usd_vault_valuation",
+          "reason": null,
+          "source_paths": []
+        },
+        "income": {
+          "value": "100",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "prime_owned_net_vault_yield_after_embedded_fees",
+          "reason": null,
+          "source_paths": [
+            "result.venue_breakdown.V1.revenue",
+            "result.venue_breakdown.V1.external_revenue"
+          ]
+        }
+      }
+    ],
+    "expected_position_ids": [
+      "obex.maple_syrup_usdc"
+    ],
+    "excluded_source_venue_ids": [],
+    "opening_value": {
+      "value": "1000",
+      "known_value": null,
+      "unit": "USD",
+      "status": "available",
+      "recognition": "valuation",
+      "basis": "reported_usd_vault_valuation",
+      "reason": null,
+      "source_paths": []
+    },
+    "closing_value": {
+      "value": "1100",
+      "known_value": null,
+      "unit": "USD",
+      "status": "available",
+      "recognition": "valuation",
+      "basis": "reported_usd_vault_valuation",
+      "reason": null,
+      "source_paths": []
+    }
+  }
+}
