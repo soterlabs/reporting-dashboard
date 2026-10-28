@@ -1,5 +1,5 @@
-import type { Prime } from "./reporting.ts";
-import { yearMonths, type Month } from "./prime-reports.ts";
+import type { Prime, Venue } from "./reporting.ts";
+import { yearMonths, type Month, type PortfolioRow } from "./prime-reports.ts";
 
 export interface Metric {
   value: string | null;
@@ -32,6 +32,8 @@ export interface FinancialStatement {
   lines: {
     id: string;
     label: string;
+    family?: string;
+    aggregation?: "leaf" | "subtotal";
     values: Record<string, Metric>;
     total: Metric;
   }[];
@@ -50,6 +52,15 @@ export interface FinancialPortfolio {
   report_hash: string;
   policy_version: string;
   source: { revision_id: string; result_hash: string };
+  claims?: {
+    source_venue_id: string;
+    label: string;
+    income: Metric;
+    cash_received: Metric;
+    receivable: Metric;
+    received_in_advance: Metric;
+    included_in_allocation_value: false;
+  }[];
   source_lag: boolean;
   freshness: { stale: boolean };
   portfolio: {
@@ -62,6 +73,7 @@ export interface FinancialPortfolio {
     positions: {
       position_id: string;
       source_venue_id: string;
+      label: string;
       income: Metric;
       opening_value: Metric;
       closing_value: Metric;
@@ -73,7 +85,10 @@ export interface FinancialRead<T> {
   retained: boolean;
   message: string | null;
 }
-const policy = "prime-management.first-slice.v1";
+const policies = new Set([
+  "prime-management.first-slice.v1",
+  "prime-management.allocations.v2",
+]);
 const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 const decimal = (v: unknown) =>
   typeof v === "string" && /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(v);
@@ -113,7 +128,7 @@ export function validateStatement(
   requireValue(
     v &&
       v.schema_version === "3.0" &&
-      v.policy_version === policy &&
+      policies.has(v.policy_version) &&
       v.prime === prime &&
       v.year === year &&
       v.scope === "individual",
@@ -170,7 +185,12 @@ export function validateStatement(
       new Set(v.lines.map((l) => l.id)).size === v.lines.length,
   );
   for (const l of v.lines) {
-    requireValue(typeof l.id === "string");
+    requireValue(
+      typeof l.id === "string" &&
+        (l.family === undefined || typeof l.family === "string") &&
+        (l.aggregation === undefined ||
+          ["leaf", "subtotal"].includes(l.aggregation)),
+    );
     metric(l.total);
     for (const p of v.periods) {
       const cell = l.values[p.key];
@@ -210,7 +230,7 @@ export function validatePortfolio(
   requireValue(
     v &&
       v.schema_version === "3.0" &&
-      v.policy_version === policy &&
+      policies.has(v.policy_version) &&
       v.prime === prime &&
       v.scope === "individual" &&
       date(v.cutoff) &&
@@ -249,11 +269,32 @@ export function validatePortfolio(
   for (const position of p.positions) {
     requireValue(
       typeof position.source_venue_id === "string" &&
-        typeof position.position_id === "string",
+        typeof position.position_id === "string" &&
+        typeof position.label === "string",
     );
     metric(position.income);
     metric(position.opening_value);
     metric(position.closing_value);
+  }
+  if (v.claims !== undefined) {
+    requireValue(Array.isArray(v.claims));
+    requireValue(
+      new Set(v.claims.map((c) => c.source_venue_id)).size === v.claims.length,
+    );
+    for (const claim of v.claims) {
+      requireValue(
+        typeof claim.source_venue_id === "string" &&
+          typeof claim.label === "string" &&
+          claim.included_in_allocation_value === false,
+      );
+      for (const m of [
+        claim.income,
+        claim.cash_received,
+        claim.receivable,
+        claim.received_in_advance,
+      ])
+        metric(m);
+    }
   }
   return v;
 }
@@ -268,7 +309,7 @@ export function financialLine(
   report: FinancialStatement | null | undefined,
   id: string,
 ) {
-  return report?.lines.find((l) => l.id === bindings[id]);
+  return report?.lines.find((l) => l.id === (bindings[id] || id));
 }
 
 // Retained reports keep the API's period classification when the calendar advances.
@@ -289,4 +330,60 @@ export function statementTotalLabel(
   fallback: string,
 ) {
   return report ? `${report.total_label} ${report.year}` : fallback;
+}
+
+export function positionAccruedIncome(
+  report: FinancialPortfolio | null | undefined,
+  venue: Venue,
+) {
+  const metric =
+    report?.portfolio.positions.find(
+      (p) => p.source_venue_id === venue.venue_id,
+    )?.income ||
+    report?.claims?.find((p) => p.source_venue_id === venue.venue_id)?.income;
+  if (metric)
+    return metric.status === "available" && metric.recognition === "accrual"
+      ? metric.value
+      : null;
+  return venue.method === "loan_accrual" &&
+    venue.enabled &&
+    venue.status === "available"
+    ? venue.income_usd
+    : null;
+}
+
+// Approved v3 members remain usable when a legacy source has no v2 publication.
+export function financialPortfolioRows(
+  prime: Prime,
+  venueRows: PortfolioRow[],
+  report?: FinancialPortfolio | null,
+): PortfolioRow[] {
+  if (venueRows.length || !report) return venueRows;
+  return report.portfolio.positions
+    .filter((p) =>
+      [p.opening_value, p.closing_value, p.income].some(
+        (m) => m.value !== null,
+      ),
+    )
+    .map((p) => ({
+      prime,
+      actualCutoff: report.cutoff,
+      revision: report.source.revision_id,
+      venue: {
+        venue_id: p.source_venue_id,
+        label: p.label,
+        chain: "saved financial source",
+        method: "financial_policy",
+        enabled: true,
+        status: "available",
+        reason: null,
+        opening_position_value_usd: p.opening_value.value,
+        position_value_usd: p.closing_value.value,
+        income_usd: null,
+        cash_received_usd: null,
+        principal_usd: null,
+        opening_unpaid_income_usd: null,
+        unpaid_income_usd: null,
+      },
+    }));
 }

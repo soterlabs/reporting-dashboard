@@ -92,3 +92,22 @@ history keeps YTD unavailable. Backend policy and API details:
 ## Railway
 
 `.railway/railway.ts` defines the Railpack build, start command and health check. Apply infrastructure changes with `railway config plan` followed by `railway config apply`. Pushes to `main` deploy automatically. Next.js uses Railway's supplied `PORT`. `/api/health` checks application readiness independently of financial-data availability.
+
+
+## Allocation coverage (policy v2)
+
+The dashboard accepts retained `prime-management.first-slice.v1` documents and
+current `prime-management.allocations.v2` documents. Reviewed Spark/Grove/Osero
+lending and vault leaves populate the statement's applicable families. Native
+income is separated from external lending rewards received, and issuer
+compensation has explicitly typed accrual/receipt recognition. Broader parent
+totals and net investment yield remain unavailable until their coverage is approved.
+
+Reviewed v3 members can supply the positions table and export even if a legacy
+source has no v2 venue view. They retain their financial source revision and
+metrics; missing v2 view hashes, unclassified cash and interest receivables are
+not invented. Issuer receivables/advances remain distinct from interest balances
+and are excluded from the tracked investment aggregate.
+
+Backend coverage, membership, exclusions and policy-upgrade guide:
+[allocation reporting](https://github.com/soterlabs/settlement-cycle/blob/feat/reporting-allocation-families/docs/pipeline/financial-allocation-reporting.md).

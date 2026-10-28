@@ -1,3 +1,4 @@
+import { financialPortfolioRows, positionAccruedIncome } from "@/lib/financial";
 import { financialStatements, financialPortfolio, report } from "@/lib/api";
 import {
   FINANCIAL_EXPORT_HEADERS,
@@ -134,7 +135,11 @@ export async function GET(request: Request) {
           },
           { status: 503 },
         );
-      const publishedRows = sourceRows([p]);
+      const publishedRows = financialPortfolioRows(
+        p.prime,
+        sourceRows([p]),
+        financial?.report,
+      );
       const metadata = [
         p.read.report?.data.revision_id,
         p.read.report?.data.view_hash,
@@ -178,10 +183,7 @@ export async function GET(request: Request) {
           v.label,
           amount(v, "opening_position_value_usd"),
           amount(v, "position_value_usd"),
-          financial?.report?.portfolio.positions.find(
-            (p) => p.source_venue_id === v.venue_id,
-          )?.income.value ??
-            (v.method === "loan_accrual" ? amount(v, "income_usd") : null),
+          positionAccruedIncome(financial?.report, v),
           loanIncomeBalances(v).interestReceivable,
           loanIncomeBalances(v).incomeReceivedInAdvance,
           amount(v, "cash_received_usd"),

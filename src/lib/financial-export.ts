@@ -40,38 +40,40 @@ export function statementCsvRows(
       "Financial report selection",
       "Source manifest",
     ],
-    ...statementLines(scope === "combined" ? null : prime, scope).map((row) => {
-      const line = financialLine(report, row.id);
-      return [
-        scope,
-        scope === "combined" ? "All prime agents" : prime,
-        row.label,
-        ...months.map((m) =>
-          row.kind === "section" ? "" : (line?.values[m.key]?.value ?? "TBD"),
-        ),
-        row.kind === "section" ? "" : (line?.total.value ?? "TBD"),
-        (line
-          ? [
-              ...new Set(
-                Object.values(line.values)
-                  .filter((v) => v.status === "available")
-                  .map((v) => v.basis),
-              ),
-            ].join("; ")
-          : "") ||
-          line?.values[selectedMonth]?.reason ||
-          "Classification or inputs not yet available",
-        JSON.stringify(
-          report?.periods.map((p) => ({
-            month: p.key,
-            cutoff: p.actual_cutoff,
-          })) || [],
-        ),
-        report?.report_hash,
-        report?.selection,
-        JSON.stringify(report?.source_manifest || {}),
-      ];
-    }),
+    ...statementLines(scope === "combined" ? null : prime, scope, report).map(
+      (row) => {
+        const line = financialLine(report, row.id);
+        return [
+          scope,
+          scope === "combined" ? "All prime agents" : prime,
+          row.label,
+          ...months.map((m) =>
+            row.kind === "section" ? "" : (line?.values[m.key]?.value ?? "TBD"),
+          ),
+          row.kind === "section" ? "" : (line?.total.value ?? "TBD"),
+          (line
+            ? [
+                ...new Set(
+                  Object.values(line.values)
+                    .filter((v) => v.status === "available")
+                    .map((v) => v.basis),
+                ),
+              ].join("; ")
+            : "") ||
+            line?.values[selectedMonth]?.reason ||
+            "Classification or inputs not yet available",
+          JSON.stringify(
+            report?.periods.map((p) => ({
+              month: p.key,
+              cutoff: p.actual_cutoff,
+            })) || [],
+          ),
+          report?.report_hash,
+          report?.selection,
+          JSON.stringify(report?.source_manifest || {}),
+        ];
+      },
+    ),
   ];
 }
 
