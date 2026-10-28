@@ -1,9 +1,7 @@
 import {
-  PRIMES,
   validatePublication,
   validateReport,
   type Prime,
-  type Publication,
   type ReadResult,
 } from "./reporting.ts";
 
@@ -96,68 +94,25 @@ export async function report(
     };
   }
 }
-export async function allReports(cutoff: string) {
-  return Object.fromEntries(
-    await Promise.all(PRIMES.map(async (p) => [p, await report(p, cutoff)])),
-  ) as Record<Prime, ReadResult>;
-}
-export async function history(
-  prime: Prime,
-  start: string,
-  end: string,
-): Promise<{
-  publications: Publication[];
-  message: string | null;
-  verifiedAt: string | null;
-}> {
+export async function latestReport(prime: Prime): Promise<ReadResult> {
   try {
-    const r = await read(
-      `/v2/reporting/${prime}/history?start=${start}&end=${end}&limit=90`,
-      (value) => {
-        const h = value as {
-          schema_version: string;
-          prime: string;
-          view: string;
-          estimate_basis: string;
-          results: (Publication & { availability: string })[];
-        };
-        if (
-          !h ||
-          h.schema_version !== "2.0" ||
-          h.prime !== prime ||
-          h.view !== "reporting" ||
-          h.estimate_basis !== "month_to_date" ||
-          !Array.isArray(h.results)
-        )
-          throw new Error("Invalid reporting history");
-        const dates = new Set<string>();
-        for (const item of h.results) {
-          if (
-            !["available", "unavailable"].includes(item.availability) ||
-            typeof item.cutoff !== "string" ||
-            item.cutoff < start ||
-            item.cutoff > end ||
-            dates.has(item.cutoff)
-          )
-            throw new Error("Invalid history date");
-          dates.add(item.cutoff);
-          if (item.availability === "available") validatePublication(item);
-        }
-        return h.results.filter((item) => item.availability === "available");
-      },
+    const r = await read(`/v2/reporting/${prime}/latest`, (value) =>
+      validateReport(value, prime),
     );
     return {
-      publications: r.value as Publication[],
-      message: r.retained
-        ? "Refresh failed; showing last verified history"
-        : null,
+      report: r.value as ReturnType<typeof validateReport>,
+      retained: r.retained,
       verifiedAt: r.verifiedAt,
+      message: r.retained
+        ? "Refresh failed; showing last checked publication"
+        : null,
     };
   } catch (e) {
     return {
-      publications: [],
-      message: e instanceof Error ? e.message : "Reporting history unavailable",
+      report: null,
+      retained: false,
       verifiedAt: null,
+      message: e instanceof Error ? e.message : "Reporting API unavailable",
     };
   }
 }

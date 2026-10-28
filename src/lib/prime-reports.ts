@@ -1,0 +1,285 @@
+import Decimal from "decimal.js";
+import {
+  amount,
+  accruedIncome,
+  name,
+  PRIMES,
+  type Prime,
+  type ReadResult,
+  type Venue,
+} from "./reporting.ts";
+
+export const API_DOC_URL =
+  "https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md";
+export type Scope = "individual" | "group" | "combined";
+export type View = "income" | "positions";
+export const SCOPES: { key: Scope; label: string; description: string }[] = [
+  {
+    key: "individual",
+    label: "Individual prime",
+    description: "Prime-agent reporting",
+  },
+  {
+    key: "group",
+    label: "Prime group",
+    description: "Prime and controlled entities",
+  },
+  {
+    key: "combined",
+    label: "Combined primes",
+    description: "All prime agents",
+  },
+];
+export interface Month {
+  key: string;
+  label: string;
+  cutoff: string | null;
+  state: "complete" | "partial" | "future";
+}
+export function reportingYear(value: string | undefined, now = new Date()) {
+  const year = Number(value);
+  return /^\d{4}$/.test(value || "") &&
+    year >= 2020 &&
+    year <= now.getUTCFullYear()
+    ? year
+    : now.getUTCFullYear();
+}
+export function yearMonths(year: number, now = new Date()): Month[] {
+  const yesterday = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1),
+  )
+    .toISOString()
+    .slice(0, 10);
+  return Array.from({ length: 12 }, (_, index) => {
+    const key = `${year}-${String(index + 1).padStart(2, "0")}`;
+    const end = new Date(Date.UTC(year, index + 1, 0))
+      .toISOString()
+      .slice(0, 10);
+    return {
+      key,
+      label: new Date(`${key}-01T00:00:00Z`).toLocaleDateString("en-US", {
+        month: "short",
+        timeZone: "UTC",
+      }),
+      cutoff:
+        key > yesterday.slice(0, 7) ? null : end > yesterday ? yesterday : end,
+      state:
+        key > yesterday.slice(0, 7)
+          ? "future"
+          : end > yesterday
+            ? "partial"
+            : "complete",
+    };
+  });
+}
+export function chooseMonth(months: Month[], requested?: string) {
+  return (
+    months.find((m) => m.key === requested) ||
+    [...months].reverse().find((m) => m.cutoff !== null) ||
+    months[0]
+  );
+}
+export function totalLabel(months: Month[]) {
+  return months.every((m) => m.state === "complete")
+    ? `FY ${months[0].key.slice(0, 4)}`
+    : `YTD ${months[0].key.slice(0, 4)}`;
+}
+export function annualAmount(
+  values: (string | null)[],
+  months: Month[],
+): string | null {
+  const required = months
+    .map((m, index) => ({ m, value: values[index] }))
+    .filter(({ m }) => m.cutoff !== null);
+  if (!required.length || required.some(({ value }) => value == null))
+    return null;
+  return required
+    .reduce((sum, { value }) => sum.plus(value!), new Decimal(0))
+    .toString();
+}
+export interface StatementLine {
+  id: string;
+  label: string;
+  level: number;
+  kind?: "section" | "subtotal" | "total";
+  parent?: string;
+}
+const line = (
+  id: string,
+  label: string,
+  level = 1,
+  parent?: string,
+  kind?: StatementLine["kind"],
+): StatementLine => ({ id, label, level, parent, kind });
+export function statementLines(
+  prime: Prime | null,
+  scope: Scope,
+): StatementLine[] {
+  const rows: StatementLine[] = [
+    line("revenue", "Revenue", 0, undefined, "section"),
+    line("demand", "Demand-side revenue"),
+    line("dr", "Distribution rewards (DR)", 2, "demand"),
+    line("ar", "Agent rate (AR)", 2, "demand"),
+    line("gar", "Governance accessibility rewards (GAR)", 2, "demand"),
+    line("protocol", "Protocol fees"),
+    line("curator", "Curator fees"),
+    line("rewards", "Incentives and rewards received"),
+    line("gains", "Gains (losses) on non-stable assets, net"),
+  ];
+  if (prime === "spark")
+    rows.push(
+      ...["MORPHO", "AVAX", "ETH / WETH", "SparkLend non-USD reserves"].map(
+        (s, i) => line(`gain-${i}`, s, 2, "gains"),
+      ),
+    );
+  rows.push(
+    line("noninterest-income", "Noninterest income", 0, undefined, "subtotal"),
+    line("interest", "Interest income from allocations"),
+  );
+  if (prime === "spark") {
+    const groups: [string, string[]][] = [
+      [
+        "SparkLend",
+        [
+          "USDS market",
+          "USDC market",
+          "USDT market",
+          "DAI market",
+          "PYUSD market",
+          "RLUSD market",
+          "WETH market",
+        ],
+      ],
+      [
+        "Aave v3",
+        [
+          "Ethereum USDS",
+          "Ethereum Lido USDS",
+          "Ethereum USDC",
+          "Ethereum USDT",
+          "Base USDC",
+          "Arbitrum USDCn",
+          "Avalanche USDC",
+        ],
+      ],
+      [
+        "Morpho vaults",
+        [
+          "Spark Blue Chip USDC",
+          "Spark Blue Chip USDT",
+          "Spark DAI",
+          "Spark USDS",
+          "Spark USDC (Base)",
+          "Sentora RLUSD",
+        ],
+      ],
+      ["Maple", ["syrupUSDC", "syrupUSDT"]],
+      ["Arkis Spark Prime USDC 1", []],
+      ["Anchorage", []],
+      ["PYUSD", []],
+      ["RLUSD", []],
+    ];
+    groups.forEach(([label, children], index) => {
+      const id = `allocation-${index}`;
+      rows.push(line(id, label, 2, "interest"));
+      children.forEach((child, i) =>
+        rows.push(line(`${id}-${i}`, child, 3, id)),
+      );
+    });
+  }
+  rows.push(
+    line("interest-expense", "Interest expense (cost of funding)"),
+    line("net-interest", "Net interest income", 0, undefined, "subtotal"),
+    line("net-revenue", "Total net revenue", 0, undefined, "subtotal"),
+    line("expenses", "Expenses", 0, undefined, "section"),
+    line("operating", "Operating expenses"),
+    line("engineering", "Engineering", 2, "operating"),
+    line("legal", "Legal", 2, "operating"),
+    line("security", "Audits and security", 2, "operating"),
+    line("other-operating", "Other operating expenses", 2, "operating"),
+    line("other-expenses", "Other expenses"),
+  );
+  if (prime === "spark")
+    rows.push(
+      line(
+        "licence",
+        "Aave profit share (SparkLend licence)",
+        2,
+        "other-expenses",
+      ),
+    );
+  rows.push(
+    line("incentives", "Incentives expense"),
+    line("own-token", "Own-token incentives", 2, "incentives"),
+    line("stablecoin", "Stablecoin incentives", 2, "incentives"),
+    line("distribution", "Distribution costs"),
+    line("impairment", "Credit impairment expense"),
+    line(
+      "noninterest-expense",
+      "Total noninterest expense",
+      0,
+      undefined,
+      "subtotal",
+    ),
+  );
+  if (scope !== "individual")
+    rows.push(
+      line("eliminations", "Consolidation and elimination adjustments", 0),
+    );
+  rows.push(
+    line("pretax", "Income before tax", 0, undefined, "subtotal"),
+    line("tax", "Income tax expense"),
+    line("net-income", "Net income", 0, undefined, "total"),
+  );
+  return rows;
+}
+export interface MonthReport {
+  month: Month;
+  read: ReadResult;
+  actualCutoff: string | null;
+}
+export interface PortfolioRow {
+  prime: Prime;
+  venue: Venue;
+  actualCutoff: string;
+  revision: string;
+}
+export function sourceRows(
+  reads: { prime: Prime; read: ReadResult }[],
+): PortfolioRow[] {
+  return reads.flatMap(
+    ({ prime, read }) =>
+      read.report?.data.result.venues
+        .filter((v) => v.enabled)
+        .map((venue) => ({
+          prime,
+          venue,
+          actualCutoff: read.report!.data.cutoff,
+          revision: read.report!.data.revision_id,
+        })) || [],
+  );
+}
+export function sourceCatalog(monthly: MonthReport[]): Venue[] {
+  // Saved publications only; never infer historical allocations from current configuration.
+  const rows = new Map<string, Venue>();
+  for (const r of monthly)
+    for (const v of r.read.report?.data.result.venues || [])
+      if (v.enabled) rows.set(v.venue_id, v);
+  return [...rows.values()];
+}
+export function sourceIncome(read: ReadResult, id: string, accrual = false) {
+  const row = read.report?.data.result.venues.find((v) => v.venue_id === id);
+  return row
+    ? accrual
+      ? accruedIncome(row)
+      : amount(row, "income_usd")
+    : null;
+}
+export function scopeTitle(prime: Prime | null, scope: Scope) {
+  return scope === "combined"
+    ? "Combined prime agents"
+    : `${name(prime || "spark")}${scope === "group" ? " group" : ""}`;
+}
+export function parsePrime(value: string | null | undefined): Prime | null {
+  return PRIMES.includes(value as Prime) ? (value as Prime) : null;
+}

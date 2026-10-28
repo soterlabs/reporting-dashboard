@@ -1,6 +1,18 @@
-# Sky reporting dashboard
+# Prime-agent reporting dashboard
 
-Draft management reporting for Sky and its prime-agent portfolios, with accrual-basis income where supported. Styled after [soterlabs/msc-dashboard](https://github.com/soterlabs/msc-dashboard).
+Annual income statements and monthly portfolio positions for Spark, Grove, Obex, Keel, Osero, and Skybase. Styled after [soterlabs/msc-dashboard](https://github.com/soterlabs/msc-dashboard).
+
+## Reporting views
+
+Each prime has a shareable page at `/primes/{prime}`. The root opens Spark. Three scope tabs are available:
+
+- **Individual prime** — prime-agent reporting, with entity attribution pending confirmation.
+- **Prime group** — intended consolidation of a prime and its controlled entities; membership, ownership and eliminations remain TBD.
+- **Combined primes** — all prime agents at `/combined`; combined totals remain TBD pending reporting scope and inter-prime eliminations. Sky's own income and expenses are outside this dashboard.
+
+Each scope has an **Income statement** and **Portfolio positions** view. There are no daily-revenue or Sky-wide income screens.
+
+Income statements have January–December columns and YTD for an incomplete year, FY for a completed year. Expandable rows follow the requested Spark spreadsheet structure. The spreadsheet supplies presentation only: none of its sample amounts, principal balances or loan terms are used. Other primes use a common financial statement structure. Supporting allocation income is shown separately from the draft statement, without inventing classifications or totals.
 
 ## Run
 
@@ -20,36 +32,39 @@ npm run build
 npm start
 ```
 
-## Data source
+## Reporting API documentation
 
-Only the settlement-cycle **v2 reporting API** is consumed, server-side:
+The authoritative guide in settlement-cycle is [`docs/pipeline/settlement-reporting-api.md`](https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md).
 
-- `/v2/reporting/{prime}/at/{cutoff}`
-- `/v2/reporting/{prime}/history?start=...&end=...&limit=90`
+Only **v2 reporting** data is consumed, server-side:
 
-`REPORTING_API_URL` defaults to `https://settle-api-production.up.railway.app`. No API key is currently required. No settlement API, blockchain RPC, database, CSV import, or alternate financial source is used. Requests cannot initiate calculations. Successful responses are validated and cached for five minutes; a failed refresh can retain the last verified response for that exact request with a visible warning. Cache is process-local and clears on restart. Refresh respects that five-minute cache.
+- `/v2/reporting/{prime}/latest` for the latest publication in an incomplete current month.
+- `/v2/reporting/{prime}/at/{cutoff}` for exact historical month ends.
 
-Contract: [Settlement and reporting dashboard API](https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md).
+`REPORTING_API_URL` defaults to `https://settle-api-production.up.railway.app`. No API key is currently required. Requests read stored publications and cannot start calculations. There are no settlement, blockchain, database, spreadsheet-import or alternate financial-data dependencies.
 
-## Accounting treatment
+Successful responses are validated and cached for five minutes. Failed refreshes may retain the last checked response for that exact request with a visible warning. The bounded process-local cache clears on restart. Annual source reads have at most four upstream requests in flight per prime. Combined positions read each prime independently; their dates and revisions remain separate.
 
-- Statements are draft, provisional, and unaudited. They are not IFRS/US GAAP financial statements or a completed accrual ledger. They are not pro forma statements: there is no defined hypothetical transaction or adjustment bridge. USD values use exact decimal arithmetic, rounded to cents only for display. CSV exports retain source precision and publication identifiers.
-- Cutoffs are completed UTC days. Income is month to date; reported position values are closing API valuations, not accounting carrying amounts under an established measurement policy.
-- Reported income is disclosed per allocation. The API's `existing` method does **not** certify accrual accounting. Only available `loan_accrual` income is shown as investment income on an accrual basis.
-- No portfolio values or income rows are summed. Holdings, savings vaults, incentive claims, and cash receipts can overlap; an approved consolidation map is required.
-- Interest expense, fees, operating expenses, credit impairment, consolidated income before tax, and allocation yields remain **TBD** until the reporting API supplies confirmed inputs. The unmerged allocation-capital-cost PR is not consumed.
-- Loan income balances distinguish interest receivable (earned and unpaid) from income received in advance. Negative unpaid loan income is presented as a positive advance balance, not as a negative receivable. These balances do not establish a complete accounting statement of financial position.
-- Missing/null data is **TBD**, never zero. Known cash income remains separately exportable even when loan accrual is unavailable. Disabled allocations are excluded.
-- Daily changes use consecutive published MTD values within a month. First-of-month values begin the new month. Gaps or method changes produce TBD. The latest revision per cutoff is used; differences may contain revisions. Both revision identities are exported. These are daily movements in reported income, not certified daily earnings.
-- Historical screens use frozen reporting rows, never current venue configuration. No fabricated or demonstration figures appear in the application.
+## Accounting and missing data
 
-## Pending accounting decisions
+- Statements are draft, provisional and unaudited. They are not completed IFRS/US GAAP financial statements or pro forma adjusted statements.
+- All unsupported statement figures and subtotals are **TBD**. The API currently lacks a complete income-statement classification, operating expenses, tax, legal-entity ownership and elimination inputs. Existing venue income is not automatically whole-venue gross interest income. The UI does not fill statement lines by guessing from venue labels.
+- Net interest income means interest income less interest expense. Total net revenue means net interest income plus noninterest income. Income before tax deducts noninterest expenses and applicable consolidation adjustments. Tax and net income are separate; no zero tax is assumed.
+- Missing/null values are TBD, never zero. A known zero remains zero. Future months are explicitly marked and are not forecasts. YTD/FY calculations require every elapsed month; no annualisation or partial subtotal is inferred.
+- Current-month schedules use the latest publication only if its cutoff belongs to the selected month and is a completed UTC day. Its actual cutoff and delayed-publication status are visible. Historical months require the exact closing date; an incomplete publication is never substituted for a month end.
+- Monthly income is the API's month-to-date figure, not a sum of daily MTD snapshots. Opening and closing position values are used directly.
+- Reported position values are API valuations, not accounting carrying amounts under an approved measurement policy. Interest receivable and income received in advance are disclosed separately for supported loan methods. Receivables must not be added to a closing position that already includes them.
+- Only available `loan_accrual` income is presented as accrual-basis income. Other source income is explicitly labelled reported income with an unconfirmed basis. These two views are not additive.
+- Portfolios, savings holdings and incentive claims can overlap. No cross-allocation or cross-prime sum is presented as consolidated portfolio value or revenue. Group and combined screens show source positions explicitly before consolidation.
+- CSV exports follow the selected scope and view. Source exports preserve decimal precision, actual cutoff, revision IDs, hashes and publication timestamps. UI amounts are rounded to cents using decimal arithmetic.
 
-1. Confirm the Sky consolidation perimeter, including income and expenses outside prime agents.
-2. Confirm expense lines: funding costs, agent fees, incentives, operating expenses, credit losses, and intragroup eliminations.
-3. Supply an approved overlap/elimination map and accrual recognition policy through the reporting API.
-4. Confirm contractual loan terms and receipt classifications for unavailable loans upstream.
+## Pending inputs
+
+1. Entity attribution for each prime; group memberships, ownership and consolidation policies.
+2. A non-overlapping allocation map and income classification, including interest, protocol fees, curator fees, rewards and investment gains/losses.
+3. Demand-side rewards, funding interest, operating expenses, incentive costs, distribution costs, credit impairment and tax through the reporting API.
+4. Confirmed loan terms and receipt classifications for unavailable accrual methods.
 
 ## Railway
 
-`.railway/railway.ts` defines the Railpack build, start command, and health check using Railway Infrastructure as Code. Apply infrastructure changes with `railway config plan` followed by `railway config apply`. Pushes to `main` deploy automatically. Next.js uses Railway’s supplied `PORT`. Health check: `/api/health` (application readiness, independent of financial-data availability). Set only `REPORTING_API_URL` if a different reporting host is needed. Do not copy database, RPC, or GitHub credentials from other projects.
+`.railway/railway.ts` defines the Railpack build, start command and health check. Apply infrastructure changes with `railway config plan` followed by `railway config apply`. Pushes to `main` deploy automatically. Next.js uses Railway's supplied `PORT`. `/api/health` checks application readiness independently of financial-data availability.

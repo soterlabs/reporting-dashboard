@@ -907,3 +907,301 @@ footer {
 :root[data-theme="dark"] .brand-mark {
   filter: brightness(0) invert(1);
 }
+/* Prime reporting: an annual statement and monthly position schedules. */
+.combined-nav {
+  margin-top: 18px;
+}
+.scope-tabs {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+  padding: 4px;
+  background: var(--tint);
+  border-radius: 8px;
+  margin-bottom: 22px;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+}
+.scope-tabs a {
+  min-height: 35px;
+  padding: 8px 15px;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 5px;
+}
+.scope-tabs a.selected {
+  background: var(--card);
+  box-shadow: 0 1px 3px var(--border);
+  color: var(--fg);
+}
+.report-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.view-tabs {
+  display: flex;
+  flex-direction: row;
+  gap: 19px;
+  align-self: stretch;
+  align-items: flex-end;
+}
+.view-tabs a {
+  min-height: 38px;
+  padding: 0 0 9px;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.view-tabs a.selected {
+  border-bottom-color: var(--fg);
+  color: var(--fg);
+}
+.period-form {
+  display: flex;
+  gap: 9px;
+  align-items: flex-end;
+}
+.period-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.period-form select {
+  min-width: 95px;
+  color: var(--fg);
+}
+.report-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 13px;
+  color: var(--muted);
+  font-size: 11px;
+  margin: 20px 0;
+}
+.report-status > span:last-child {
+  margin-left: auto;
+}
+.financial-wrap {
+  max-height: 740px;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.financial-table {
+  min-width: 1720px;
+  isolation: isolate;
+  table-layout: fixed;
+}
+.financial-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--tint);
+  z-index: 2;
+}
+.financial-table th:first-child {
+  width: 340px;
+  position: sticky;
+  left: 0;
+  text-align: left;
+  z-index: 1;
+  background: var(--card);
+  box-shadow: 1px 0 0 var(--border);
+}
+.financial-table thead th:first-child {
+  z-index: 3;
+  background: var(--tint);
+}
+.financial-table td,
+.financial-table th {
+  padding: 13px 14px;
+  text-align: right;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.financial-table tbody th {
+  font-size: 12px;
+  font-weight: 400;
+  white-space: normal;
+  line-height: 1.45;
+}
+.financial-table .section th,
+.financial-table .section td {
+  background: var(--sidebar);
+  font-weight: 600;
+  padding-top: 17px;
+  padding-bottom: 17px;
+}
+.financial-table .subtotal th,
+.financial-table .subtotal td {
+  background: var(--tint);
+  font-weight: 600;
+  border-top: 1px solid var(--border);
+}
+.financial-table .total th,
+.financial-table .total td {
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+  padding-top: 17px;
+  padding-bottom: 17px;
+}
+.financial-table .year-total {
+  background: color-mix(in srgb, var(--tint) 65%, var(--card));
+  border-left: 1px solid var(--border);
+  font-weight: 500;
+}
+.row-toggle {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 0;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  width: 100%;
+}
+.row-toggle svg {
+  flex-shrink: 0;
+}
+.text-link {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+.text-link:hover {
+  text-decoration: underline;
+}
+.income-schedule > summary {
+  cursor: pointer;
+  list-style: none;
+  margin: 0;
+}
+.income-schedule > summary::-webkit-details-marker {
+  display: none;
+}
+.income-schedule[open] > summary > svg {
+  transform: rotate(90deg);
+}
+.schedule-export {
+  padding: 12px 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+.source-schedule th:first-child {
+  width: 340px;
+}
+.source-schedule .allocation-name {
+  font-weight: 500;
+}
+.positions-table td:nth-child(2),
+.positions-table th:nth-child(2) {
+  text-align: right;
+}
+.source-coverage td:nth-child(2) {
+  text-align: left;
+}
+.source-coverage td:last-child {
+  white-space: normal;
+  min-width: 200px;
+}
+.income-schedule h2 {
+  font-size: 13px;
+}
+@media (max-width: 1100px) {
+  .report-toolbar {
+    flex-wrap: wrap;
+  }
+  .report-status > span:last-child {
+    margin-left: 0;
+  }
+  .financial-table th:first-child {
+    width: 280px;
+  }
+  .financial-table {
+    min-width: 1660px;
+  }
+}
+@media (max-width: 800px) {
+  .combined-nav {
+    margin-top: 0;
+  }
+  .scope-tabs {
+    width: 100%;
+    gap: 2px;
+  }
+  .scope-tabs a {
+    font-size: 11px;
+    padding: 8px 11px;
+    flex-shrink: 0;
+  }
+  .report-toolbar {
+    gap: 15px;
+  }
+  .period-form {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .period-form select {
+    min-width: 105px;
+  }
+  .financial-table th:first-child {
+    width: 205px;
+  }
+  .financial-table {
+    min-width: 1585px;
+  }
+  .financial-table tbody th {
+    font-size: 11px;
+  }
+  .financial-table th,
+  .financial-table td {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .financial-wrap {
+    max-height: 630px;
+  }
+  .row-toggle {
+    gap: 3px;
+  }
+  .report-status {
+    font-size: 10px;
+    gap: 8px;
+  }
+  .source-coverage .panel-heading {
+    flex-wrap: wrap;
+  }
+  .page-title .export {
+    font-size: 0;
+  }
+  .scope-tabs a > svg {
+    display: none;
+  }
+  .topbar > span {
+    font-size: 11px;
+    gap: 7px;
+  }
+  .source-schedule th:first-child {
+    width: 205px;
+  }
+}
+.sidebar nav a .dot {
+  flex: 0 0 7px;
+}
+.financial-table tbody tr:hover th,
+.financial-table tbody tr:hover td {
+  filter: brightness(0.985);
+}

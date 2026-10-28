@@ -3,10 +3,8 @@ import assert from "node:assert/strict";
 import {
   accruedIncome,
   amount,
-  dailyChange,
   loanIncomeBalances,
   money,
-  period,
   validatePublication,
   validateReport,
   type Publication,
@@ -99,36 +97,6 @@ test("loan income balances separate receivables from advance receipts without in
     });
   }
 });
-test("daily movement uses exact decimals and refuses missing days or method changes", () => {
-  const current = pub(
-    "2026-10-03",
-    venue({ income_usd: "9007199254740993.13" }),
-  );
-  const before = pub(
-    "2026-10-02",
-    venue({ income_usd: "9007199254740993.12" }),
-  );
-  assert.equal(dailyChange(current, before, "L1"), "0.01");
-  assert.equal(dailyChange(current, pub("2026-10-01"), "L1"), null);
-  assert.equal(dailyChange(current, undefined, "L1"), null);
-  assert.equal(
-    dailyChange(
-      current,
-      pub("2026-10-02", venue({ method: "existing" })),
-      "L1",
-    ),
-    null,
-  );
-  assert.equal(dailyChange(pub("2026-11-01"), pub("2026-10-31"), "L1"), "1");
-  assert.equal(
-    dailyChange(
-      pub("2026-10-03", venue({ income_usd: "1" })),
-      pub("2026-10-02", venue({ income_usd: "2" })),
-      "L1",
-    ),
-    "-1",
-  );
-});
 test("report validator rejects non-reporting views, numbers, null substitutions and duplicates", () => {
   const valid: Report = {
     schema_version: "2.0",
@@ -162,22 +130,4 @@ test("report validator rejects non-reporting views, numbers, null substitutions 
   const duplicate = pub("2026-10-26");
   duplicate.result.venues.push(venue());
   assert.throws(() => validatePublication(duplicate));
-});
-test("periods use completed UTC days including month boundaries and leap years", () => {
-  assert.equal(
-    period(undefined, new Date("2026-11-01T10:00:00Z")).cutoff,
-    "2026-10-31",
-  );
-  assert.equal(
-    period("2024-02", new Date("2026-10-27T00:00:00Z")).cutoff,
-    "2024-02-29",
-  );
-  assert.equal(
-    period("2026-12", new Date("2026-10-27T00:00:00Z")).month,
-    "2026-10",
-  );
-  assert.equal(
-    period("2026-10", new Date("2026-10-27T00:00:00Z")).cutoff,
-    "2026-10-26",
-  );
 });

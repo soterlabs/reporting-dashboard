@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sky · Financial reporting",
+  title: "Prime agents · Financial reporting",
   description:
-    "Draft financial reporting for Sky and its prime-agent portfolios; accrual basis where supported.",
+    "Annual income statements and monthly portfolio positions for prime agents, with separate individual, group and combined reporting views.",
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

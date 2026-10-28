@@ -168,52 +168,6 @@ export function loanIncomeBalances(row: Venue): {
       : "0",
   };
 }
-export function dailyChange(
-  current: Publication | undefined,
-  previous: Publication | undefined,
-  id: string,
-  accrual = false,
-): string | null {
-  if (!current) return null;
-  const row = current.result.venues.find((v) => v.venue_id === id);
-  if (!row) return null;
-  const income = accrual ? accruedIncome(row) : amount(row, "income_usd");
-  if (income === null) return null;
-  if (current.cutoff.endsWith("-01")) return income;
-  const priorDay = new Date(`${current.cutoff}T00:00:00Z`);
-  priorDay.setUTCDate(priorDay.getUTCDate() - 1);
-  if (
-    !previous ||
-    previous.cutoff !== priorDay.toISOString().slice(0, 10) ||
-    current.result.period.start !== previous.result.period.start
-  )
-    return null;
-  const before = previous.result.venues.find((v) => v.venue_id === id);
-  if (!before || before.method !== row.method || before.enabled !== row.enabled)
-    return null;
-  const prior = accrual ? accruedIncome(before) : amount(before, "income_usd");
-  return prior === null ? null : new Decimal(income).minus(prior).toString();
-}
-export function period(month: string | undefined, now = new Date()) {
-  const yesterday = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1),
-  );
-  const latestMonth = yesterday.toISOString().slice(0, 7);
-  const selected =
-    month &&
-    /^\d{4}-(0[1-9]|1[0-2])$/.test(month) &&
-    month >= "2020-01" &&
-    month <= latestMonth
-      ? month
-      : latestMonth;
-  const end = new Date(`${selected}-01T00:00:00Z`);
-  end.setUTCMonth(end.getUTCMonth() + 1, 0);
-  const cutoff =
-    selected === latestMonth
-      ? yesterday.toISOString().slice(0, 10)
-      : end.toISOString().slice(0, 10);
-  return { month: selected, start: `${selected}-01`, cutoff, latestMonth };
-}
 export const cleanLabel = (label: string) =>
   label
     .replace(/\s*\([^)]*\)/g, "")
