@@ -1,9 +1,11 @@
 import {
-  validatePublication,
-  validateReport,
-  type Prime,
-  type ReadResult,
-} from "./reporting.ts";
+  validateStatement,
+  validatePortfolio,
+  type FinancialStatement,
+  type FinancialPortfolio,
+  type FinancialRead,
+} from "./financial.ts";
+import { validateReport, type Prime, type ReadResult } from "./reporting.ts";
 
 const BASE = (
   process.env.REPORTING_API_URL ||
@@ -69,14 +71,21 @@ async function read(path: string, validate: (v: unknown) => unknown) {
 export async function report(
   prime: Prime,
   cutoff: string,
+  revision?: string,
 ): Promise<ReadResult> {
   try {
-    const r = await read(`/v2/reporting/${prime}/at/${cutoff}`, (value) => {
-      const doc = validateReport(value, prime);
-      if (doc.data.cutoff !== cutoff)
-        throw new Error("Reporting date mismatch");
-      return doc;
-    });
+    const r = await read(
+      `/v2/reporting/${prime}/at/${cutoff}${revision ? `?${new URLSearchParams({ revision })}` : ""}`,
+      (value) => {
+        const doc = validateReport(value, prime);
+        if (
+          doc.data.cutoff !== cutoff ||
+          (revision && doc.data.revision_id !== revision)
+        )
+          throw new Error("Reporting date mismatch");
+        return doc;
+      },
+    );
     return {
       report: r.value as ReturnType<typeof validateReport>,
       retained: r.retained,
@@ -113,6 +122,52 @@ export async function latestReport(prime: Prime): Promise<ReadResult> {
       retained: false,
       verifiedAt: null,
       message: e instanceof Error ? e.message : "Reporting API unavailable",
+    };
+  }
+}
+
+export async function financialStatements(
+  prime: Prime,
+  year: number,
+  revision?: string,
+) {
+  return financialRead<FinancialStatement>(
+    `/v3/reporting/statements?${new URLSearchParams({ prime, year: String(year), ...(revision ? { revision } : {}) })}`,
+    (v) => validateStatement(v, prime, year, revision),
+  );
+}
+export async function financialPortfolio(
+  prime: Prime,
+  month: string,
+  source_revision?: string,
+  cutoff?: string,
+  revision?: string,
+) {
+  return financialRead<FinancialPortfolio>(
+    `/v3/reporting/portfolio?${new URLSearchParams({ prime, month, ...(source_revision && !revision ? { source_revision } : {}), ...(cutoff ? { cutoff } : {}), ...(revision ? { revision } : {}) })}`,
+    (v) =>
+      validatePortfolio(v, prime, month, source_revision, cutoff, revision),
+  );
+}
+async function financialRead<T>(
+  path: string,
+  validate: (v: unknown) => T,
+): Promise<FinancialRead<T>> {
+  try {
+    const result = await read(path, validate);
+    return {
+      report: result.value as T,
+      retained: result.retained,
+      message: result.retained
+        ? "Refresh failed; showing retained financial publication"
+        : null,
+    };
+  } catch (e) {
+    return {
+      report: null,
+      retained: false,
+      message:
+        e instanceof Error ? e.message : "Financial reporting unavailable",
     };
   }
 }

@@ -1,0 +1,820 @@
+{
+  "schema_version": "3.0",
+  "policy_version": "prime-management.first-slice.v1",
+  "scope": "individual",
+  "prime": "obex",
+  "year": 2026,
+  "as_of": "2026-10-27",
+  "periods": [
+    {
+      "key": "2026-01",
+      "state": "complete",
+      "expected_cutoff": "2026-01-31",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-02",
+      "state": "complete",
+      "expected_cutoff": "2026-02-28",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-03",
+      "state": "complete",
+      "expected_cutoff": "2026-03-31",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-04",
+      "state": "complete",
+      "expected_cutoff": "2026-04-30",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-05",
+      "state": "complete",
+      "expected_cutoff": "2026-05-31",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-06",
+      "state": "complete",
+      "expected_cutoff": "2026-06-30",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-07",
+      "state": "complete",
+      "expected_cutoff": "2026-07-31",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-08",
+      "state": "complete",
+      "expected_cutoff": "2026-08-31",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-09",
+      "state": "complete",
+      "expected_cutoff": "2026-09-30",
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-10",
+      "state": "partial",
+      "expected_cutoff": "2026-10-27",
+      "actual_cutoff": "2026-10-26",
+      "financial_revision": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16",
+      "stale": true
+    },
+    {
+      "key": "2026-11",
+      "state": "future",
+      "expected_cutoff": null,
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    },
+    {
+      "key": "2026-12",
+      "state": "future",
+      "expected_cutoff": null,
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false
+    }
+  ],
+  "lines": [
+    {
+      "id": "demand.agent_rate",
+      "label": "Agent rate (AR)",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-10": {
+          "value": "12.000000000000000001",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "tracked_protocol_entitlement",
+          "reason": null,
+          "source_paths": [
+            "result.agent_rate"
+          ]
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "12.000000000000000001",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    },
+    {
+      "id": "funding.sky.gross",
+      "label": "Sky borrowing interest, before reimbursement",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-10": {
+          "value": "105",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "sky_borrowing_before_reimbursement",
+          "reason": null,
+          "source_paths": [
+            "result.sky_revenue",
+            "result.sde_revenue",
+            "result.susds_spread_reimbursement"
+          ]
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "105",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    },
+    {
+      "id": "funding.sky.reimbursement",
+      "label": "Sky spread reimbursement (deduction)",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-10": {
+          "value": "5",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "sky_funding_reduction",
+          "reason": null,
+          "source_paths": [
+            "result.susds_spread_reimbursement"
+          ]
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "5",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    },
+    {
+      "id": "funding.sky.net",
+      "label": "Sky funding interest, net",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-10": {
+          "value": "100",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "net_sky_funding_only",
+          "reason": null,
+          "source_paths": [
+            "result.sky_revenue",
+            "result.sde_revenue"
+          ]
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "100",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    },
+    {
+      "id": "investment.maple_syrup_usdc",
+      "label": "Maple syrupUSDC \u2014 net investment income",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-10": {
+          "value": "100",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "prime_owned_net_vault_yield_after_embedded_fees",
+          "reason": null,
+          "source_paths": [
+            "result.venue_breakdown.V1.revenue",
+            "result.venue_breakdown.V1.external_revenue"
+          ]
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "100",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    }
+  ],
+  "total_label": "YTD",
+  "source_manifest": {
+    "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16": {
+      "cutoff": "2026-10-26",
+      "revision_id": "acae4218fa4311f9f845e0c28b17e0876b5e808750a6773c61f29027ea851711",
+      "result_hash": "acae4218fa4311f9f845e0c28b17e0876b5e808750a6773c61f29027ea851711",
+      "code_version": null,
+      "configuration_version": null,
+      "input_revision": null,
+      "computed_at": null,
+      "provisional": true,
+      "excluded_inputs": null
+    }
+  },
+  "selection": "eyJhc19vZiI6IjIwMjYtMTAtMjciLCJleGFjdCI6ZmFsc2UsInBvbGljeV92ZXJzaW9uIjoicHJpbWUtbWFuYWdlbWVudC5maXJzdC1zbGljZS52MSIsInByaW1lIjoib2JleCIsInJldmlzaW9ucyI6W251bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLCJjOTRkZjllMmZlMTNhN2M2ODdjZjYzOGI1NTk3N2U0ZjA4OTY4MGM2NDExYWU1YjhiZjU3OGUwZjhiYjQxZDE2IixudWxsLG51bGxdLCJ5ZWFyIjoyMDI2fQ",
+  "perimeter": "operational_prime_management_reporting",
+  "report_hash": "1c3c61dcee6e640c91dea75dd1418cbe90d199b6c137fb8c3156d04d5bbfbe2e",
+  "source_lag_periods": []
+}

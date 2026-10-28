@@ -1,3 +1,5 @@
+import { statementTotalLabel } from "@/lib/financial";
+import { financialStatements, financialPortfolio } from "@/lib/api";
 import Link from "next/link";
 import {
   ArrowDownToLine,
@@ -95,8 +97,7 @@ export async function PrimeDashboard({
   const months = yearMonths(year);
   const month = chooseMonth(months, param(search, "month"));
   const title = scopeTitle(prime, scope);
-  // Annual financial statement classifications are currently unsupported. Read source
-  // history for the individual-prime supporting schedule, never for fabricated totals.
+  // Financial components are independent of the unclassified source schedule.
   const annual =
     view === "income" && scope === "individual"
       ? await annualReports(prime, year)
@@ -105,6 +106,20 @@ export async function PrimeDashboard({
   const portfolios = fromAnnual
     ? [{ prime, ...fromAnnual }]
     : await portfolioReports(prime, scope, month);
+  const financial =
+    scope === "individual" && view === "income"
+      ? await financialStatements(prime, year)
+      : null;
+  const sourcePortfolio = portfolios[0];
+  const positionFinancial =
+    scope === "individual" && view === "positions" && month.cutoff
+      ? await financialPortfolio(
+          prime,
+          month.key,
+          sourcePortfolio?.read.report?.data.revision_id,
+          sourcePortfolio?.actualCutoff || undefined,
+        )
+      : null;
   const rows = sourceRows(portfolios);
   const available = portfolios.filter((p) => p.read.report).length;
   const query = new URLSearchParams({
@@ -114,6 +129,20 @@ export async function PrimeDashboard({
     year: String(year),
     month: month.key,
   });
+  if (financial?.report)
+    query.set("financial_revision", financial.report.selection);
+  if (view === "positions" && scope === "individual") {
+    query.set(
+      "source_revision",
+      sourcePortfolio?.read.report?.data.revision_id || "none",
+    );
+    if (sourcePortfolio?.actualCutoff)
+      query.set("source_cutoff", sourcePortfolio.actualCutoff);
+    query.set(
+      "portfolio_revision",
+      positionFinancial?.report?.financial_revision || "none",
+    );
+  }
   const anyStale = portfolios.some(
     (p) => p.read.retained || p.read.report?.freshness.stale,
   );
@@ -275,7 +304,7 @@ export async function PrimeDashboard({
             <span className="badge">Draft · Unaudited</span>
             <span>
               {view === "income"
-                ? `${year} · Monthly columns · ${totalLabel(months)}`
+                ? `${year} · Monthly columns · ${statementTotalLabel(financial?.report, totalLabel(months))}`
                 : `${month.label} ${year} · Closing positions`}
             </span>
             <span>
@@ -283,12 +312,19 @@ export async function PrimeDashboard({
               {anyStale ? " · Delayed publication" : ""}
             </span>
           </div>
+          {financial?.message && <p role="status">{financial.message}</p>}
+          {!!financial?.report?.source_lag_periods.length && (
+            <p role="status">
+              A newer source correction is awaiting financial publication.
+            </p>
+          )}
           {view === "income" ? (
             <>
               <IncomeStatement
                 rows={statementLines(combined ? null : prime, scope)}
                 months={months}
                 title={title}
+                financial={financial?.report}
               />
               {scope === "individual" && (
                 <SourceIncome
@@ -301,6 +337,49 @@ export async function PrimeDashboard({
             </>
           ) : (
             <>
+              {scope === "individual" && (
+                <section className="panel">
+                  <div className="panel-heading">
+                    <div>
+                      <h2>Tracked allocation value</h2>
+                      <p>
+                        {money(
+                          positionFinancial?.report?.portfolio.closing_value
+                            .value ?? null,
+                        )}{" "}
+                        · USD
+                      </p>
+                      <p>
+                        {positionFinancial?.report
+                          ? `Through ${positionFinancial.report.cutoff} · ${positionFinancial.report.portfolio.perimeter_id || "Perimeter not yet approved"}`
+                          : positionFinancial?.message ||
+                            "No approved aggregate published"}
+                      </p>
+                      <p>
+                        {positionFinancial?.report?.portfolio.closing_value
+                          .reason ||
+                          "Reviewed tracked allocations only; entity assets and NAV are unavailable."}
+                      </p>
+                      {positionFinancial?.report?.portfolio.closing_value
+                        .known_value != null && (
+                        <p>
+                          Known portion:{" "}
+                          {money(
+                            positionFinancial.report.portfolio.closing_value
+                              .known_value,
+                          )}{" "}
+                          USD
+                        </p>
+                      )}
+                      {(positionFinancial?.retained ||
+                        positionFinancial?.report?.source_lag ||
+                        positionFinancial?.report?.freshness.stale) && (
+                        <p>Delayed or retained financial publication</p>
+                      )}
+                    </div>
+                  </div>
+                </section>
+              )}
               <section className="panel">
                 <div className="panel-heading">
                   <div>
@@ -371,9 +450,12 @@ export async function PrimeDashboard({
                           <td>
                             <Value
                               value={
-                                v.method === "loan_accrual"
+                                positionFinancial?.report?.portfolio.positions.find(
+                                  (p) => p.source_venue_id === v.venue_id,
+                                )?.income.value ??
+                                (v.method === "loan_accrual"
                                   ? amount(v, "income_usd")
-                                  : null
+                                  : null)
                               }
                             />
                           </td>
@@ -472,11 +554,12 @@ export async function PrimeDashboard({
             <div className="source-body">
               <p>
                 Draft management reporting. Accrual-basis income is shown only
-                where the saved method supports it. Demand-side revenue, fee
-                classifications, operating expenses, tax, group membership, and
-                eliminations require additional reporting API data. Spreadsheet
-                examples supply structure only; none of their amounts are
-                loaded.
+                where the saved method or approved financial policy supports it.
+                AR and typed Sky funding components are available; other
+                demand-side revenue, fee classifications, operating expenses,
+                tax, group membership, and eliminations require additional
+                reporting API data. Spreadsheet examples supply structure only;
+                none of their amounts are loaded.
               </p>
               <p>
                 Net interest income is interest income less interest expense.
