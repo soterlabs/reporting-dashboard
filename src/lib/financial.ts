@@ -11,6 +11,8 @@ export interface Metric {
   reason: string | null;
   source_paths: string[];
   source_ref?: string;
+  source_refs?: string[];
+  missing_components?: string[];
 }
 export interface FinancialStatement {
   schema_version: "3.0";
@@ -36,6 +38,8 @@ export interface FinancialStatement {
     label: string;
     family?: string;
     aggregation?: "leaf" | "subtotal";
+    components?: { id: string; sign: 1 | -1 }[];
+    published_override?: string;
     values: Record<string, Metric>;
     total: Metric;
   }[];
@@ -104,6 +108,7 @@ const policies = new Set([
   "prime-management.allocations.v2.1",
 ]);
 const monthlyPolicy = "prime-management.monthly-statements.v3";
+export const rollupPolicy = "prime-management.statement-rollups.v3.1";
 const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 const decimal = (v: unknown) =>
   typeof v === "string" && /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(v);
@@ -132,6 +137,20 @@ function metric(v: Metric) {
       v.source_paths.every((p) => typeof p === "string") &&
       (v.status === "partial" || v.known_value === null),
   );
+  requireValue(v.source_ref === undefined || hash(v.source_ref));
+  requireValue(
+    v.source_refs === undefined ||
+      (Array.isArray(v.source_refs) &&
+        v.source_refs.every(hash) &&
+        new Set(v.source_refs).size === v.source_refs.length),
+  );
+  requireValue(
+    v.missing_components === undefined ||
+      (Array.isArray(v.missing_components) &&
+        v.missing_components.every(
+          (id) => typeof id === "string" && id.length > 0,
+        )),
+  );
 }
 export function validateStatement(
   value: unknown,
@@ -143,7 +162,8 @@ export function validateStatement(
   requireValue(
     v &&
       v.schema_version === "3.0" &&
-      (policies.has(v.policy_version) || v.policy_version === monthlyPolicy) &&
+      (policies.has(v.policy_version) ||
+        [monthlyPolicy, rollupPolicy].includes(v.policy_version)) &&
       v.prime === prime &&
       v.year === year &&
       v.scope === "individual",
@@ -161,7 +181,7 @@ export function validateStatement(
       ["FY", "YTD"].includes(v.total_label),
   );
   const expected = yearMonths(year, new Date(Date.parse(v.as_of) + 86400000));
-  const monthly = v.policy_version === monthlyPolicy;
+  const monthly = [monthlyPolicy, rollupPolicy].includes(v.policy_version);
   requireValue(
     v.total_label ===
       (expected.every((p) => p.state === "complete") ? "FY" : "YTD"),
@@ -211,6 +231,17 @@ export function validateStatement(
           ["leaf", "subtotal"].includes(l.aggregation)),
     );
     metric(l.total);
+    const derived =
+      v.policy_version === rollupPolicy && l.id.startsWith("statement.");
+    if (derived)
+      requireValue(
+        Array.isArray(l.components) &&
+          l.components.length > 0 &&
+          l.components.every(
+            (c) => typeof c.id === "string" && [1, -1].includes(c.sign),
+          ) &&
+          new Set(l.components.map((c) => c.id)).size === l.components.length,
+      );
     for (const p of v.periods) {
       const cell = l.values[p.key];
       metric(cell);
@@ -218,9 +249,26 @@ export function validateStatement(
       requireValue(
         p.financial_revision !== null ||
           (monthly && p.monthly_revision !== null) ||
-          cell.value === null,
+          (cell.value === null && cell.known_value === null),
       );
-      if (monthly && cell.value !== null) {
+      if (
+        monthly &&
+        derived &&
+        (cell.value !== null || cell.known_value !== null)
+      ) {
+        requireValue(
+          Array.isArray(cell.source_refs) &&
+            cell.source_refs.length > 0 &&
+            cell.source_refs.every(
+              (ref) =>
+                [p.financial_revision, p.monthly_revision].includes(ref) &&
+                v.source_manifest?.[ref]?.cutoff === p.actual_cutoff,
+            ),
+        );
+      } else if (
+        monthly &&
+        (cell.value !== null || cell.known_value !== null)
+      ) {
         requireValue(
           cell.source_ref &&
             [p.financial_revision, p.monthly_revision].includes(
@@ -378,7 +426,48 @@ export function financialLine(
   report: FinancialStatement | null | undefined,
   id: string,
 ) {
+  const rollups: Record<string, string> = {
+    demand: "statement.demand",
+    interest: "statement.interest",
+    rewards: "statement.rewards",
+    "noninterest-income": "statement.noninterest_income",
+    "interest-expense": "statement.funding",
+    "net-interest": "statement.net_interest",
+    "net-revenue": "statement.net_revenue",
+    "noninterest-expense": "statement.noninterest_expense",
+    "net-income": "statement.net_income",
+    "allocation-0": "statement.family.sparklend",
+    "allocation-1": "statement.family.aave_v3",
+    "allocation-2": "statement.family.morpho_vaults",
+    "allocation-3": "statement.family.maple",
+    "allocation-4": "statement.family.arkis",
+  };
+  if (report?.policy_version === rollupPolicy && rollups[id])
+    return report.lines.find((l) => l.id === rollups[id]);
   return report?.lines.find((l) => l.id === (bindings[id] || id));
+}
+
+export function metricExplanation(
+  item?: Metric,
+  report?: FinancialStatement | null,
+) {
+  if (!item) return "Classification or inputs not yet available";
+  if (item.status === "future") return "Future period; no forecast";
+  const missing = item.missing_components
+    ?.map(
+      (id) =>
+        report?.lines.find((line) => line.id === id)?.label ||
+        id
+          .replace(/^(unclassified|statement)\./, "")
+          .replaceAll("_", " ")
+          .replaceAll(".", " · "),
+    )
+    .join(", ");
+  if (item.status === "partial")
+    return `Partial: known components only; this is not a complete total. Missing: ${missing || "some periods or components"}.`;
+  if (item.status === "unavailable" && missing)
+    return `Unavailable: no confirmed amount. Missing: ${missing}.`;
+  return item.reason?.replaceAll("_", " ") || item.basis.replaceAll("_", " ");
 }
 
 // Retained reports keep the API's period classification when the calendar advances.

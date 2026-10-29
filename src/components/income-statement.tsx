@@ -5,11 +5,14 @@ import {
   financialLine,
   statementMonths,
   statementTotalLabel,
+  metricExplanation,
+  type Metric,
   type FinancialStatement,
 } from "@/lib/financial";
 import { money } from "@/lib/reporting";
 import {
   totalLabel,
+  collapsedStatementGroups,
   type Month,
   type StatementLine,
 } from "@/lib/prime-reports";
@@ -26,8 +29,8 @@ export function IncomeStatement({
   financial?: FinancialStatement | null;
 }) {
   const months = statementMonths(financial, calendarMonths);
-  const [collapsed, setCollapsed] = useState<Set<string>>(
-    () => new Set(["gains", "operating", "other-expenses", "incentives"]),
+  const [collapsed, setCollapsed] = useState<Set<string>>(() =>
+    collapsedStatementGroups(rows),
   );
   const hasChildren = (id: string) => rows.some((r) => r.parent === id);
   function visible(row: StatementLine): boolean {
@@ -125,37 +128,28 @@ export function IncomeStatement({
                     row.label
                   )}
                 </th>
-                {months.map((m) => (
-                  <td
-                    key={m.key}
-                    className={
-                      financialLine(financial, row.id)?.values[m.key]?.value !=
-                      null
-                        ? ""
-                        : "tbd"
-                    }
-                    title={
-                      financialLine(financial, row.id)?.values[m.key]?.reason ||
-                      financialLine(financial, row.id)?.values[m.key]?.basis ||
-                      "Classification or inputs not yet available"
-                    }
-                  >
-                    {row.kind === "section"
-                      ? ""
-                      : money(
-                          financialLine(financial, row.id)?.values[m.key]
-                            ?.value ?? null,
-                        )}
-                  </td>
-                ))}
-                <td
-                  className={`${financialLine(financial, row.id)?.total.value != null ? "" : "tbd "}year-total`}
-                >
-                  {row.kind === "section"
-                    ? ""
-                    : money(
-                        financialLine(financial, row.id)?.total.value ?? null,
+                {months.map((m) => {
+                  const item = financialLine(financial, row.id)?.values[m.key];
+                  return (
+                    <td key={m.key} title={metricExplanation(item, financial)}>
+                      {row.kind !== "section" && !row.structural && (
+                        <MetricValue item={item} />
                       )}
+                    </td>
+                  );
+                })}
+                <td
+                  className="year-total"
+                  title={metricExplanation(
+                    financialLine(financial, row.id)?.total,
+                    financial,
+                  )}
+                >
+                  {row.kind !== "section" && !row.structural && (
+                    <MetricValue
+                      item={financialLine(financial, row.id)?.total}
+                    />
+                  )}
                 </td>
               </tr>
             ))}
@@ -167,10 +161,29 @@ export function IncomeStatement({
         separately classified rewards. Vault income is after embedded fees;
         lending distributions and USDG use receipt recognition. Reviewed
         subtotals exclude unclassified sources. These components do not certify
-        their parent totals. TBD = unavailable or unconfirmed. Subtotals require
-        complete classifications and expense data. Future months are not
-        forecasts.
+        their parent totals. Partial = known components only, with missing
+        inputs; hover for details. A partial net-income amount does not
+        establish profit. TBD = no confirmed amount. Missing data is never zero;
+        future months are not forecasts.
       </div>
     </section>
+  );
+}
+
+function MetricValue({ item }: { item?: Metric }) {
+  if (item?.status === "partial")
+    return (
+      <span className="partial-value">
+        <strong>Partial</strong>
+        {item.known_value !== null && (
+          <small>Known components: {money(item.known_value)}</small>
+        )}
+      </span>
+    );
+  if (item?.status === "future") return <span className="tbd">—</span>;
+  return (
+    <span className={item?.value == null ? "tbd" : ""}>
+      {money(item?.value ?? null)}
+    </span>
   );
 }

@@ -95,6 +95,7 @@ test("v2 maps existing Spark leaves once, adds typed rewards and preserves unsup
     "100",
   );
   assert.equal(financialLine(doc, "interest"), undefined);
+  assert.equal(rows.some((row) => row.id === "investment.reviewed_income"), false);
   const csv = statementCsvRows(
     "spark",
     "individual",

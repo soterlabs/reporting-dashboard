@@ -55,13 +55,21 @@ test("year and month defaults stay in the selected year and respect completed UT
   assert.equal(months[9].state, "complete");
   assert.equal(months[10].state, "future");
 });
-test("statements contain unique hierarchical rows and separate pre-tax income, tax and net income", () => {
+test("statements retain unique hierarchy and net income while removing requested lines", () => {
   for (const scope of ["individual", "group", "combined"] as const) {
     const rows = statementLines(scope === "combined" ? null : "spark", scope);
     const ids = new Set(rows.map((r) => r.id));
     assert.equal(ids.size, rows.length);
     for (const row of rows) if (row.parent) assert.ok(ids.has(row.parent));
-    assert.ok(ids.has("pretax") && ids.has("tax") && ids.has("net-income"));
+    assert.ok(ids.has("net-income"));
+    for (const removed of [
+      "pretax",
+      "tax",
+      "impairment",
+      "sky-funding-gross",
+      "sky-funding-reimbursement",
+    ])
+      assert.equal(ids.has(removed), false);
     assert.equal(ids.has("eliminations"), scope !== "individual");
   }
   assert.equal(

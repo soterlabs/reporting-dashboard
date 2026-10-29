@@ -140,3 +140,26 @@ The monthly API policy and source snapshot are documented in the
 Deploy this compatible dashboard consumer before the backend switches its default
 annual statement policy. Both retained v1/v2/v2.1 selections and the new monthly
 statement are supported. Portfolio API policies are unchanged.
+
+## Simplified statement presentation
+
+Statements open with all expandable groups collapsed. Income statements select
+a year; portfolio positions retain a reporting-month selector. Only individual
+primes are offered: old combined/group pages redirect to an individual prime
+while preserving the requested year/view/month. Old combined/group CSV requests
+return HTTP 410 rather than silently exporting a different scope.
+
+The statement and CSV omit pre-tax income, the tax row, credit impairment and
+the gross-funding/spread-reimbursement breakdown. Net Sky funding remains visible.
+Removing a row does not assume that its expense is zero.
+
+`prime-management.statement-rollups.v3.1` binds parent lines to explicit API sums.
+Reviewed families can have complete numeric subtotals; broader totals retain
+unknown perimeter/expense inputs and show **Partial**, with their known component
+amount separately labelled. A partial net-income amount is not confirmed profit.
+The screen does no independent arithmetic. CSVs preserve coverage, exact known
+amounts, missing-input explanations and all contributing source references.
+The API retains old report selections and gross/reimbursement reconciliation data.
+
+This PR is stacked on the monthly-headline dashboard PR; its API companion adds
+the rollup policy without changing settlement calculations or daily publications.
