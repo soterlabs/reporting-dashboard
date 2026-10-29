@@ -13,7 +13,7 @@
       "actual_cutoff": "2026-01-31",
       "financial_revision": null,
       "stale": false,
-      "monthly_revision": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+      "monthly_revision": "19d06582542b896a52e73b60d97688923c7c9ec337e00cc21e8e87da396a9c3d"
     },
     {
       "key": "2026-02",
@@ -22,7 +22,7 @@
       "actual_cutoff": "2026-02-28",
       "financial_revision": null,
       "stale": false,
-      "monthly_revision": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+      "monthly_revision": "04570eb4deb9a43016b010b3df9094adcec3d7cc64b02fba351987f1a64ee9d5"
     },
     {
       "key": "2026-03",
@@ -31,7 +31,7 @@
       "actual_cutoff": "2026-03-31",
       "financial_revision": null,
       "stale": false,
-      "monthly_revision": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+      "monthly_revision": "8f6198178793c5792f55a3450caff574208be1fb101d5a5d127f1ec19cbb447f"
     },
     {
       "key": "2026-04",
@@ -40,7 +40,7 @@
       "actual_cutoff": "2026-04-30",
       "financial_revision": null,
       "stale": false,
-      "monthly_revision": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+      "monthly_revision": "eb9aa7a360da6d74044cf1035962fdab0f186e517486d6c94db099a8c3c5d892"
     },
     {
       "key": "2026-05",
@@ -49,7 +49,7 @@
       "actual_cutoff": "2026-05-31",
       "financial_revision": null,
       "stale": false,
-      "monthly_revision": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+      "monthly_revision": "85bd0c07873b185a8aa35c31dba6ffa03129065473fbd3f95228782603f4774f"
     },
     {
       "key": "2026-06",
@@ -58,7 +58,7 @@
       "actual_cutoff": "2026-06-30",
       "financial_revision": null,
       "stale": false,
-      "monthly_revision": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+      "monthly_revision": "b51e634d86a69aee5cfd1d2586610b4db862c9fbcda329af77b273cdcc42f147"
     },
     {
       "key": "2026-07",
@@ -67,7 +67,7 @@
       "actual_cutoff": "2026-07-31",
       "financial_revision": null,
       "stale": false,
-      "monthly_revision": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+      "monthly_revision": "e66bc1f1c4c2ffe4b83f5bf72ecb82cf961f8634e4864d24205e222a18023324"
     },
     {
       "key": "2026-08",
@@ -76,7 +76,7 @@
       "actual_cutoff": "2026-08-31",
       "financial_revision": null,
       "stale": false,
-      "monthly_revision": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+      "monthly_revision": "7a7641a0ed2252568ff33acc798a1e425ef4eb11de83febd51568985e7b75815"
     },
     {
       "key": "2026-09",
@@ -85,7 +85,7 @@
       "actual_cutoff": "2026-09-30",
       "financial_revision": "827d37c8560e8134701f3c213bf97f1f5a5099afcb6fa517b38e2167dd36dae2",
       "stale": false,
-      "monthly_revision": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+      "monthly_revision": "ea2e43b941044aee181645fbaea2262f8da8863218197517c6b799266b01d721"
     },
     {
       "key": "2026-10",
@@ -131,7 +131,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md"
           ],
-          "source_ref": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+          "source_ref": "19d06582542b896a52e73b60d97688923c7c9ec337e00cc21e8e87da396a9c3d"
         },
         "2026-02": {
           "value": "67754.17",
@@ -144,7 +144,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md"
           ],
-          "source_ref": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+          "source_ref": "04570eb4deb9a43016b010b3df9094adcec3d7cc64b02fba351987f1a64ee9d5"
         },
         "2026-03": {
           "value": "72061.47",
@@ -157,7 +157,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md"
           ],
-          "source_ref": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+          "source_ref": "8f6198178793c5792f55a3450caff574208be1fb101d5a5d127f1ec19cbb447f"
         },
         "2026-04": {
           "value": "68358.25",
@@ -170,7 +170,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md"
           ],
-          "source_ref": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+          "source_ref": "eb9aa7a360da6d74044cf1035962fdab0f186e517486d6c94db099a8c3c5d892"
         },
         "2026-05": {
           "value": "69563.01",
@@ -183,7 +183,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md"
           ],
-          "source_ref": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+          "source_ref": "85bd0c07873b185a8aa35c31dba6ffa03129065473fbd3f95228782603f4774f"
         },
         "2026-06": {
           "value": "67174.42",
@@ -196,7 +196,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md"
           ],
-          "source_ref": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+          "source_ref": "b51e634d86a69aee5cfd1d2586610b4db862c9fbcda329af77b273cdcc42f147"
         },
         "2026-07": {
           "value": "71996.70",
@@ -209,7 +209,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md"
           ],
-          "source_ref": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+          "source_ref": "e66bc1f1c4c2ffe4b83f5bf72ecb82cf961f8634e4864d24205e222a18023324"
         },
         "2026-08": {
           "value": "75327.60",
@@ -222,7 +222,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md"
           ],
-          "source_ref": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+          "source_ref": "7a7641a0ed2252568ff33acc798a1e425ef4eb11de83febd51568985e7b75815"
         },
         "2026-09": {
           "value": "76635.17",
@@ -235,7 +235,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md"
           ],
-          "source_ref": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+          "source_ref": "ea2e43b941044aee181645fbaea2262f8da8863218197517c6b799266b01d721"
         },
         "2026-10": {
           "value": "12.000000000000000001",
@@ -585,7 +585,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md"
           ],
-          "source_ref": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+          "source_ref": "19d06582542b896a52e73b60d97688923c7c9ec337e00cc21e8e87da396a9c3d"
         },
         "2026-02": {
           "value": "1948739.35",
@@ -598,7 +598,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md"
           ],
-          "source_ref": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+          "source_ref": "04570eb4deb9a43016b010b3df9094adcec3d7cc64b02fba351987f1a64ee9d5"
         },
         "2026-03": {
           "value": "2073865.93",
@@ -611,7 +611,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md"
           ],
-          "source_ref": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+          "source_ref": "8f6198178793c5792f55a3450caff574208be1fb101d5a5d127f1ec19cbb447f"
         },
         "2026-04": {
           "value": "1968813.08",
@@ -624,7 +624,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md"
           ],
-          "source_ref": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+          "source_ref": "eb9aa7a360da6d74044cf1035962fdab0f186e517486d6c94db099a8c3c5d892"
         },
         "2026-05": {
           "value": "2005204.07",
@@ -637,7 +637,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md"
           ],
-          "source_ref": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+          "source_ref": "85bd0c07873b185a8aa35c31dba6ffa03129065473fbd3f95228782603f4774f"
         },
         "2026-06": {
           "value": "1925370.69",
@@ -650,7 +650,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md"
           ],
-          "source_ref": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+          "source_ref": "b51e634d86a69aee5cfd1d2586610b4db862c9fbcda329af77b273cdcc42f147"
         },
         "2026-07": {
           "value": "1761245.42",
@@ -663,7 +663,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md"
           ],
-          "source_ref": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+          "source_ref": "e66bc1f1c4c2ffe4b83f5bf72ecb82cf961f8634e4864d24205e222a18023324"
         },
         "2026-08": {
           "value": "1248716.85",
@@ -676,7 +676,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md"
           ],
-          "source_ref": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+          "source_ref": "7a7641a0ed2252568ff33acc798a1e425ef4eb11de83febd51568985e7b75815"
         },
         "2026-09": {
           "value": "1239312.89",
@@ -689,7 +689,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md"
           ],
-          "source_ref": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+          "source_ref": "ea2e43b941044aee181645fbaea2262f8da8863218197517c6b799266b01d721"
         },
         "2026-10": {
           "value": "100",
@@ -896,7 +896,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md"
           ],
-          "source_ref": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+          "source_ref": "19d06582542b896a52e73b60d97688923c7c9ec337e00cc21e8e87da396a9c3d"
         },
         "2026-02": {
           "value": "0.00",
@@ -909,7 +909,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md"
           ],
-          "source_ref": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+          "source_ref": "04570eb4deb9a43016b010b3df9094adcec3d7cc64b02fba351987f1a64ee9d5"
         },
         "2026-03": {
           "value": "0.00",
@@ -922,7 +922,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md"
           ],
-          "source_ref": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+          "source_ref": "8f6198178793c5792f55a3450caff574208be1fb101d5a5d127f1ec19cbb447f"
         },
         "2026-04": {
           "value": "0.00",
@@ -935,7 +935,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md"
           ],
-          "source_ref": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+          "source_ref": "eb9aa7a360da6d74044cf1035962fdab0f186e517486d6c94db099a8c3c5d892"
         },
         "2026-05": {
           "value": "0.00",
@@ -948,7 +948,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md"
           ],
-          "source_ref": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+          "source_ref": "85bd0c07873b185a8aa35c31dba6ffa03129065473fbd3f95228782603f4774f"
         },
         "2026-06": {
           "value": "0.00",
@@ -961,7 +961,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md"
           ],
-          "source_ref": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+          "source_ref": "b51e634d86a69aee5cfd1d2586610b4db862c9fbcda329af77b273cdcc42f147"
         },
         "2026-07": {
           "value": "0.00",
@@ -974,7 +974,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md"
           ],
-          "source_ref": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+          "source_ref": "e66bc1f1c4c2ffe4b83f5bf72ecb82cf961f8634e4864d24205e222a18023324"
         },
         "2026-08": {
           "value": "0.00",
@@ -987,7 +987,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md"
           ],
-          "source_ref": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+          "source_ref": "7a7641a0ed2252568ff33acc798a1e425ef4eb11de83febd51568985e7b75815"
         },
         "2026-09": {
           "value": "0.00",
@@ -1000,7 +1000,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md"
           ],
-          "source_ref": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+          "source_ref": "ea2e43b941044aee181645fbaea2262f8da8863218197517c6b799266b01d721"
         },
         "2026-10": {
           "value": null,
@@ -1060,7 +1060,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md"
           ],
-          "source_ref": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+          "source_ref": "19d06582542b896a52e73b60d97688923c7c9ec337e00cc21e8e87da396a9c3d"
         },
         "2026-02": {
           "value": "67754.17",
@@ -1073,7 +1073,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md"
           ],
-          "source_ref": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+          "source_ref": "04570eb4deb9a43016b010b3df9094adcec3d7cc64b02fba351987f1a64ee9d5"
         },
         "2026-03": {
           "value": "72061.47",
@@ -1086,7 +1086,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md"
           ],
-          "source_ref": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+          "source_ref": "8f6198178793c5792f55a3450caff574208be1fb101d5a5d127f1ec19cbb447f"
         },
         "2026-04": {
           "value": "68358.25",
@@ -1099,7 +1099,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md"
           ],
-          "source_ref": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+          "source_ref": "eb9aa7a360da6d74044cf1035962fdab0f186e517486d6c94db099a8c3c5d892"
         },
         "2026-05": {
           "value": "69563.01",
@@ -1112,7 +1112,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md"
           ],
-          "source_ref": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+          "source_ref": "85bd0c07873b185a8aa35c31dba6ffa03129065473fbd3f95228782603f4774f"
         },
         "2026-06": {
           "value": "67174.42",
@@ -1125,7 +1125,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md"
           ],
-          "source_ref": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+          "source_ref": "b51e634d86a69aee5cfd1d2586610b4db862c9fbcda329af77b273cdcc42f147"
         },
         "2026-07": {
           "value": "71996.70",
@@ -1138,7 +1138,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md"
           ],
-          "source_ref": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+          "source_ref": "e66bc1f1c4c2ffe4b83f5bf72ecb82cf961f8634e4864d24205e222a18023324"
         },
         "2026-08": {
           "value": "75327.60",
@@ -1151,7 +1151,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md"
           ],
-          "source_ref": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+          "source_ref": "7a7641a0ed2252568ff33acc798a1e425ef4eb11de83febd51568985e7b75815"
         },
         "2026-09": {
           "value": "76635.17",
@@ -1164,7 +1164,7 @@
           "source_paths": [
             "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md"
           ],
-          "source_ref": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+          "source_ref": "ea2e43b941044aee181645fbaea2262f8da8863218197517c6b799266b01d721"
         },
         "2026-10": {
           "value": null,
@@ -1234,7 +1234,7 @@
       "provisional": true,
       "excluded_inputs": null
     },
-    "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3": {
+    "19d06582542b896a52e73b60d97688923c7c9ec337e00cc21e8e87da396a9c3d": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1247,9 +1247,10 @@
       "cutoff": "2026-01-31",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "19d06582542b896a52e73b60d97688923c7c9ec337e00cc21e8e87da396a9c3d"
     },
-    "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b": {
+    "04570eb4deb9a43016b010b3df9094adcec3d7cc64b02fba351987f1a64ee9d5": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1262,9 +1263,10 @@
       "cutoff": "2026-02-28",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "04570eb4deb9a43016b010b3df9094adcec3d7cc64b02fba351987f1a64ee9d5"
     },
-    "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4": {
+    "8f6198178793c5792f55a3450caff574208be1fb101d5a5d127f1ec19cbb447f": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1277,9 +1279,10 @@
       "cutoff": "2026-03-31",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "8f6198178793c5792f55a3450caff574208be1fb101d5a5d127f1ec19cbb447f"
     },
-    "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca": {
+    "eb9aa7a360da6d74044cf1035962fdab0f186e517486d6c94db099a8c3c5d892": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1292,9 +1295,10 @@
       "cutoff": "2026-04-30",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "eb9aa7a360da6d74044cf1035962fdab0f186e517486d6c94db099a8c3c5d892"
     },
-    "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6": {
+    "85bd0c07873b185a8aa35c31dba6ffa03129065473fbd3f95228782603f4774f": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1307,9 +1311,10 @@
       "cutoff": "2026-05-31",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "85bd0c07873b185a8aa35c31dba6ffa03129065473fbd3f95228782603f4774f"
     },
-    "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210": {
+    "b51e634d86a69aee5cfd1d2586610b4db862c9fbcda329af77b273cdcc42f147": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1322,9 +1327,10 @@
       "cutoff": "2026-06-30",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "b51e634d86a69aee5cfd1d2586610b4db862c9fbcda329af77b273cdcc42f147"
     },
-    "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6": {
+    "e66bc1f1c4c2ffe4b83f5bf72ecb82cf961f8634e4864d24205e222a18023324": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1337,9 +1343,10 @@
       "cutoff": "2026-07-31",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "e66bc1f1c4c2ffe4b83f5bf72ecb82cf961f8634e4864d24205e222a18023324"
     },
-    "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659": {
+    "7a7641a0ed2252568ff33acc798a1e425ef4eb11de83febd51568985e7b75815": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1352,9 +1359,10 @@
       "cutoff": "2026-08-31",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "7a7641a0ed2252568ff33acc798a1e425ef4eb11de83febd51568985e7b75815"
     },
-    "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c": {
+    "ea2e43b941044aee181645fbaea2262f8da8863218197517c6b799266b01d721": {
       "kind": "published_monthly_summary",
       "repository": "soterlabs/settlement-reports",
       "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
@@ -1367,11 +1375,12 @@
       "cutoff": "2026-09-30",
       "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md",
       "demand_rounding_delta": "0.00",
-      "revision_id": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+      "sky_rounding_delta": "0.00",
+      "revision_id": "ea2e43b941044aee181645fbaea2262f8da8863218197517c6b799266b01d721"
     }
   },
-  "selection": "eyJhc19vZiI6IjIwMjYtMTAtMjgiLCJleGFjdCI6ZmFsc2UsIm1vbnRobHlfcmV2aXNpb25zIjpbIjJhZGFmMzkzOTg4Njc0ZDhiNDIwNjQxNGRiMTk3NTY4NzE3N2JhNzcyYzI4NWU0ODBkZDFjZWY1M2FkNDkzYzMiLCI0YjRkNzMwMTFhYTliYTBkZTM4OTRmY2UyZWU2ZGMwNmZlZjA4MDJkMDc3OTU2YjI5MzY0MjM0ZWM4Y2M0MzdiIiwiYTgwNGI0ZmQ5MzBkMTc3YzFlYzg2M2FlMzU3MjljZWYzM2NjZmUwODRmZWRkNGM1ZDkzOWRmZjBiYjY0MmZkNCIsImUxMDZkMjk2ZGRlMzU3ZmY0ZWM3ZjNhODE1NmM0MTFjZWFhYmQwYmYwYWQ3ODBhMDIxOTEyOTU1OGQ1MGRkY2EiLCIyNTVkNTI2ZDljZTU5MTZkY2Q2ODFmNDNjYzQ0MzUwNjA5MTIwNWI4YzJiNTQ1YzBiMjk1ZGU1YTQ2ODVmNGE2IiwiNTE3YWM0ZjMzNDEwY2MwOGJhMzk0YzNlZmRjMDNlNjU1ZjljYTA4MGM0NmUxMGE3ZjAxZjM4ZTBkYjIzYjIxMCIsIjcwOGY1ODVlMjRlNTQzMmNlYjM4YWIyODA0OGJiOGU0MDBlMmExNmM1NTE5YjIwYWZlOWU5MjJmZWY2ZTQ5ZTYiLCIyZTBkNDkwZGM3NjE4NDhkYjExNjk3MjkzM2MwM2FiMmNjNDUyNDhlOWYxMjcxZTc1M2NhNWZlOGQ1OWE1NjU5IiwiOWUxMTA1MDFkMTA0MGEzNjYxYmY0NWI2ZGE0MzkzYzhjZmMzMjJjZGYwMTExMGQwYmM4M2NmNGMzNTc3ZTMwYyIsbnVsbCxudWxsLG51bGxdLCJwb2xpY3lfdmVyc2lvbiI6InByaW1lLW1hbmFnZW1lbnQubW9udGhseS1zdGF0ZW1lbnRzLnYzIiwicHJpbWUiOiJvYmV4IiwicmV2aXNpb25zIjpbbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLCI4MjdkMzdjODU2MGU4MTM0NzAxZjNjMjEzYmY5N2YxZjVhNTA5OWFmY2I2ZmE1MTdiMzhlMjE2N2RkMzZkYWUyIiwiYzk0ZGY5ZTJmZTEzYTdjNjg3Y2Y2MzhiNTU5NzdlNGYwODk2ODBjNjQxMWFlNWI4YmY1NzhlMGY4YmI0MWQxNiIsbnVsbCxudWxsXSwieWVhciI6MjAyNn0",
+  "selection": "eyJhc19vZiI6IjIwMjYtMTAtMjgiLCJleGFjdCI6ZmFsc2UsIm1vbnRobHlfcmV2aXNpb25zIjpbIjE5ZDA2NTgyNTQyYjg5NmE1MmU3M2I2MGQ5NzY4ODkyM2M3YzllYzMzN2UwMGNjMjFlOGU4N2RhMzk2YTljM2QiLCIwNDU3MGViNGRlYjlhNDMwMTZiMDEwYjNkZjkwOTRhZGNlYzNkN2NjNjRiMDJmYmEzNTE5ODdmMWE2NGVlOWQ1IiwiOGY2MTk4MTc4NzkzYzU3OTJmNTVhMzQ1MGNhZmY1NzQyMDhiZTFmYjEwMWQ1YTVkMTI3ZjFlYzE5Y2JiNDQ3ZiIsImViOWFhN2EzNjBkYTZkNzQwNDRjZjEwMzU5NjJmZGFiMGYxODZlNTE3NDg2ZDZjOTRkYjA5OWE4YzNjNWQ4OTIiLCI4NWJkMGMwNzg3M2IxODVhOGFhMzVjMzFkYmE2ZmZhMDMxMjkwNjU0NzNmYmQzZjk1MjI4NzgyNjAzZjQ3NzRmIiwiYjUxZTYzNGQ4NmE2OWFlZTVjZmQxZDI1ODY2MTBiNGRiODYyYzlmYmNkYTMyOWFmNzdiMjczY2RjYzQyZjE0NyIsImU2NmJjMWYxYzRjMmZmZTRiODNmNWJmNzJlY2I4MmNmOTYxZjg2MzRlNDg2NGQyNDIwNWUyMjJhMTgwMjMzMjQiLCI3YTc2NDFhMGVkMjI1MjU2OGZmMzNhY2M3OThhMWU0MjVlZjRlYjExZGU4M2ZlYmQ1MTU2ODk4NWU3Yjc1ODE1IiwiZWEyZTQzYjk0MTA0NGFlZTE4MTY0NWZiYWVhMjI2MmY4ZGE4ODYzMjE4MTk3NTE3YzZiNzk5MjY2YjAxZDcyMSIsbnVsbCxudWxsLG51bGxdLCJwb2xpY3lfdmVyc2lvbiI6InByaW1lLW1hbmFnZW1lbnQubW9udGhseS1zdGF0ZW1lbnRzLnYzIiwicHJpbWUiOiJvYmV4IiwicmV2aXNpb25zIjpbbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLCI4MjdkMzdjODU2MGU4MTM0NzAxZjNjMjEzYmY5N2YxZjVhNTA5OWFmY2I2ZmE1MTdiMzhlMjE2N2RkMzZkYWUyIiwiYzk0ZGY5ZTJmZTEzYTdjNjg3Y2Y2MzhiNTU5NzdlNGYwODk2ODBjNjQxMWFlNWI4YmY1NzhlMGY4YmI0MWQxNiIsbnVsbCxudWxsXSwieWVhciI6MjAyNn0",
   "perimeter": "operational_prime_management_reporting",
-  "report_hash": "00c36876ebec672283ec1a5f8c07d44f9e08ea20690676faf895ee21df72db40",
+  "report_hash": "adb76d40dd29eede8c9be977b46c702a47dda4207c88154ffde36cdd8ca5bbdd",
   "source_lag_periods": []
 }
