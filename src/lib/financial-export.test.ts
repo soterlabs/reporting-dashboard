@@ -142,3 +142,40 @@ test("v3-only member exports retain actual dates and disambiguate identical depl
   );
   assert.ok(exported.every((row) => row[8] === original.income.value));
 });
+
+test("issuer income exports its own recognition basis without inventing an investment position ID", () => {
+  const report = structuredClone(portfolio);
+  report.prime = "spark";
+  report.policy_version = "prime-management.allocations.v2.1";
+  const income = {
+    ...structuredClone(report.portfolio.positions[0].income),
+    basis: "issuer_compensation_daily_accrual",
+  };
+  report.claims = [
+    {
+      source_venue_id: "S68",
+      label: "PYUSD issuer compensation",
+      income,
+      cash_received: { ...income, recognition: "receipt" },
+      receivable: { ...income, recognition: "valuation" },
+      received_in_advance: { ...income, recognition: "valuation" },
+      included_in_allocation_value: false,
+    },
+  ];
+  const member = financialPortfolioRows("spark", [], report)[0];
+  member.venue = { ...member.venue, venue_id: "S68", method: "existing" };
+  const read = { report, retained: false, message: null };
+  const row = positionCsvRow(
+    "individual",
+    "2026-10",
+    member,
+    read,
+    Array(7).fill(null),
+  );
+  const headers = [...Array(23).fill(""), ...FINANCIAL_EXPORT_HEADERS];
+  assert.equal(row[8], income.value);
+  assert.equal(row[headers.indexOf("Recognition basis")], income.basis);
+  assert.equal(row[headers.indexOf("Source venue ID")], "S68");
+  assert.equal(row[headers.indexOf("Position ID")], "");
+  assert.equal(row[9], null); // issuer compensation is not interest receivable
+});
