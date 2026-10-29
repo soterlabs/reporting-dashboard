@@ -109,6 +109,8 @@ const policies = new Set([
 ]);
 const monthlyPolicy = "prime-management.monthly-statements.v3";
 export const rollupPolicy = "prime-management.statement-rollups.v3.1";
+export const rwaPolicy = "prime-management.rwa-income.v3.2";
+const rollupPolicies = [rollupPolicy, rwaPolicy];
 const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 const decimal = (v: unknown) =>
   typeof v === "string" && /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(v);
@@ -163,7 +165,7 @@ export function validateStatement(
     v &&
       v.schema_version === "3.0" &&
       (policies.has(v.policy_version) ||
-        [monthlyPolicy, rollupPolicy].includes(v.policy_version)) &&
+        [monthlyPolicy, ...rollupPolicies].includes(v.policy_version)) &&
       v.prime === prime &&
       v.year === year &&
       v.scope === "individual",
@@ -181,7 +183,7 @@ export function validateStatement(
       ["FY", "YTD"].includes(v.total_label),
   );
   const expected = yearMonths(year, new Date(Date.parse(v.as_of) + 86400000));
-  const monthly = [monthlyPolicy, rollupPolicy].includes(v.policy_version);
+  const monthly = [monthlyPolicy, ...rollupPolicies].includes(v.policy_version);
   requireValue(
     v.total_label ===
       (expected.every((p) => p.state === "complete") ? "FY" : "YTD"),
@@ -232,7 +234,11 @@ export function validateStatement(
     );
     metric(l.total);
     const derived =
-      v.policy_version === rollupPolicy && l.id.startsWith("statement.");
+      rollupPolicies.includes(v.policy_version) &&
+      (l.id.startsWith("statement.") ||
+        (v.policy_version === rwaPolicy &&
+          l.id === "investment.reviewed_income" &&
+          Array.isArray(l.components)));
     if (derived)
       requireValue(
         Array.isArray(l.components) &&
@@ -286,6 +292,9 @@ export function validateStatement(
               "funding.sky.net",
               ...(prime === "skybase" ? ["demand.gar"] : []),
               ...(prime === "grove" ? ["demand.chronicle_points"] : []),
+              ...(prime === "grove" && v.policy_version === rwaPolicy
+                ? ["investment.rwa.stac", "investment.rwa.jaaa"]
+                : []),
             ].includes(l.id),
           );
       }
@@ -442,7 +451,7 @@ export function financialLine(
     "allocation-3": "statement.family.maple",
     "allocation-4": "statement.family.arkis",
   };
-  if (report?.policy_version === rollupPolicy && rollups[id])
+  if (report && rollupPolicies.includes(report.policy_version) && rollups[id])
     return report.lines.find((l) => l.id === rollups[id]);
   return report?.lines.find((l) => l.id === (bindings[id] || id));
 }

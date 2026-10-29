@@ -163,3 +163,19 @@ The API retains old report selections and gross/reimbursement reconciliation dat
 
 This PR is stacked on the monthly-headline dashboard PR; its API companion adds
 the rollup policy without changing settlement calculations or daily publications.
+
+## Grove STAC / JAAA history
+
+The compatible `prime-management.rwa-income.v3.2` statement adds reviewed STAC
+and JAAA investment-return rows and an RWA-family subtotal for Grove. It fills
+every month from January through the latest published October source in the
+same backend slice; historical/monthly precision and dated prime/Sky splits
+remain explicit. Other missing income categories can still keep broader totals
+partial. The current verified cutoff is October 27, not an invented October 28.
+
+Grove labels this bucket Investment income from allocations and Net investment
+income after funding: fund NAV appreciation is not labelled contractual interest.
+The CSV uses the same exact API amounts and source references as the screen.
+Old reporting policies and saved selections remain supported. This consumer
+must deploy before the backend changes its default policy. Neither PR alone
+publishes these values before its normal reviewed deployment.

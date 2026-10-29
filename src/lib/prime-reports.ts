@@ -249,11 +249,26 @@ export function statementLines(
   rows.push(line("net-income", "Net income", 0, undefined, "total"));
   if (
     scope === "individual" &&
-    financial?.policy_version === "prime-management.statement-rollups.v3.1"
+    [
+      "prime-management.statement-rollups.v3.1",
+      "prime-management.rwa-income.v3.2",
+    ].includes(financial?.policy_version || "") &&
+    financial
   ) {
     const base = rows.filter(
       (row) => !row.id.startsWith("allocation-") && row.id !== "obex-maple",
     );
+    if (
+      financial.policy_version === "prime-management.rwa-income.v3.2" &&
+      prime === "grove"
+    ) {
+      for (const row of base) {
+        if (row.id === "interest")
+          row.label = "Investment income from allocations";
+        if (row.id === "net-interest")
+          row.label = "Net investment income after funding";
+      }
+    }
     const inserts = new Map<string, StatementLine[]>();
     const add = (parent: string, row: StatementLine) =>
       inserts.set(parent, [...(inserts.get(parent) || []), row]);
