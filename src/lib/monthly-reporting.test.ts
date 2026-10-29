@@ -81,7 +81,7 @@ test("monthly sources populate January–August without daily publications and b
   assert.equal(dr[3], financialLine(report, "dr")?.values["2026-01"].value);
   assert.equal(dr[10], financialLine(report, "dr")?.values["2026-08"].value);
   assert.equal(dr[12], "TBD");
-  assert.equal(dr[15], "TBD");
+  assert.equal(dr[15], "Partial");
   assert.equal(dr[19], report.selection);
   assert.equal(
     JSON.parse(dr[21] as string)["2026-01"],

@@ -34,6 +34,14 @@ export async function GET(request: Request) {
       : q.get("scope") === "group"
         ? "group"
         : "individual";
+  if (scope !== "individual")
+    return Response.json(
+      {
+        error:
+          "Group and combined exports are unavailable. Open an individual prime report.",
+      },
+      { status: 410 },
+    );
   const year = reportingYear(q.get("year") || undefined);
   const months = yearMonths(year);
   const month = chooseMonth(months, q.get("month") || undefined);
@@ -278,7 +286,7 @@ export async function GET(request: Request) {
     {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": `attachment; filename="${scope === "combined" ? "combined-primes" : prime}-${scope}-${positions ? `positions-${month.key}` : source ? `source-income-${year}` : `income-statement-${year}`}.csv"`,
+        "Content-Disposition": `attachment; filename="${prime}-${scope}-${positions ? `positions-${month.key}` : source ? `source-income-${year}` : `income-statement-${year}`}.csv"`,
         "Cache-Control": "no-store",
       },
     },
