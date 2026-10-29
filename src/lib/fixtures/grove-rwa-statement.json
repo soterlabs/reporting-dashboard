@@ -4190,6 +4190,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "616387.90",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4210,6 +4211,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "188278.20",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4230,6 +4232,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "127923.80",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4250,6 +4253,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "574281.10",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4270,6 +4274,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "453105.30",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4290,6 +4295,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "99799.80",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4310,6 +4316,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "540942.60",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4330,6 +4337,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "469275.10",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4350,6 +4358,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "335575.00",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4370,6 +4379,7 @@
             "sky_income_usd": "0.000000",
             "prime_income_usd": "348094.400000",
             "sky_share": "0",
+            "sky_share_basis": "saved_source_share",
             "rounding_delta_usd": "0.000000"
           }
         },
@@ -4441,6 +4451,7 @@
             "sky_income_usd": "1429870.18",
             "prime_income_usd": "933299.18",
             "sky_share": "0.6051",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.01"
           }
         },
@@ -4461,6 +4472,7 @@
             "sky_income_usd": "991827.49",
             "prime_income_usd": "396689.67",
             "sky_share": "0.7143",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4481,6 +4493,7 @@
             "sky_income_usd": "-477414.38",
             "prime_income_usd": "0.00",
             "sky_share": "1.00",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4501,6 +4514,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "590469.81",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4521,6 +4535,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "495968.87",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4541,6 +4556,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "385937.82",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4561,6 +4577,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "451019.48",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4581,6 +4598,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "570646.76",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4601,6 +4619,7 @@
             "sky_income_usd": "0.00",
             "prime_income_usd": "346671.49",
             "sky_share": "0",
+            "sky_share_basis": "published_rounded_percentage",
             "rounding_delta_usd": "0.00"
           }
         },
@@ -4621,6 +4640,7 @@
             "sky_income_usd": "0E-19",
             "prime_income_usd": "448971.1846168581493691352",
             "sky_share": "0",
+            "sky_share_basis": "saved_source_share",
             "rounding_delta_usd": "0E-19"
           }
         },
@@ -9355,6 +9375,6 @@
   },
   "selection": "eyJhc19vZiI6IjIwMjYtMTAtMjgiLCJleGFjdCI6ZmFsc2UsIm1vbnRobHlfcmV2aXNpb25zIjpbIjE1NzZhNDNiZDc2MDkyNmVmZWQyNzkwNTQ3OGJjMzU0NDRiNTFmOWZlNjEyNjUwMTg4ODk5MjhkZTVhN2NkZGYiLCI3N2MyNDhjMjc2OTNiZGUyYTM0NzE3NjYzMDA1NTNiYWQ0YTZjYTA2ZjFlNTQ0YTU2ZjMxNGFkNjNhYmMxNmE1IiwiYWY5OGYzMDE0ZDg3ZTVmNWYyMWJhYmUyMzIwNDU2OTM0MzhhN2UyYWI5MDUzZjhiOWQzY2NjYmFiYmY1MWMzMSIsIjljNTUyMDk1N2UzNTFlYjQxZGE0MzM2MmQ0OTQ4NGE1OGRmMWUxYzRlMzNjMWM0ZDMzNTZmN2NiOGU5NGE5ZDgiLCI5NzA4YmUyM2FlYzBmYWQxNzQ1MWZhYWY2YTk2Y2RiYzVjNDY2ODg2YTYyYWNlMjllOGM0NDczOGE3N2FkNWViIiwiODkxNGZiODU1MGExOTc2ODc0NjVhYmQ2ZWJjYjI5OGViNmJmOTM5ZGI0ODY5MmNjMTY3ZTYyZDVhZjA2MTBiNiIsImVmNTQwMGQ3NzUzYThhZjY3YWRiY2Q2YTYwYzAwMjUzMmVlYzYxZWIwMmU1Nzc3OWI4NjY0MDZlYzdmMjEzNjAiLCJiYmIwOGE1NDlkMDE5NGRiNjZlZGY2NjM0YTAxMzMzZWU4NmI3ZjYwZDg0YTMwNTE3NjIxZWJlNDg3MTI5MjE2IiwiYzFlMDdlZmM4ZWJiNmU5NjJiMWRhYzk1ZDBhN2E5YmViOTY4Y2E2MjdiNjViMTBjMDA1Yjk5ZTIzMGE5MWNkNCIsbnVsbCxudWxsLG51bGxdLCJwb2xpY3lfdmVyc2lvbiI6InByaW1lLW1hbmFnZW1lbnQucndhLWluY29tZS52My4yIiwicHJpbWUiOiJncm92ZSIsInJldmlzaW9ucyI6W251bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLCJlZjBiODBjMmU1MGQyM2ZmNDRjMWJkMmE4ZDhlNjBmMjZiMDQ4YmU4ZjhhNTdmYjk0NDI1YzQ2NGJkOGY3NzU0IixudWxsLG51bGxdLCJ5ZWFyIjoyMDI2fQ",
   "perimeter": "operational_prime_management_reporting",
-  "report_hash": "3950b1998afcc89bd5f8b84425f8d2d83cc89a2ac3755b48ece689911fec7af3",
+  "report_hash": "0bf1c74e409c9d41310c309837f30de4d5278f45a0a6b650a61012922b821268",
   "source_lag_periods": []
 }

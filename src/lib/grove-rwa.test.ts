@@ -95,3 +95,27 @@ test("monthly RWA source authority is restricted to Grove and the reviewed new p
   row.values["2026-01"].source_ref = missing.periods[1].monthly_revision;
   assert.throws(() => validateStatement(missing, "grove", 2026));
 });
+
+test("RWA amounts reject conflicting recognition and ownership-split metadata", () => {
+  for (const change of [
+    (cell: typeof input) => {
+      cell.recognition = "receipt";
+    },
+    (cell: typeof input) => {
+      cell.allocation_split.prime_income_usd = "999999";
+    },
+    (cell: typeof input) => {
+      cell.allocation_split.sky_income_usd = "999999";
+    },
+    (cell: typeof input) => {
+      delete cell.allocation_split;
+    },
+  ]) {
+    const bad = structuredClone(input);
+    const cell = bad.lines.find(
+      (row: { id: string }) => row.id === "investment.rwa.jaaa",
+    ).values["2026-01"];
+    change(cell);
+    assert.throws(() => validateStatement(bad, "grove", 2026));
+  }
+});
