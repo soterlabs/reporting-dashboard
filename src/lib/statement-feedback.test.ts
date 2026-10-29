@@ -99,7 +99,49 @@ test("UI and CSV remove requested lines and keep partial numbers separate from f
   );
   assert.equal(interest[column("Total coverage")], "partial");
   assert.equal(interest[column("Total known components USD")], "200");
+  assert.equal(
+    interest[column("Accounting basis")],
+    "explicit_signed_management_components",
+  );
   assert.ok(csv.every((row) => row.length === csv[0].length));
+});
+
+test("alternate reviewed subtotals cannot duplicate family amounts in the hierarchy or CSV", () => {
+  const input = structuredClone(fixture);
+  const native = input.lines.find(
+    (row: { id: string }) => row.id === "investment.maple_syrup_usdc",
+  );
+  input.lines.push({
+    ...structuredClone(native),
+    id: "investment.reviewed_income",
+    label: "Reviewed native investment income subtotal",
+    family: "Reviewed components",
+    aggregation: "subtotal",
+  });
+  const report = validateStatement(input, "obex", 2026);
+  assert.ok(financialLine(report, "investment.reviewed_income")); // API audit metric is retained.
+  const rows = statementLines("obex", "individual", report);
+  const children = rows.filter((row) => row.parent === "interest");
+  assert.deepEqual(
+    children.map((row) => row.id),
+    ["statement.family.maple"],
+  );
+  assert.equal(
+    financialLine(report, children[0].id)!.values["2026-10"].value,
+    financialLine(report, "interest")!.values["2026-10"].known_value,
+  );
+  const csv = statementCsvRows(
+    "obex",
+    "individual",
+    2026,
+    "2026-10",
+    yearMonths(2026),
+    report,
+  );
+  assert.equal(
+    csv.some((row) => row[2] === "Reviewed native investment income subtotal"),
+    false,
+  );
 });
 
 test("only individual scope is offered and retired links preserve prime/year/view/month", () => {
@@ -143,6 +185,33 @@ test("derived amounts reject missing or cross-month provenance and duplicate com
     (v: FinancialStatement) => {
       const line = financialLine(v, "interest")!;
       line.components!.push(line.components![0]);
+    },
+  ]) {
+    const bad = structuredClone(fixture);
+    mutate(bad);
+    assert.throws(() => validateStatement(bad, "obex", 2026));
+  }
+});
+
+test("coverage metadata is validated before rendering or caching any metric", () => {
+  const row = (v: typeof fixture, id: string) =>
+    v.lines.find((r: { id: string }) => r.id === id);
+  for (const mutate of [
+    (v: typeof fixture) => {
+      row(v, "statement.interest").values["2026-10"].missing_components =
+        "not an array";
+    },
+    (v: typeof fixture) => {
+      row(v, "statement.interest").values["2026-10"].missing_components = [12];
+    },
+    (v: typeof fixture) => {
+      row(v, "statement.interest").total.source_refs = [false];
+    },
+    (v: typeof fixture) => {
+      row(v, "demand.agent_rate").values["2026-11"].source_refs = "bad refs";
+    },
+    (v: typeof fixture) => {
+      row(v, "statement.interest").total.missing_components = {};
     },
   ]) {
     const bad = structuredClone(fixture);

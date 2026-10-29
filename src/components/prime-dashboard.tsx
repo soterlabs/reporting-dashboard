@@ -310,7 +310,7 @@ export async function PrimeDashboard({
           {view === "income" ? (
             <>
               <IncomeStatement
-                key={`${prime}:${year}`}
+                key={`${prime}:${year}:${financial?.report?.policy_version || "unavailable"}`}
                 rows={statementLines(
                   combined ? null : prime,
                   scope,

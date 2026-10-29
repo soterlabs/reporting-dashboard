@@ -104,3 +104,14 @@ test("portfolio exact cutoff and revision must match; duplicate members are reje
   bad.portfolio.positions.push(structuredClone(bad.portfolio.positions[0]));
   assert.throws(() => validatePortfolio(bad, "obex", "2026-10"));
 });
+
+test("legacy partial amounts also require a source publication for their month", () => {
+  const bad = structuredClone(statement);
+  const cell = structuredClone(bad.lines[0].values["2026-10"]);
+  cell.status = "partial";
+  cell.known_value = cell.value;
+  cell.value = null;
+  bad.lines[0].values["2026-01"] = cell;
+  assert.equal(bad.periods[0].financial_revision, null);
+  assert.throws(() => validateStatement(bad, "obex", 2026));
+});

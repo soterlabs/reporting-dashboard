@@ -270,10 +270,8 @@ export function statementLines(
           : null;
       if (!parent) continue;
       if (definition.aggregation === "subtotal") {
-        add(
-          parent,
-          line(definition.id, definition.label, 2, parent, "subtotal"),
-        );
+        // The same leaves are already displayed in disjoint family groups.
+        // An alternate reviewed subtotal here would duplicate those children.
         continue;
       }
       if (
@@ -365,10 +363,6 @@ export function statementLines(
           : null;
       if (!parent) continue;
       if (definition.aggregation === "subtotal") {
-        add(
-          parent,
-          line(definition.id, definition.label, 2, parent, "subtotal"),
-        );
         continue;
       }
       const group = `${parent}-${definition.family.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;

@@ -72,7 +72,7 @@ export function statementCsvRows(
             ? [
                 ...new Set(
                   Object.values(line.values)
-                    .filter((v) => v.status === "available")
+                    .filter((v) => v.value !== null || v.known_value !== null)
                     .map((v) => v.basis),
                 ),
               ].join("; ")

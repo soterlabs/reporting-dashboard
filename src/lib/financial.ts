@@ -137,6 +137,20 @@ function metric(v: Metric) {
       v.source_paths.every((p) => typeof p === "string") &&
       (v.status === "partial" || v.known_value === null),
   );
+  requireValue(v.source_ref === undefined || hash(v.source_ref));
+  requireValue(
+    v.source_refs === undefined ||
+      (Array.isArray(v.source_refs) &&
+        v.source_refs.every(hash) &&
+        new Set(v.source_refs).size === v.source_refs.length),
+  );
+  requireValue(
+    v.missing_components === undefined ||
+      (Array.isArray(v.missing_components) &&
+        v.missing_components.every(
+          (id) => typeof id === "string" && id.length > 0,
+        )),
+  );
 }
 export function validateStatement(
   value: unknown,
@@ -235,7 +249,7 @@ export function validateStatement(
       requireValue(
         p.financial_revision !== null ||
           (monthly && p.monthly_revision !== null) ||
-          cell.value === null,
+          (cell.value === null && cell.known_value === null),
       );
       if (
         monthly &&
