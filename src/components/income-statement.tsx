@@ -6,6 +6,7 @@ import {
   statementMonths,
   statementTotalLabel,
   metricExplanation,
+  rwaPolicy,
   type Metric,
   type FinancialStatement,
 } from "@/lib/financial";
@@ -159,10 +160,19 @@ export function IncomeStatement({
       <div className="panel-note">
         Approved components: AR, Sky funding, reviewed lending/vault income and
         separately classified rewards. Vault income is after embedded fees;
-        lending distributions and USDG use receipt recognition. Reviewed
-        subtotals exclude unclassified sources. These components do not certify
-        their parent totals. Partial = known components only, with missing
-        inputs; hover for details. A partial net-income amount does not
+        lending distributions and USDG use receipt recognition.
+        {financial?.policy_version === rwaPolicy &&
+          financial.prime === "grove" && (
+            <>
+              {" "}
+              RWA fund income includes NAV changes and distributions after
+              capital flows and Sky's share; it is not contractual interest or
+              cash received.{" "}
+            </>
+          )}
+        Reviewed subtotals exclude unclassified sources. These components do not
+        certify their parent totals. Partial = known components only, with
+        missing inputs; hover for details. A partial net-income amount does not
         establish profit. TBD = no confirmed amount. Missing data is never zero;
         future months are not forecasts.
       </div>

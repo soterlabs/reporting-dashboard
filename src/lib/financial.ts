@@ -1,5 +1,6 @@
 import type { Prime, Venue } from "./reporting.ts";
 import { yearMonths, type Month, type PortfolioRow } from "./prime-reports.ts";
+import Decimal from "decimal.js";
 
 export interface Metric {
   value: string | null;
@@ -13,6 +14,14 @@ export interface Metric {
   source_ref?: string;
   source_refs?: string[];
   missing_components?: string[];
+  allocation_split?: {
+    gross_income_usd: string;
+    sky_income_usd: string;
+    prime_income_usd: string;
+    sky_share: string;
+    sky_share_basis: "published_rounded_percentage" | "saved_source_share";
+    rounding_delta_usd: string;
+  };
 }
 export interface FinancialStatement {
   schema_version: "3.0";
@@ -109,9 +118,12 @@ const policies = new Set([
 ]);
 const monthlyPolicy = "prime-management.monthly-statements.v3";
 export const rollupPolicy = "prime-management.statement-rollups.v3.1";
+export const rwaPolicy = "prime-management.rwa-income.v3.2";
+const rollupPolicies = [rollupPolicy, rwaPolicy];
 const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 const decimal = (v: unknown) =>
   typeof v === "string" && /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(v);
+const SplitDecimal = Decimal.clone({ precision: 60 });
 const date = (v: unknown) =>
   typeof v === "string" &&
   /^\d{4}-\d\d-\d\d$/.test(v) &&
@@ -151,6 +163,28 @@ function metric(v: Metric) {
           (id) => typeof id === "string" && id.length > 0,
         )),
   );
+  if (v.allocation_split !== undefined) {
+    const split = v.allocation_split;
+    requireValue(split && typeof split === "object" && !Array.isArray(split));
+    requireValue(
+      (
+        [
+          "gross_income_usd",
+          "sky_income_usd",
+          "prime_income_usd",
+          "sky_share",
+          "rounding_delta_usd",
+        ] as const
+      ).every(
+        (key) => decimal(split[key]) && new SplitDecimal(split[key]).isFinite(),
+      ),
+    );
+    requireValue(
+      ["published_rounded_percentage", "saved_source_share"].includes(
+        split.sky_share_basis,
+      ),
+    );
+  }
 }
 export function validateStatement(
   value: unknown,
@@ -163,7 +197,7 @@ export function validateStatement(
     v &&
       v.schema_version === "3.0" &&
       (policies.has(v.policy_version) ||
-        [monthlyPolicy, rollupPolicy].includes(v.policy_version)) &&
+        [monthlyPolicy, ...rollupPolicies].includes(v.policy_version)) &&
       v.prime === prime &&
       v.year === year &&
       v.scope === "individual",
@@ -181,7 +215,7 @@ export function validateStatement(
       ["FY", "YTD"].includes(v.total_label),
   );
   const expected = yearMonths(year, new Date(Date.parse(v.as_of) + 86400000));
-  const monthly = [monthlyPolicy, rollupPolicy].includes(v.policy_version);
+  const monthly = [monthlyPolicy, ...rollupPolicies].includes(v.policy_version);
   requireValue(
     v.total_label ===
       (expected.every((p) => p.state === "complete") ? "FY" : "YTD"),
@@ -232,7 +266,11 @@ export function validateStatement(
     );
     metric(l.total);
     const derived =
-      v.policy_version === rollupPolicy && l.id.startsWith("statement.");
+      rollupPolicies.includes(v.policy_version) &&
+      (l.id.startsWith("statement.") ||
+        (v.policy_version === rwaPolicy &&
+          l.id === "investment.reviewed_income" &&
+          Array.isArray(l.components)));
     if (derived)
       requireValue(
         Array.isArray(l.components) &&
@@ -277,6 +315,34 @@ export function validateStatement(
         );
         const source = v.source_manifest?.[cell.source_ref];
         requireValue(source && source.cutoff === p.actual_cutoff);
+        if (
+          v.policy_version === rwaPolicy &&
+          ["investment.rwa.stac", "investment.rwa.jaaa"].includes(l.id)
+        ) {
+          const split = cell.allocation_split;
+          requireValue(split && cell.recognition === "investment_return");
+          const rounded = source.kind === "published_monthly_summary";
+          requireValue(
+            split.sky_share_basis ===
+              (rounded ? "published_rounded_percentage" : "saved_source_share"),
+          );
+          requireValue(
+            new SplitDecimal(split.prime_income_usd).eq(
+              cell.value ?? cell.known_value!,
+            ),
+          );
+          requireValue(
+            new SplitDecimal(split.sky_share).gte(0) &&
+              new SplitDecimal(split.sky_share).lte(1),
+          );
+          const delta = new SplitDecimal(split.gross_income_usd)
+            .minus(split.prime_income_usd)
+            .minus(split.sky_income_usd);
+          requireValue(
+            delta.eq(split.rounding_delta_usd) &&
+              delta.abs().lte(rounded ? "0.015" : "1e-12"),
+          );
+        }
         if (cell.source_ref === p.monthly_revision)
           requireValue(
             [
@@ -286,6 +352,9 @@ export function validateStatement(
               "funding.sky.net",
               ...(prime === "skybase" ? ["demand.gar"] : []),
               ...(prime === "grove" ? ["demand.chronicle_points"] : []),
+              ...(prime === "grove" && v.policy_version === rwaPolicy
+                ? ["investment.rwa.stac", "investment.rwa.jaaa"]
+                : []),
             ].includes(l.id),
           );
       }
@@ -442,7 +511,7 @@ export function financialLine(
     "allocation-3": "statement.family.maple",
     "allocation-4": "statement.family.arkis",
   };
-  if (report?.policy_version === rollupPolicy && rollups[id])
+  if (report && rollupPolicies.includes(report.policy_version) && rollups[id])
     return report.lines.find((l) => l.id === rollups[id]);
   return report?.lines.find((l) => l.id === (bindings[id] || id));
 }
