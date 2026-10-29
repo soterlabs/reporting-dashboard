@@ -1,9 +1,10 @@
-import { financialPortfolioRows, positionAccruedIncome } from "@/lib/financial";
+import { financialPortfolioRows } from "@/lib/financial";
 import { financialStatements, financialPortfolio, report } from "@/lib/api";
 import {
   FINANCIAL_EXPORT_HEADERS,
   financialExportMetadata,
   portfolioSummaryCsv,
+  positionCsvRow,
   statementCsvRows,
 } from "@/lib/financial-export";
 import { annualReports, portfolioReports } from "@/lib/report-data";
@@ -17,7 +18,6 @@ import {
   yearMonths,
   type Scope,
 } from "@/lib/prime-reports";
-import { amount, loanIncomeBalances } from "@/lib/reporting";
 export const dynamic = "force-dynamic";
 function cell(value: unknown) {
   const text = String(value ?? "TBD");
@@ -173,33 +173,8 @@ export async function GET(request: Request) {
           ...metadata,
           ...financialExportMetadata(financial, "position"),
         ]);
-      for (const { venue: v } of publishedRows)
-        rows.push([
-          scope,
-          "Unconsolidated source position; entity attribution unconfirmed",
-          p.prime,
-          month.key,
-          p.actualCutoff,
-          v.label,
-          amount(v, "opening_position_value_usd"),
-          amount(v, "position_value_usd"),
-          positionAccruedIncome(financial?.report, v),
-          loanIncomeBalances(v).interestReceivable,
-          loanIncomeBalances(v).incomeReceivedInAdvance,
-          amount(v, "cash_received_usd"),
-          "TBD",
-          "TBD",
-          v.status,
-          v.reason || p.read.message || "",
-          ...metadata,
-          ...financialExportMetadata(
-            financial,
-            "position",
-            financial?.report?.portfolio.positions.find(
-              (row) => row.source_venue_id === v.venue_id,
-            )?.income,
-          ),
-        ]);
+      for (const row of publishedRows)
+        rows.push(positionCsvRow(scope, month.key, row, financial, metadata));
     }
   } else if (source) {
     if (scope !== "individual")

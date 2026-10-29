@@ -88,6 +88,7 @@ export interface FinancialRead<T> {
 const policies = new Set([
   "prime-management.first-slice.v1",
   "prime-management.allocations.v2",
+  "prime-management.allocations.v2.1",
 ]);
 const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 const decimal = (v: unknown) =>

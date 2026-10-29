@@ -252,7 +252,11 @@ export function statementLines(
   );
   if (
     scope === "individual" &&
-    financial?.policy_version === "prime-management.allocations.v2"
+    [
+      "prime-management.allocations.v2",
+      "prime-management.allocations.v2.1",
+    ].includes(financial?.policy_version || "") &&
+    financial
   ) {
     const bindings: Record<string, string> = {
       "allocation-0-0": "investment.sparklend.usds",

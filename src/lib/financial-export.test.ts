@@ -6,12 +6,14 @@ import {
   FINANCIAL_EXPORT_HEADERS,
   portfolioSummaryCsv,
   statementCsvRows,
+  positionCsvRow,
 } from "./financial-export.ts";
 import {
   statementMonths,
   statementTotalLabel,
   validatePortfolio,
   validateStatement,
+  financialPortfolioRows,
 } from "./financial.ts";
 import { yearMonths } from "./prime-reports.ts";
 const statement = validateStatement(
@@ -107,4 +109,36 @@ test("portfolio CSV distinguishes summary from position rows and retains partial
   );
   assert.equal(missing[7], undefined);
   assert.equal(missing[14], "unavailable");
+});
+
+test("v3-only member exports retain actual dates and disambiguate identical deployment labels", () => {
+  const report = structuredClone(portfolio);
+  report.prime = "spark";
+  report.policy_version = "prime-management.allocations.v2.1";
+  const original = report.portfolio.positions[0];
+  report.portfolio.positions = ["S11", "S65"].map((id) => ({
+    ...structuredClone(original),
+    source_venue_id: id,
+    position_id: `spark.${id}`,
+    label: "Morpho Blue Chip USDT net vault income",
+  }));
+  const read = { report, retained: false, message: null };
+  const members = financialPortfolioRows("spark", [], report);
+  const exported = members.map((row) =>
+    positionCsvRow("individual", "2026-10", row, read, Array(7).fill(null)),
+  );
+  const headers = [...Array(23).fill(""), ...FINANCIAL_EXPORT_HEADERS];
+  assert.ok(exported.every((row) => row.length === headers.length));
+  assert.ok(exported.every((row) => row[4] === report.cutoff));
+  const venueColumn = headers.indexOf("Source venue ID"),
+    positionColumn = headers.indexOf("Position ID");
+  assert.deepEqual(
+    exported.map((row) => row[venueColumn]),
+    ["S11", "S65"],
+  );
+  assert.deepEqual(
+    exported.map((row) => row[positionColumn]),
+    ["spark.S11", "spark.S65"],
+  );
+  assert.ok(exported.every((row) => row[8] === original.income.value));
 });

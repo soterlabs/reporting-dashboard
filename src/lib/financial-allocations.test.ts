@@ -169,3 +169,14 @@ test("issuer claims never become interest receivables or allocation assets, and 
     ),
   );
 });
+
+test("v2.1 accepts the corrected policy while retaining v2 statement bindings", () => {
+  const original = statement();
+  const corrected = structuredClone(original);
+  corrected.policy_version = "prime-management.allocations.v2.1";
+  const validated = validateStatement(corrected, "spark", 2026);
+  assert.deepEqual(
+    statementLines("spark", "individual", validated),
+    statementLines("spark", "individual", original),
+  );
+});

@@ -442,6 +442,7 @@ export async function PrimeDashboard({
                               {cleanLabel(v.label)}
                             </div>
                             <small>
+                              {v.venue_id} ·{" "}
                               {v.status === "available"
                                 ? "Published position"
                                 : v.reason || "Pending inputs"}

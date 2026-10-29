@@ -111,3 +111,10 @@ and are excluded from the tracked investment aggregate.
 
 Backend coverage, membership, exclusions and policy-upgrade guide:
 [allocation reporting](https://github.com/soterlabs/settlement-cycle/blob/feat/reporting-allocation-families/docs/pipeline/financial-allocation-reporting.md).
+
+
+Review correction v2.1 preserves retained v1/v2 reports and fixes legacy issuer
+source references. The dashboard accepts all supported policy versions before
+the API changes its default. Position exports include each row's actual cutoff,
+source venue ID and approved position ID, so vault redeployments with the same
+business label can be reconciled independently. Summary rows have no member ID.
