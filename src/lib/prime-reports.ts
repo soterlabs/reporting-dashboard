@@ -14,21 +14,24 @@ export const API_DOC_URL =
   "https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md";
 export type Scope = "individual" | "group" | "combined";
 export type View = "income" | "positions";
+// Consolidated scopes are deliberately unavailable until attribution is supported.
+export function individualScope(): Scope {
+  return "individual";
+}
+export function individualReportHref(
+  prime: Prime,
+  search: Record<string, string | string[] | undefined>,
+) {
+  const query = new URLSearchParams({ scope: "individual" });
+  for (const key of ["year", "view", "month"])
+    if (typeof search[key] === "string") query.set(key, search[key]);
+  return `/primes/${prime}?${query}`;
+}
 export const SCOPES: { key: Scope; label: string; description: string }[] = [
   {
     key: "individual",
     label: "Individual prime",
     description: "Prime-agent reporting",
-  },
-  {
-    key: "group",
-    label: "Prime group",
-    description: "Prime and controlled entities",
-  },
-  {
-    key: "combined",
-    label: "Combined primes",
-    description: "All prime agents",
   },
 ];
 export interface Month {
@@ -104,6 +107,10 @@ export interface StatementLine {
   level: number;
   kind?: "section" | "subtotal" | "total";
   parent?: string;
+  structural?: boolean;
+}
+export function collapsedStatementGroups(rows: StatementLine[]) {
+  return new Set(rows.flatMap((row) => (row.parent ? [row.parent] : [])));
 }
 const line = (
   id: string,
@@ -122,7 +129,9 @@ export function statementLines(
     line("demand", "Demand-side revenue"),
     line("dr", "Distribution rewards (DR)", 2, "demand"),
     line("ar", "Agent rate (AR)", 2, "demand"),
-    line("gar", "Governance accessibility rewards (GAR)", 2, "demand"),
+    ...(prime === "skybase"
+      ? [line("gar", "Governance accessibility rewards (GAR)", 2, "demand")]
+      : []),
     line("protocol", "Protocol fees"),
     line("curator", "Curator fees"),
     line("rewards", "Incentives and rewards received"),
@@ -201,13 +210,6 @@ export function statementLines(
   rows.push(
     line("interest-expense", "Interest expense (cost of funding)"),
     line("sky-funding", "Sky funding interest, net", 2, "interest-expense"),
-    line("sky-funding-gross", "Before spread reimbursement", 3, "sky-funding"),
-    line(
-      "sky-funding-reimbursement",
-      "Spread reimbursement (deduction)",
-      3,
-      "sky-funding",
-    ),
     line("net-interest", "Net interest income", 0, undefined, "subtotal"),
     line("net-revenue", "Total net revenue", 0, undefined, "subtotal"),
     line("expenses", "Expenses", 0, undefined, "section"),
@@ -232,7 +234,6 @@ export function statementLines(
     line("own-token", "Own-token incentives", 2, "incentives"),
     line("stablecoin", "Stablecoin incentives", 2, "incentives"),
     line("distribution", "Distribution costs"),
-    line("impairment", "Credit impairment expense"),
     line(
       "noninterest-expense",
       "Total noninterest expense",
@@ -245,16 +246,71 @@ export function statementLines(
     rows.push(
       line("eliminations", "Consolidation and elimination adjustments", 0),
     );
-  rows.push(
-    line("pretax", "Income before tax", 0, undefined, "subtotal"),
-    line("tax", "Income tax expense"),
-    line("net-income", "Net income", 0, undefined, "total"),
-  );
+  rows.push(line("net-income", "Net income", 0, undefined, "total"));
+  if (
+    scope === "individual" &&
+    financial?.policy_version === "prime-management.statement-rollups.v3.1"
+  ) {
+    const base = rows.filter(
+      (row) => !row.id.startsWith("allocation-") && row.id !== "obex-maple",
+    );
+    const inserts = new Map<string, StatementLine[]>();
+    const add = (parent: string, row: StatementLine) =>
+      inserts.set(parent, [...(inserts.get(parent) || []), row]);
+    const groups = new Set<string>();
+    for (const definition of financial.lines) {
+      if (definition.id === "demand.chronicle_points") {
+        add("demand", line(definition.id, definition.label, 2, "demand"));
+        continue;
+      }
+      const parent = definition.id.startsWith("investment.")
+        ? "interest"
+        : definition.id.startsWith("rewards.")
+          ? "rewards"
+          : null;
+      if (!parent) continue;
+      if (definition.aggregation === "subtotal") {
+        // The same leaves are already displayed in disjoint family groups.
+        // An alternate reviewed subtotal here would duplicate those children.
+        continue;
+      }
+      if (
+        definition.aggregation !== "leaf" &&
+        !(prime === "obex" && definition.id === "investment.maple_syrup_usdc")
+      )
+        continue;
+      const family = definition.family || "Maple";
+      const group =
+        parent === "interest"
+          ? `statement.family.${family.toLowerCase().replaceAll(" ", "_")}`
+          : `rewards-${family.toLowerCase().replaceAll(" ", "-")}`;
+      if (!groups.has(group)) {
+        add(parent, {
+          ...line(
+            group,
+            parent === "interest" ? `Reviewed ${family} income` : family,
+            2,
+            parent,
+          ),
+          structural: parent === "rewards",
+        });
+        groups.add(group);
+      }
+      add(group, line(definition.id, definition.label, 3, group));
+    }
+    const expand = (row: StatementLine): StatementLine[] => [
+      row,
+      ...(inserts.get(row.id) || []).flatMap(expand),
+    ];
+    return base.flatMap(expand);
+  }
   if (
     scope === "individual" &&
     [
       "prime-management.allocations.v2",
       "prime-management.allocations.v2.1",
+      "prime-management.monthly-statements.v3",
+      "prime-management.statement-rollups.v3.1",
     ].includes(financial?.policy_version || "") &&
     financial
   ) {
@@ -307,10 +363,6 @@ export function statementLines(
           : null;
       if (!parent) continue;
       if (definition.aggregation === "subtotal") {
-        add(
-          parent,
-          line(definition.id, definition.label, 2, parent, "subtotal"),
-        );
         continue;
       }
       const group = `${parent}-${definition.family.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
@@ -320,7 +372,19 @@ export function statementLines(
       }
       add(parent, line(definition.id, definition.label, 3, group));
     }
-    return rows.flatMap((row) => [row, ...(inserts.get(row.id) || [])]);
+    const expanded = rows.flatMap((row) => [
+      row,
+      ...(inserts.get(row.id) || []),
+    ]);
+    // Family headers with no certified metric are navigation, not missing totals.
+    for (const row of expanded) {
+      if (
+        (row.id.startsWith("interest-") || row.id.startsWith("rewards-")) &&
+        expanded.some((child) => child.parent === row.id)
+      )
+        row.structural = true;
+    }
+    return expanded;
   }
   return rows;
 }

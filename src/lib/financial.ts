@@ -10,6 +10,9 @@ export interface Metric {
   basis: string;
   reason: string | null;
   source_paths: string[];
+  source_ref?: string;
+  source_refs?: string[];
+  missing_components?: string[];
 }
 export interface FinancialStatement {
   schema_version: "3.0";
@@ -28,18 +31,32 @@ export interface FinancialStatement {
     expected_cutoff: string | null;
     stale: boolean;
     financial_revision: string | null;
+    monthly_revision?: string | null;
   }[];
   lines: {
     id: string;
     label: string;
     family?: string;
     aggregation?: "leaf" | "subtotal";
+    components?: { id: string; sign: 1 | -1 }[];
+    published_override?: string;
     values: Record<string, Metric>;
     total: Metric;
   }[];
   source_manifest: Record<
     string,
-    { cutoff: string; revision_id: string; result_hash: string }
+    {
+      cutoff: string;
+      revision_id: string;
+      result_hash: string;
+      kind?: "published_monthly_summary";
+      repository?: string;
+      commit?: string;
+      path?: string;
+      url?: string;
+      currency?: string;
+      display_precision?: string;
+    }
   >;
   source_lag_periods: string[];
 }
@@ -90,6 +107,8 @@ const policies = new Set([
   "prime-management.allocations.v2",
   "prime-management.allocations.v2.1",
 ]);
+const monthlyPolicy = "prime-management.monthly-statements.v3";
+export const rollupPolicy = "prime-management.statement-rollups.v3.1";
 const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 const decimal = (v: unknown) =>
   typeof v === "string" && /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(v);
@@ -118,6 +137,20 @@ function metric(v: Metric) {
       v.source_paths.every((p) => typeof p === "string") &&
       (v.status === "partial" || v.known_value === null),
   );
+  requireValue(v.source_ref === undefined || hash(v.source_ref));
+  requireValue(
+    v.source_refs === undefined ||
+      (Array.isArray(v.source_refs) &&
+        v.source_refs.every(hash) &&
+        new Set(v.source_refs).size === v.source_refs.length),
+  );
+  requireValue(
+    v.missing_components === undefined ||
+      (Array.isArray(v.missing_components) &&
+        v.missing_components.every(
+          (id) => typeof id === "string" && id.length > 0,
+        )),
+  );
 }
 export function validateStatement(
   value: unknown,
@@ -129,7 +162,8 @@ export function validateStatement(
   requireValue(
     v &&
       v.schema_version === "3.0" &&
-      policies.has(v.policy_version) &&
+      (policies.has(v.policy_version) ||
+        [monthlyPolicy, rollupPolicy].includes(v.policy_version)) &&
       v.prime === prime &&
       v.year === year &&
       v.scope === "individual",
@@ -147,6 +181,7 @@ export function validateStatement(
       ["FY", "YTD"].includes(v.total_label),
   );
   const expected = yearMonths(year, new Date(Date.parse(v.as_of) + 86400000));
+  const monthly = [monthlyPolicy, rollupPolicy].includes(v.policy_version);
   requireValue(
     v.total_label ===
       (expected.every((p) => p.state === "complete") ? "FY" : "YTD"),
@@ -161,10 +196,13 @@ export function validateStatement(
     );
     requireValue(
       typeof p.stale === "boolean" &&
-        (p.financial_revision === null || hash(p.financial_revision)),
+        (p.financial_revision === null || hash(p.financial_revision)) &&
+        (!monthly || p.monthly_revision === null || hash(p.monthly_revision)),
     );
     requireValue(
-      (p.actual_cutoff === null) === (p.financial_revision === null),
+      (p.actual_cutoff === null) ===
+        (p.financial_revision === null &&
+          (!monthly || p.monthly_revision === null)),
     );
     requireValue(
       p.actual_cutoff === null ||
@@ -193,11 +231,64 @@ export function validateStatement(
           ["leaf", "subtotal"].includes(l.aggregation)),
     );
     metric(l.total);
+    const derived =
+      v.policy_version === rollupPolicy && l.id.startsWith("statement.");
+    if (derived)
+      requireValue(
+        Array.isArray(l.components) &&
+          l.components.length > 0 &&
+          l.components.every(
+            (c) => typeof c.id === "string" && [1, -1].includes(c.sign),
+          ) &&
+          new Set(l.components.map((c) => c.id)).size === l.components.length,
+      );
     for (const p of v.periods) {
       const cell = l.values[p.key];
       metric(cell);
       requireValue((cell.status === "future") === (p.state === "future"));
-      requireValue(p.financial_revision !== null || cell.value === null);
+      requireValue(
+        p.financial_revision !== null ||
+          (monthly && p.monthly_revision !== null) ||
+          (cell.value === null && cell.known_value === null),
+      );
+      if (
+        monthly &&
+        derived &&
+        (cell.value !== null || cell.known_value !== null)
+      ) {
+        requireValue(
+          Array.isArray(cell.source_refs) &&
+            cell.source_refs.length > 0 &&
+            cell.source_refs.every(
+              (ref) =>
+                [p.financial_revision, p.monthly_revision].includes(ref) &&
+                v.source_manifest?.[ref]?.cutoff === p.actual_cutoff,
+            ),
+        );
+      } else if (
+        monthly &&
+        (cell.value !== null || cell.known_value !== null)
+      ) {
+        requireValue(
+          cell.source_ref &&
+            [p.financial_revision, p.monthly_revision].includes(
+              cell.source_ref,
+            ),
+        );
+        const source = v.source_manifest?.[cell.source_ref];
+        requireValue(source && source.cutoff === p.actual_cutoff);
+        if (cell.source_ref === p.monthly_revision)
+          requireValue(
+            [
+              "demand.agent_rate",
+              "demand.distribution_rewards",
+              "demand.total",
+              "funding.sky.net",
+              ...(prime === "skybase" ? ["demand.gar"] : []),
+              ...(prime === "grove" ? ["demand.chronicle_points"] : []),
+            ].includes(l.id),
+          );
+      }
     }
     requireValue(
       l.total.value === null ||
@@ -217,6 +308,28 @@ export function validateStatement(
           hash(s.result_hash),
       );
     }
+  if (monthly)
+    for (const p of v.periods)
+      if (p.monthly_revision) {
+        const s = v.source_manifest[p.monthly_revision];
+        requireValue(
+          p.state === "complete" &&
+            s &&
+            s.kind === "published_monthly_summary" &&
+            s.cutoff === p.actual_cutoff &&
+            s.cutoff === p.expected_cutoff &&
+            s.revision_id === p.monthly_revision &&
+            hash(s.result_hash) &&
+            s.repository === "soterlabs/settlement-reports" &&
+            typeof s.commit === "string" &&
+            /^[a-f0-9]{40}$/.test(s.commit) &&
+            s.path === `reports/${prime}/${p.key}/summary.md` &&
+            s.url ===
+              `https://github.com/${s.repository}/blob/${s.commit}/${s.path}` &&
+            s.currency === "USDS" &&
+            s.display_precision === "0.01",
+        );
+      }
   return v;
 }
 export function validatePortfolio(
@@ -300,6 +413,9 @@ export function validatePortfolio(
   return v;
 }
 const bindings: Record<string, string> = {
+  demand: "demand.total",
+  dr: "demand.distribution_rewards",
+  gar: "demand.gar",
   ar: "demand.agent_rate",
   "sky-funding": "funding.sky.net",
   "sky-funding-gross": "funding.sky.gross",
@@ -310,7 +426,48 @@ export function financialLine(
   report: FinancialStatement | null | undefined,
   id: string,
 ) {
+  const rollups: Record<string, string> = {
+    demand: "statement.demand",
+    interest: "statement.interest",
+    rewards: "statement.rewards",
+    "noninterest-income": "statement.noninterest_income",
+    "interest-expense": "statement.funding",
+    "net-interest": "statement.net_interest",
+    "net-revenue": "statement.net_revenue",
+    "noninterest-expense": "statement.noninterest_expense",
+    "net-income": "statement.net_income",
+    "allocation-0": "statement.family.sparklend",
+    "allocation-1": "statement.family.aave_v3",
+    "allocation-2": "statement.family.morpho_vaults",
+    "allocation-3": "statement.family.maple",
+    "allocation-4": "statement.family.arkis",
+  };
+  if (report?.policy_version === rollupPolicy && rollups[id])
+    return report.lines.find((l) => l.id === rollups[id]);
   return report?.lines.find((l) => l.id === (bindings[id] || id));
+}
+
+export function metricExplanation(
+  item?: Metric,
+  report?: FinancialStatement | null,
+) {
+  if (!item) return "Classification or inputs not yet available";
+  if (item.status === "future") return "Future period; no forecast";
+  const missing = item.missing_components
+    ?.map(
+      (id) =>
+        report?.lines.find((line) => line.id === id)?.label ||
+        id
+          .replace(/^(unclassified|statement)\./, "")
+          .replaceAll("_", " ")
+          .replaceAll(".", " · "),
+    )
+    .join(", ");
+  if (item.status === "partial")
+    return `Partial: known components only; this is not a complete total. Missing: ${missing || "some periods or components"}.`;
+  if (item.status === "unavailable" && missing)
+    return `Unavailable: no confirmed amount. Missing: ${missing}.`;
+  return item.reason?.replaceAll("_", " ") || item.basis.replaceAll("_", " ");
 }
 
 // Retained reports keep the API's period classification when the calendar advances.

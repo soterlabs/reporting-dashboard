@@ -12,16 +12,15 @@ import {
   ChevronRight,
   CircleHelp,
   FileText,
-  Layers3,
 } from "lucide-react";
 import { Controls } from "@/app/controls";
 import { IncomeStatement } from "./income-statement";
 import { annualReports, portfolioReports } from "@/lib/report-data";
 import {
   API_DOC_URL,
+  individualScope,
   chooseMonth,
   scopeTitle,
-  SCOPES,
   sourceCatalog,
   sourceIncome,
   sourceRows,
@@ -67,19 +66,19 @@ function Value({ value }: { value?: string | null }) {
 }
 export function reportHref(
   prime: Prime,
-  scope: Scope,
+  _scope: Scope,
   view: View,
   year: number,
   month: string,
 ) {
   const query = new URLSearchParams({
     prime,
-    scope,
+    scope: "individual",
     view,
     year: String(year),
     month,
   });
-  return `${scope === "combined" ? "/combined" : `/primes/${prime}`}?${query}`;
+  return `/primes/${prime}?${query}`;
 }
 export async function PrimeDashboard({
   prime = "spark",
@@ -90,11 +89,7 @@ export async function PrimeDashboard({
   combined?: boolean;
   search: Search;
 }) {
-  const scope: Scope = combined
-    ? "combined"
-    : param(search, "scope") === "group"
-      ? "group"
-      : "individual";
+  const scope: Scope = individualScope();
   const view: View =
     param(search, "view") === "positions" ? "positions" : "income";
   const year = reportingYear(param(search, "year"));
@@ -187,14 +182,6 @@ export async function PrimeDashboard({
               {!combined && prime === p && <ChevronRight size={14} />}
             </Link>
           ))}
-          <Link
-            href={reportHref(prime, "combined", view, year, month.key)}
-            className={combined ? "active combined-nav" : "combined-nav"}
-            aria-current={combined ? "page" : undefined}
-          >
-            <Layers3 size={16} />
-            <span>Combined primes</span>
-          </Link>
         </nav>
         <div className="sidebar-bottom">
           <Building2 size={23} />
@@ -232,18 +219,7 @@ export async function PrimeDashboard({
               {view === "income" ? "Statement CSV" : "Positions CSV"}
             </a>
           </div>
-          <nav className="scope-tabs" aria-label="Reporting scope">
-            {SCOPES.map((s) => (
-              <Link
-                key={s.key}
-                href={reportHref(prime, s.key, view, year, month.key)}
-                className={scope === s.key ? "selected" : ""}
-                aria-current={scope === s.key ? "page" : undefined}
-              >
-                {s.label}
-              </Link>
-            ))}
-          </nav>
+
           <div className="report-toolbar">
             <nav className="view-tabs" aria-label="Report view">
               <Link
@@ -278,23 +254,23 @@ export async function PrimeDashboard({
                   ))}
                 </select>
               </label>
-              <label>
-                <span>
-                  {view === "positions" ? "Reporting month" : "Source month"}
-                </span>
-                <select name="month" defaultValue={month.key}>
-                  {months.map((m) => (
-                    <option key={m.key} value={m.key}>
-                      {m.label} {year}
-                      {m.state === "partial"
-                        ? " · MTD"
-                        : m.state === "future"
-                          ? " · Future"
-                          : ""}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              {view === "positions" && (
+                <label>
+                  <span>Reporting month</span>
+                  <select name="month" defaultValue={month.key}>
+                    {months.map((m) => (
+                      <option key={m.key} value={m.key}>
+                        {m.label} {year}
+                        {m.state === "partial"
+                          ? " · MTD"
+                          : m.state === "future"
+                            ? " · Future"
+                            : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
               <button className="button primary">Apply</button>
             </form>
           </div>
@@ -316,11 +292,13 @@ export async function PrimeDashboard({
                 : `${month.label} ${year} · Closing positions`}
             </span>
             <span>
-              {available}/{portfolios.length} venue source publications
+              {view === "positions"
+                ? `${available}/${portfolios.length} venue source publications`
+                : "Monthly reporting API"}
               {positionFinancial?.report
                 ? ` · ${positionFinancial.report.portfolio.positions.filter((p) => p.closing_value.value !== null || p.income.value !== null).length} reviewed financial members`
                 : ""}
-              {anyStale ? " · Delayed publication" : ""}
+              {view === "positions" && anyStale ? " · Delayed publication" : ""}
             </span>
           </div>
           {financial?.message && <p role="status">{financial.message}</p>}
@@ -332,6 +310,7 @@ export async function PrimeDashboard({
           {view === "income" ? (
             <>
               <IncomeStatement
+                key={`${prime}:${year}:${financial?.report?.policy_version || "unavailable"}`}
                 rows={statementLines(
                   combined ? null : prime,
                   scope,
@@ -567,26 +546,25 @@ export async function PrimeDashboard({
               <p>
                 Draft management reporting. Accrual-basis income is shown only
                 where the saved method or approved financial policy supports it.
-                AR and typed Sky funding components are available; other
-                demand-side revenue, fee classifications, operating expenses,
-                tax, group membership, and eliminations require additional
-                reporting API data. Spreadsheet examples supply structure only;
-                none of their amounts are loaded.
+                Published monthly summaries provide demand-side figures;
+                approved financial publications provide allocation income and
+                Sky funding. Other classifications and expenses remain
+                incomplete.
               </p>
               <p>
                 Net interest income is interest income less interest expense.
                 Total net revenue is net interest income plus noninterest
-                income. Income before tax deducts noninterest expenses and
-                applicable consolidation adjustments. Tax is a separate TBD
-                line; net income is not inferred to equal pre-tax income. YTD
-                totals require every elapsed month; a missing month is not zero.
+                income. Net income requires confirmed expense and tax inputs,
+                including items hidden from the statement. Partial amounts show
+                only known components, not complete totals or confirmed profit.
+                Missing months and components are never treated as zero.
               </p>
               <p>
                 Current-month source figures use the latest available
                 publication within that month, with the actual cutoff shown.
                 Past months require a month-end publication. Daily publications
-                remain provisional, including at month-end. Statement cells
-                remain TBD until amounts can be classified without overlap.
+                remain provisional, including at month-end. Statement cells use
+                explicit component definitions to prevent overlap.
               </p>
               {(annual.length
                 ? annual.map((r) => ({ prime, ...r }))

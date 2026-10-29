@@ -1,5 +1,6 @@
-import { PrimeDashboard, type Search } from "@/components/prime-dashboard";
-import { parsePrime } from "@/lib/prime-reports";
+import { redirect } from "next/navigation";
+import type { Search } from "@/components/prime-dashboard";
+import { individualReportHref, parsePrime } from "@/lib/prime-reports";
 export const dynamic = "force-dynamic";
 export default async function Page({
   searchParams,
@@ -7,14 +8,8 @@ export default async function Page({
   searchParams: Promise<Search>;
 }) {
   const search = await searchParams;
-  return (
-    <PrimeDashboard
-      prime={
-        parsePrime(typeof search.prime === "string" ? search.prime : null) ||
-        "spark"
-      }
-      combined
-      search={search}
-    />
-  );
+  const prime =
+    parsePrime(typeof search.prime === "string" ? search.prime : null) ||
+    "spark";
+  redirect(individualReportHref(prime, search));
 }

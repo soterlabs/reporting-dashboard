@@ -57,7 +57,7 @@ test("a retained October MTD statement keeps its labels and exact decimals after
     assert.equal(rows[0][15], "YTD 2026");
     const ar = rows.find((r) => r[2] === "Agent rate (AR)")!;
     assert.equal(ar[12], "12.000000000000000001");
-    assert.equal(ar[15], "TBD");
+    assert.equal(ar[15], "Partial");
     assert.equal(ar[18], statement.report_hash);
     assert.equal(ar[19], statement.selection);
     assert.ok(rows.every((r) => r.length === rows[0].length));

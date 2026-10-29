@@ -3,6 +3,7 @@ import {
   statementMonths,
   statementTotalLabel,
   positionAccruedIncome,
+  metricExplanation,
   type FinancialPortfolio,
   type FinancialRead,
   type FinancialStatement,
@@ -41,6 +42,12 @@ export function statementCsvRows(
       "Financial report hash",
       "Financial report selection",
       "Source manifest",
+      "Monthly metric source references",
+      "Monthly coverage",
+      "Monthly known components USD",
+      "Total coverage",
+      "Total known components USD",
+      "Coverage explanation",
     ],
     ...statementLines(scope === "combined" ? null : prime, scope, report).map(
       (row) => {
@@ -50,14 +57,22 @@ export function statementCsvRows(
           scope === "combined" ? "All prime agents" : prime,
           row.label,
           ...months.map((m) =>
-            row.kind === "section" ? "" : (line?.values[m.key]?.value ?? "TBD"),
+            row.kind === "section" || row.structural
+              ? ""
+              : line?.values[m.key]?.status === "partial"
+                ? "Partial"
+                : (line?.values[m.key]?.value ?? "TBD"),
           ),
-          row.kind === "section" ? "" : (line?.total.value ?? "TBD"),
+          row.kind === "section" || row.structural
+            ? ""
+            : line?.total.status === "partial"
+              ? "Partial"
+              : (line?.total.value ?? "TBD"),
           (line
             ? [
                 ...new Set(
                   Object.values(line.values)
-                    .filter((v) => v.status === "available")
+                    .filter((v) => v.value !== null || v.known_value !== null)
                     .map((v) => v.basis),
                 ),
               ].join("; ")
@@ -73,6 +88,43 @@ export function statementCsvRows(
           report?.report_hash,
           report?.selection,
           JSON.stringify(report?.source_manifest || {}),
+          JSON.stringify(
+            Object.fromEntries(
+              months.map((m) => [
+                m.key,
+                line?.values[m.key]?.source_refs ||
+                  line?.values[m.key]?.source_ref ||
+                  null,
+              ]),
+            ),
+          ),
+          JSON.stringify(
+            Object.fromEntries(
+              months.map((m) => [
+                m.key,
+                line?.values[m.key]?.status || "unavailable",
+              ]),
+            ),
+          ),
+          JSON.stringify(
+            Object.fromEntries(
+              months.map((m) => [
+                m.key,
+                line?.values[m.key]?.known_value ?? null,
+              ]),
+            ),
+          ),
+          line?.total.status || "unavailable",
+          line?.total.known_value ?? "",
+          JSON.stringify({
+            months: Object.fromEntries(
+              months.map((m) => [
+                m.key,
+                metricExplanation(line?.values[m.key], report),
+              ]),
+            ),
+            total: metricExplanation(line?.total, report),
+          }),
         ];
       },
     ),
