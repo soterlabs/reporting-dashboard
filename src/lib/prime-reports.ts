@@ -122,7 +122,9 @@ export function statementLines(
     line("demand", "Demand-side revenue"),
     line("dr", "Distribution rewards (DR)", 2, "demand"),
     line("ar", "Agent rate (AR)", 2, "demand"),
-    line("gar", "Governance accessibility rewards (GAR)", 2, "demand"),
+    ...(prime === "skybase"
+      ? [line("gar", "Governance accessibility rewards (GAR)", 2, "demand")]
+      : []),
     line("protocol", "Protocol fees"),
     line("curator", "Curator fees"),
     line("rewards", "Incentives and rewards received"),
@@ -255,6 +257,7 @@ export function statementLines(
     [
       "prime-management.allocations.v2",
       "prime-management.allocations.v2.1",
+      "prime-management.monthly-statements.v3",
     ].includes(financial?.policy_version || "") &&
     financial
   ) {

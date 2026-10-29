@@ -41,6 +41,7 @@ export function statementCsvRows(
       "Financial report hash",
       "Financial report selection",
       "Source manifest",
+      "Monthly metric source references",
     ],
     ...statementLines(scope === "combined" ? null : prime, scope, report).map(
       (row) => {
@@ -73,6 +74,14 @@ export function statementCsvRows(
           report?.report_hash,
           report?.selection,
           JSON.stringify(report?.source_manifest || {}),
+          JSON.stringify(
+            Object.fromEntries(
+              months.map((m) => [
+                m.key,
+                line?.values[m.key]?.source_ref || null,
+              ]),
+            ),
+          ),
         ];
       },
     ),

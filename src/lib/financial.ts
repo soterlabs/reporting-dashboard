@@ -10,6 +10,7 @@ export interface Metric {
   basis: string;
   reason: string | null;
   source_paths: string[];
+  source_ref?: string;
 }
 export interface FinancialStatement {
   schema_version: "3.0";
@@ -28,6 +29,7 @@ export interface FinancialStatement {
     expected_cutoff: string | null;
     stale: boolean;
     financial_revision: string | null;
+    monthly_revision?: string | null;
   }[];
   lines: {
     id: string;
@@ -39,7 +41,18 @@ export interface FinancialStatement {
   }[];
   source_manifest: Record<
     string,
-    { cutoff: string; revision_id: string; result_hash: string }
+    {
+      cutoff: string;
+      revision_id: string;
+      result_hash: string;
+      kind?: "published_monthly_summary";
+      repository?: string;
+      commit?: string;
+      path?: string;
+      url?: string;
+      currency?: string;
+      display_precision?: string;
+    }
   >;
   source_lag_periods: string[];
 }
@@ -90,6 +103,7 @@ const policies = new Set([
   "prime-management.allocations.v2",
   "prime-management.allocations.v2.1",
 ]);
+const monthlyPolicy = "prime-management.monthly-statements.v3";
 const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 const decimal = (v: unknown) =>
   typeof v === "string" && /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(v);
@@ -129,7 +143,7 @@ export function validateStatement(
   requireValue(
     v &&
       v.schema_version === "3.0" &&
-      policies.has(v.policy_version) &&
+      (policies.has(v.policy_version) || v.policy_version === monthlyPolicy) &&
       v.prime === prime &&
       v.year === year &&
       v.scope === "individual",
@@ -147,6 +161,7 @@ export function validateStatement(
       ["FY", "YTD"].includes(v.total_label),
   );
   const expected = yearMonths(year, new Date(Date.parse(v.as_of) + 86400000));
+  const monthly = v.policy_version === monthlyPolicy;
   requireValue(
     v.total_label ===
       (expected.every((p) => p.state === "complete") ? "FY" : "YTD"),
@@ -161,10 +176,13 @@ export function validateStatement(
     );
     requireValue(
       typeof p.stale === "boolean" &&
-        (p.financial_revision === null || hash(p.financial_revision)),
+        (p.financial_revision === null || hash(p.financial_revision)) &&
+        (!monthly || p.monthly_revision === null || hash(p.monthly_revision)),
     );
     requireValue(
-      (p.actual_cutoff === null) === (p.financial_revision === null),
+      (p.actual_cutoff === null) ===
+        (p.financial_revision === null &&
+          (!monthly || p.monthly_revision === null)),
     );
     requireValue(
       p.actual_cutoff === null ||
@@ -197,7 +215,32 @@ export function validateStatement(
       const cell = l.values[p.key];
       metric(cell);
       requireValue((cell.status === "future") === (p.state === "future"));
-      requireValue(p.financial_revision !== null || cell.value === null);
+      requireValue(
+        p.financial_revision !== null ||
+          (monthly && p.monthly_revision !== null) ||
+          cell.value === null,
+      );
+      if (monthly && cell.value !== null) {
+        requireValue(
+          cell.source_ref &&
+            [p.financial_revision, p.monthly_revision].includes(
+              cell.source_ref,
+            ),
+        );
+        const source = v.source_manifest?.[cell.source_ref];
+        requireValue(source && source.cutoff === p.actual_cutoff);
+        if (cell.source_ref === p.monthly_revision)
+          requireValue(
+            [
+              "demand.agent_rate",
+              "demand.distribution_rewards",
+              "demand.total",
+              "funding.sky.net",
+              ...(prime === "skybase" ? ["demand.gar"] : []),
+              ...(prime === "grove" ? ["demand.chronicle_points"] : []),
+            ].includes(l.id),
+          );
+      }
     }
     requireValue(
       l.total.value === null ||
@@ -217,6 +260,28 @@ export function validateStatement(
           hash(s.result_hash),
       );
     }
+  if (monthly)
+    for (const p of v.periods)
+      if (p.monthly_revision) {
+        const s = v.source_manifest[p.monthly_revision];
+        requireValue(
+          p.state === "complete" &&
+            s &&
+            s.kind === "published_monthly_summary" &&
+            s.cutoff === p.actual_cutoff &&
+            s.cutoff === p.expected_cutoff &&
+            s.revision_id === p.monthly_revision &&
+            hash(s.result_hash) &&
+            s.repository === "soterlabs/settlement-reports" &&
+            typeof s.commit === "string" &&
+            /^[a-f0-9]{40}$/.test(s.commit) &&
+            s.path === `reports/${prime}/${p.key}/summary.md` &&
+            s.url ===
+              `https://github.com/${s.repository}/blob/${s.commit}/${s.path}` &&
+            s.currency === "USDS" &&
+            s.display_precision === "0.01",
+        );
+      }
   return v;
 }
 export function validatePortfolio(
@@ -300,6 +365,9 @@ export function validatePortfolio(
   return v;
 }
 const bindings: Record<string, string> = {
+  demand: "demand.total",
+  dr: "demand.distribution_rewards",
+  gar: "demand.gar",
   ar: "demand.agent_rate",
   "sky-funding": "funding.sky.net",
   "sky-funding-gross": "funding.sky.gross",

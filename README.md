@@ -118,3 +118,25 @@ source references. The dashboard accepts all supported policy versions before
 the API changes its default. Position exports include each row's actual cutoff,
 source venue ID and approved position ID, so vault redeployments with the same
 business label can be reconciled independently. Summary rows have no member ID.
+
+## Published monthly headlines
+
+The `prime-management.monthly-statements.v3` annual statement adds published
+Distribution Rewards, demand-side revenue and historical AR/net Sky funding.
+The API bundles reviewed settlement summaries; the dashboard does not request
+or sum daily revenue to fill historical months. January–September 2026 is
+available for five primes; Osero's source history starts in July. Unsupported
+historical allocation figures and unfinalized DR/demand-side MTD remain TBD.
+GAR appears only for Skybase in the dashboard and CSV. Source summaries without
+an explicit GAR row leave that amount unavailable.
+
+A month can carry both a daily financial revision and a monthly-summary revision.
+Available cells reference their own source in the manifest; CSVs preserve those
+references as well as the frozen annual selection. This preserves existing
+September allocation figures when headline fields use the published summary.
+The monthly API policy and source snapshot are documented in the
+[financial reporting API guide](https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/financial-reporting-api.md#published-monthly-history-monthly-statementsv3).
+
+Deploy this compatible dashboard consumer before the backend switches its default
+annual statement policy. Both retained v1/v2/v2.1 selections and the new monthly
+statement are supported. Portfolio API policies are unchanged.

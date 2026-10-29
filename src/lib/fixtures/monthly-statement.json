@@ -1,0 +1,1377 @@
+{
+  "schema_version": "3.0",
+  "policy_version": "prime-management.monthly-statements.v3",
+  "scope": "individual",
+  "prime": "obex",
+  "year": 2026,
+  "as_of": "2026-10-28",
+  "periods": [
+    {
+      "key": "2026-01",
+      "state": "complete",
+      "expected_cutoff": "2026-01-31",
+      "actual_cutoff": "2026-01-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+    },
+    {
+      "key": "2026-02",
+      "state": "complete",
+      "expected_cutoff": "2026-02-28",
+      "actual_cutoff": "2026-02-28",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+    },
+    {
+      "key": "2026-03",
+      "state": "complete",
+      "expected_cutoff": "2026-03-31",
+      "actual_cutoff": "2026-03-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+    },
+    {
+      "key": "2026-04",
+      "state": "complete",
+      "expected_cutoff": "2026-04-30",
+      "actual_cutoff": "2026-04-30",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+    },
+    {
+      "key": "2026-05",
+      "state": "complete",
+      "expected_cutoff": "2026-05-31",
+      "actual_cutoff": "2026-05-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+    },
+    {
+      "key": "2026-06",
+      "state": "complete",
+      "expected_cutoff": "2026-06-30",
+      "actual_cutoff": "2026-06-30",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+    },
+    {
+      "key": "2026-07",
+      "state": "complete",
+      "expected_cutoff": "2026-07-31",
+      "actual_cutoff": "2026-07-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+    },
+    {
+      "key": "2026-08",
+      "state": "complete",
+      "expected_cutoff": "2026-08-31",
+      "actual_cutoff": "2026-08-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+    },
+    {
+      "key": "2026-09",
+      "state": "complete",
+      "expected_cutoff": "2026-09-30",
+      "actual_cutoff": "2026-09-30",
+      "financial_revision": "827d37c8560e8134701f3c213bf97f1f5a5099afcb6fa517b38e2167dd36dae2",
+      "stale": false,
+      "monthly_revision": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+    },
+    {
+      "key": "2026-10",
+      "state": "partial",
+      "expected_cutoff": "2026-10-28",
+      "actual_cutoff": "2026-10-26",
+      "financial_revision": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16",
+      "stale": true,
+      "monthly_revision": null
+    },
+    {
+      "key": "2026-11",
+      "state": "future",
+      "expected_cutoff": null,
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": null
+    },
+    {
+      "key": "2026-12",
+      "state": "future",
+      "expected_cutoff": null,
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": null
+    }
+  ],
+  "lines": [
+    {
+      "id": "demand.agent_rate",
+      "label": "Agent rate (AR)",
+      "values": {
+        "2026-01": {
+          "value": "73520.27",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md"
+          ],
+          "source_ref": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+        },
+        "2026-02": {
+          "value": "67754.17",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md"
+          ],
+          "source_ref": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+        },
+        "2026-03": {
+          "value": "72061.47",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md"
+          ],
+          "source_ref": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+        },
+        "2026-04": {
+          "value": "68358.25",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md"
+          ],
+          "source_ref": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+        },
+        "2026-05": {
+          "value": "69563.01",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md"
+          ],
+          "source_ref": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+        },
+        "2026-06": {
+          "value": "67174.42",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md"
+          ],
+          "source_ref": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+        },
+        "2026-07": {
+          "value": "71996.70",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md"
+          ],
+          "source_ref": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+        },
+        "2026-08": {
+          "value": "75327.60",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md"
+          ],
+          "source_ref": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+        },
+        "2026-09": {
+          "value": "76635.17",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md"
+          ],
+          "source_ref": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+        },
+        "2026-10": {
+          "value": "12.000000000000000001",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "tracked_protocol_entitlement",
+          "reason": null,
+          "source_paths": [
+            "result.agent_rate"
+          ],
+          "source_ref": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16"
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": "642403.060000000000000001",
+        "known_value": null,
+        "unit": "USD",
+        "status": "available",
+        "recognition": "accrual",
+        "basis": "sum_of_selected_monthly_flows",
+        "reason": null,
+        "source_paths": []
+      }
+    },
+    {
+      "id": "funding.sky.gross",
+      "label": "Sky borrowing interest, before reimbursement",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": "105",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "sky_borrowing_before_reimbursement",
+          "reason": null,
+          "source_paths": [
+            "result.sky_revenue",
+            "result.sde_revenue",
+            "result.susds_spread_reimbursement"
+          ],
+          "source_ref": "827d37c8560e8134701f3c213bf97f1f5a5099afcb6fa517b38e2167dd36dae2"
+        },
+        "2026-10": {
+          "value": "105",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "sky_borrowing_before_reimbursement",
+          "reason": null,
+          "source_paths": [
+            "result.sky_revenue",
+            "result.sde_revenue",
+            "result.susds_spread_reimbursement"
+          ],
+          "source_ref": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16"
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "210",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    },
+    {
+      "id": "funding.sky.reimbursement",
+      "label": "Sky spread reimbursement (deduction)",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": "5",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "sky_funding_reduction",
+          "reason": null,
+          "source_paths": [
+            "result.susds_spread_reimbursement"
+          ],
+          "source_ref": "827d37c8560e8134701f3c213bf97f1f5a5099afcb6fa517b38e2167dd36dae2"
+        },
+        "2026-10": {
+          "value": "5",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "sky_funding_reduction",
+          "reason": null,
+          "source_paths": [
+            "result.susds_spread_reimbursement"
+          ],
+          "source_ref": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16"
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "10",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    },
+    {
+      "id": "funding.sky.net",
+      "label": "Sky funding interest, net",
+      "values": {
+        "2026-01": {
+          "value": "2110933.27",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md"
+          ],
+          "source_ref": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+        },
+        "2026-02": {
+          "value": "1948739.35",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md"
+          ],
+          "source_ref": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+        },
+        "2026-03": {
+          "value": "2073865.93",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md"
+          ],
+          "source_ref": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+        },
+        "2026-04": {
+          "value": "1968813.08",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md"
+          ],
+          "source_ref": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+        },
+        "2026-05": {
+          "value": "2005204.07",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md"
+          ],
+          "source_ref": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+        },
+        "2026-06": {
+          "value": "1925370.69",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md"
+          ],
+          "source_ref": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+        },
+        "2026-07": {
+          "value": "1761245.42",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md"
+          ],
+          "source_ref": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+        },
+        "2026-08": {
+          "value": "1248716.85",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md"
+          ],
+          "source_ref": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+        },
+        "2026-09": {
+          "value": "1239312.89",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md"
+          ],
+          "source_ref": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+        },
+        "2026-10": {
+          "value": "100",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "net_sky_funding_only",
+          "reason": null,
+          "source_paths": [
+            "result.sky_revenue",
+            "result.sde_revenue"
+          ],
+          "source_ref": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16"
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": "16282301.55",
+        "known_value": null,
+        "unit": "USD",
+        "status": "available",
+        "recognition": "accrual",
+        "basis": "sum_of_selected_monthly_flows",
+        "reason": null,
+        "source_paths": []
+      }
+    },
+    {
+      "id": "investment.maple_syrup_usdc",
+      "label": "Maple syrupUSDC \u2014 net investment income",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": "100",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "prime_owned_net_vault_yield_after_embedded_fees",
+          "reason": null,
+          "source_paths": [
+            "result.venue_breakdown.V1.revenue",
+            "result.venue_breakdown.V1.external_revenue"
+          ],
+          "source_ref": "827d37c8560e8134701f3c213bf97f1f5a5099afcb6fa517b38e2167dd36dae2"
+        },
+        "2026-10": {
+          "value": "100",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "prime_owned_net_vault_yield_after_embedded_fees",
+          "reason": null,
+          "source_paths": [
+            "result.venue_breakdown.V1.revenue",
+            "result.venue_breakdown.V1.external_revenue"
+          ],
+          "source_ref": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16"
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "200",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    },
+    {
+      "id": "demand.distribution_rewards",
+      "label": "Distribution rewards (DR)",
+      "values": {
+        "2026-01": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md"
+          ],
+          "source_ref": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+        },
+        "2026-02": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md"
+          ],
+          "source_ref": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+        },
+        "2026-03": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md"
+          ],
+          "source_ref": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+        },
+        "2026-04": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md"
+          ],
+          "source_ref": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+        },
+        "2026-05": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md"
+          ],
+          "source_ref": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+        },
+        "2026-06": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md"
+          ],
+          "source_ref": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+        },
+        "2026-07": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md"
+          ],
+          "source_ref": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+        },
+        "2026-08": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md"
+          ],
+          "source_ref": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+        },
+        "2026-09": {
+          "value": "0.00",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md"
+          ],
+          "source_ref": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+        },
+        "2026-10": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "monthly_summary_not_published",
+          "source_paths": [],
+          "source_ref": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16"
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "0.00",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    },
+    {
+      "id": "demand.total",
+      "label": "Demand-side revenue",
+      "values": {
+        "2026-01": {
+          "value": "73520.27",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md"
+          ],
+          "source_ref": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+        },
+        "2026-02": {
+          "value": "67754.17",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md"
+          ],
+          "source_ref": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+        },
+        "2026-03": {
+          "value": "72061.47",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md"
+          ],
+          "source_ref": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+        },
+        "2026-04": {
+          "value": "68358.25",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md"
+          ],
+          "source_ref": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+        },
+        "2026-05": {
+          "value": "69563.01",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md"
+          ],
+          "source_ref": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+        },
+        "2026-06": {
+          "value": "67174.42",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md"
+          ],
+          "source_ref": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+        },
+        "2026-07": {
+          "value": "71996.70",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md"
+          ],
+          "source_ref": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+        },
+        "2026-08": {
+          "value": "75327.60",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md"
+          ],
+          "source_ref": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+        },
+        "2026-09": {
+          "value": "76635.17",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "published_monthly_settlement_headline_usds_at_par",
+          "reason": null,
+          "source_paths": [
+            "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md"
+          ],
+          "source_ref": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+        },
+        "2026-10": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "monthly_summary_not_published",
+          "source_paths": [],
+          "source_ref": "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16"
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "642391.06",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "unknown",
+        "basis": "unclassified",
+        "reason": "incomplete_year_coverage",
+        "source_paths": []
+      }
+    }
+  ],
+  "total_label": "YTD",
+  "source_manifest": {
+    "827d37c8560e8134701f3c213bf97f1f5a5099afcb6fa517b38e2167dd36dae2": {
+      "cutoff": "2026-09-30",
+      "revision_id": "eda1741ede2252df14f52928724d0642cf88f6121dccbc2e01334092e6b87e2d",
+      "result_hash": "eda1741ede2252df14f52928724d0642cf88f6121dccbc2e01334092e6b87e2d",
+      "code_version": null,
+      "configuration_version": null,
+      "input_revision": null,
+      "computed_at": null,
+      "provisional": true,
+      "excluded_inputs": null
+    },
+    "c94df9e2fe13a7c687cf638b55977e4f089680c6411ae5b8bf578e0f8bb41d16": {
+      "cutoff": "2026-10-26",
+      "revision_id": "acae4218fa4311f9f845e0c28b17e0876b5e808750a6773c61f29027ea851711",
+      "result_hash": "acae4218fa4311f9f845e0c28b17e0876b5e808750a6773c61f29027ea851711",
+      "code_version": null,
+      "configuration_version": null,
+      "input_revision": null,
+      "computed_at": null,
+      "provisional": true,
+      "excluded_inputs": null
+    },
+    "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-01/summary.md",
+      "git_blob_sha": "992860704b68ea72c414d978578e9b5926c6d291",
+      "result_hash": "ca34e694f33d8373ffd748d033874ad41dd5a7038d133dcb2f4c02187911a89c",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-01-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-01/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "2adaf393988674d8b4206414db1975687177ba772c285e480dd1cef53ad493c3"
+    },
+    "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-02/summary.md",
+      "git_blob_sha": "2f84ccd43b88f23aa8616ef1ccac72bccaca76dc",
+      "result_hash": "678d4afbbfd74cc3acc94f9125bb0eb78f13554314d6eb5e7af5d8a795d64ed0",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-02-28",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-02/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "4b4d73011aa9ba0de3894fce2ee6dc06fef0802d077956b29364234ec8cc437b"
+    },
+    "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-03/summary.md",
+      "git_blob_sha": "2ff3a8b565e0c98ff62487e852208320fcaece59",
+      "result_hash": "78398af1a23ca1f50b080a2d599798685c83458a6da2176c1e1ec6e5bb58c23c",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-03-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-03/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "a804b4fd930d177c1ec863ae35729cef33ccfe084fedd4c5d939dff0bb642fd4"
+    },
+    "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-04/summary.md",
+      "git_blob_sha": "8ba4ef98975fd388dcabe2890515fcf851cae2a8",
+      "result_hash": "b73f177afcf5a94e29add1c0f88dcfa0b191d50d9cfa65588f41cf095272a3d4",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-04-30",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-04/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "e106d296dde357ff4ec7f3a8156c411ceaabd0bf0ad780a0219129558d50ddca"
+    },
+    "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-05/summary.md",
+      "git_blob_sha": "12584f672c433d317cafa54bee6d12ab02643a5f",
+      "result_hash": "dc90eb35d3778d6642e5f5b73c5f184196237f3067274d3f1d7ecf408ce145a9",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-05-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-05/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "255d526d9ce5916dcd681f43cc443506091205b8c2b545c0b295de5a4685f4a6"
+    },
+    "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-06/summary.md",
+      "git_blob_sha": "7aa2b169a04d90378903152799f6f0eed976a3f7",
+      "result_hash": "c8ee63ecbee20699258e0abc1aba28443cdd0b231b829be0fb3095148650c758",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-06-30",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-06/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "517ac4f33410cc08ba394c3efdc03e655f9ca080c46e10a7f01f38e0db23b210"
+    },
+    "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-07/summary.md",
+      "git_blob_sha": "f8ddc05601fe289003338681c7ce1be326cae1ca",
+      "result_hash": "2211f7d9a20b1f3d5d6de48208b973f4a389b135450c4be36acdf28e16e97fb7",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-07-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-07/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "708f585e24e5432ceb38ab28048bb8e400e2a16c5519b20afe9e922fef6e49e6"
+    },
+    "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-08/summary.md",
+      "git_blob_sha": "be92fb7716cd8c5427dc27b462ca1e434432cb59",
+      "result_hash": "35e7d02ac6208393d2857305aee001b36b6cc201d8b748c5fd260d1dd3c372cf",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-08-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-08/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "2e0d490dc761848db116972933c03ab2cc45248e9f1271e753ca5fe8d59a5659"
+    },
+    "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/obex/2026-09/summary.md",
+      "git_blob_sha": "8b5420402ad102d3531639cb6feb16ae43ff5151",
+      "result_hash": "9721a3874bc87a9dd37bcfa8cdb58794840f134ce1c22e71bbcf70bf42cbd19a",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-09-30",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/obex/2026-09/summary.md",
+      "demand_rounding_delta": "0.00",
+      "revision_id": "9e110501d1040a3661bf45b6da4393c8cfc322cdf01110d0bc83cf4c3577e30c"
+    }
+  },
+  "selection": "eyJhc19vZiI6IjIwMjYtMTAtMjgiLCJleGFjdCI6ZmFsc2UsIm1vbnRobHlfcmV2aXNpb25zIjpbIjJhZGFmMzkzOTg4Njc0ZDhiNDIwNjQxNGRiMTk3NTY4NzE3N2JhNzcyYzI4NWU0ODBkZDFjZWY1M2FkNDkzYzMiLCI0YjRkNzMwMTFhYTliYTBkZTM4OTRmY2UyZWU2ZGMwNmZlZjA4MDJkMDc3OTU2YjI5MzY0MjM0ZWM4Y2M0MzdiIiwiYTgwNGI0ZmQ5MzBkMTc3YzFlYzg2M2FlMzU3MjljZWYzM2NjZmUwODRmZWRkNGM1ZDkzOWRmZjBiYjY0MmZkNCIsImUxMDZkMjk2ZGRlMzU3ZmY0ZWM3ZjNhODE1NmM0MTFjZWFhYmQwYmYwYWQ3ODBhMDIxOTEyOTU1OGQ1MGRkY2EiLCIyNTVkNTI2ZDljZTU5MTZkY2Q2ODFmNDNjYzQ0MzUwNjA5MTIwNWI4YzJiNTQ1YzBiMjk1ZGU1YTQ2ODVmNGE2IiwiNTE3YWM0ZjMzNDEwY2MwOGJhMzk0YzNlZmRjMDNlNjU1ZjljYTA4MGM0NmUxMGE3ZjAxZjM4ZTBkYjIzYjIxMCIsIjcwOGY1ODVlMjRlNTQzMmNlYjM4YWIyODA0OGJiOGU0MDBlMmExNmM1NTE5YjIwYWZlOWU5MjJmZWY2ZTQ5ZTYiLCIyZTBkNDkwZGM3NjE4NDhkYjExNjk3MjkzM2MwM2FiMmNjNDUyNDhlOWYxMjcxZTc1M2NhNWZlOGQ1OWE1NjU5IiwiOWUxMTA1MDFkMTA0MGEzNjYxYmY0NWI2ZGE0MzkzYzhjZmMzMjJjZGYwMTExMGQwYmM4M2NmNGMzNTc3ZTMwYyIsbnVsbCxudWxsLG51bGxdLCJwb2xpY3lfdmVyc2lvbiI6InByaW1lLW1hbmFnZW1lbnQubW9udGhseS1zdGF0ZW1lbnRzLnYzIiwicHJpbWUiOiJvYmV4IiwicmV2aXNpb25zIjpbbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLCI4MjdkMzdjODU2MGU4MTM0NzAxZjNjMjEzYmY5N2YxZjVhNTA5OWFmY2I2ZmE1MTdiMzhlMjE2N2RkMzZkYWUyIiwiYzk0ZGY5ZTJmZTEzYTdjNjg3Y2Y2MzhiNTU5NzdlNGYwODk2ODBjNjQxMWFlNWI4YmY1NzhlMGY4YmI0MWQxNiIsbnVsbCxudWxsXSwieWVhciI6MjAyNn0",
+  "perimeter": "operational_prime_management_reporting",
+  "report_hash": "00c36876ebec672283ec1a5f8c07d44f9e08ea20690676faf895ee21df72db40",
+  "source_lag_periods": []
+}
