@@ -163,11 +163,13 @@ export function IncomeStatement({
         </table>
       </div>
       <div className="panel-note">
-        First slice: AR, Sky funding components and Obex Maple net investment
-        income. Maple income is after embedded vault fees. These components do
-        not certify their parent totals. TBD = unavailable or unconfirmed.
-        Subtotals require complete classifications and expense data. Future
-        months are not forecasts.
+        Approved components: AR, Sky funding, reviewed lending/vault income and
+        separately classified rewards. Vault income is after embedded fees;
+        lending distributions and USDG use receipt recognition. Reviewed
+        subtotals exclude unclassified sources. These components do not certify
+        their parent totals. TBD = unavailable or unconfirmed. Subtotals require
+        complete classifications and expense data. Future months are not
+        forecasts.
       </div>
     </section>
   );

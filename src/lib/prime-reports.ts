@@ -1,3 +1,4 @@
+import type { FinancialStatement } from "./financial.ts";
 import Decimal from "decimal.js";
 import {
   amount,
@@ -114,6 +115,7 @@ const line = (
 export function statementLines(
   prime: Prime | null,
   scope: Scope,
+  financial?: FinancialStatement | null,
 ): StatementLine[] {
   const rows: StatementLine[] = [
     line("revenue", "Revenue", 0, undefined, "section"),
@@ -248,6 +250,78 @@ export function statementLines(
     line("tax", "Income tax expense"),
     line("net-income", "Net income", 0, undefined, "total"),
   );
+  if (
+    scope === "individual" &&
+    [
+      "prime-management.allocations.v2",
+      "prime-management.allocations.v2.1",
+    ].includes(financial?.policy_version || "") &&
+    financial
+  ) {
+    const bindings: Record<string, string> = {
+      "allocation-0-0": "investment.sparklend.usds",
+      "allocation-0-1": "investment.sparklend.usdc",
+      "allocation-0-2": "investment.sparklend.usdt",
+      "allocation-0-3": "investment.sparklend.dai",
+      "allocation-0-4": "investment.sparklend.pyusd",
+      "allocation-1-0": "investment.aave.eth_usds",
+      "allocation-1-1": "investment.aave.eth_lido_usds",
+      "allocation-1-2": "investment.aave.eth_usdc",
+      "allocation-1-3": "investment.aave.eth_usdt",
+      "allocation-1-4": "investment.aave.base_usdc",
+      "allocation-1-5": "investment.aave.arbitrum_usdc",
+      "allocation-1-6": "investment.aave.avalanche_usdc",
+      "allocation-2-0": "investment.morpho.blue_chip_usdc",
+      "allocation-2-1": "investment.morpho.blue_chip_usdt",
+      "allocation-2-2": "investment.morpho.dai",
+      "allocation-2-3": "investment.morpho.usds",
+      "allocation-2-4": "investment.morpho.base_usdc",
+      "allocation-3-0": "investment.maple_syrup_usdc",
+      "allocation-3-1": "investment.maple_syrup_usdt",
+      "allocation-4": "investment.arkis.usdc",
+    };
+    const bound = new Set<string>();
+    if (prime === "spark")
+      for (const row of rows)
+        if (bindings[row.id]) {
+          row.id = bindings[row.id];
+          bound.add(row.id);
+        }
+    const inserts = new Map<string, StatementLine[]>();
+    const add = (parent: string, row: StatementLine) => {
+      const group = inserts.get(parent) || [];
+      group.push(row);
+      inserts.set(parent, group);
+    };
+    const groups = new Set<string>();
+    for (const definition of financial.lines) {
+      if (!definition.family || bound.has(definition.id)) continue;
+      if (definition.id === "demand.chronicle_points") {
+        add("demand", line(definition.id, definition.label, 2, "demand"));
+        continue;
+      }
+      const parent = definition.id.startsWith("investment.")
+        ? "interest"
+        : definition.id.startsWith("rewards.")
+          ? "rewards"
+          : null;
+      if (!parent) continue;
+      if (definition.aggregation === "subtotal") {
+        add(
+          parent,
+          line(definition.id, definition.label, 2, parent, "subtotal"),
+        );
+        continue;
+      }
+      const group = `${parent}-${definition.family.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+      if (!groups.has(group)) {
+        add(parent, line(group, definition.family, 2, parent));
+        groups.add(group);
+      }
+      add(parent, line(definition.id, definition.label, 3, group));
+    }
+    return rows.flatMap((row) => [row, ...(inserts.get(row.id) || [])]);
+  }
   return rows;
 }
 export interface MonthReport {

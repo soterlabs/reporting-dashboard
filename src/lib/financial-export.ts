@@ -2,6 +2,7 @@ import {
   financialLine,
   statementMonths,
   statementTotalLabel,
+  positionAccruedIncome,
   type FinancialPortfolio,
   type FinancialRead,
   type FinancialStatement,
@@ -12,8 +13,9 @@ import {
   totalLabel,
   type Month,
   type Scope,
+  type PortfolioRow,
 } from "./prime-reports.ts";
-import type { Prime } from "./reporting.ts";
+import { amount, loanIncomeBalances, type Prime } from "./reporting.ts";
 
 export function statementCsvRows(
   prime: Prime,
@@ -40,38 +42,40 @@ export function statementCsvRows(
       "Financial report selection",
       "Source manifest",
     ],
-    ...statementLines(scope === "combined" ? null : prime, scope).map((row) => {
-      const line = financialLine(report, row.id);
-      return [
-        scope,
-        scope === "combined" ? "All prime agents" : prime,
-        row.label,
-        ...months.map((m) =>
-          row.kind === "section" ? "" : (line?.values[m.key]?.value ?? "TBD"),
-        ),
-        row.kind === "section" ? "" : (line?.total.value ?? "TBD"),
-        (line
-          ? [
-              ...new Set(
-                Object.values(line.values)
-                  .filter((v) => v.status === "available")
-                  .map((v) => v.basis),
-              ),
-            ].join("; ")
-          : "") ||
-          line?.values[selectedMonth]?.reason ||
-          "Classification or inputs not yet available",
-        JSON.stringify(
-          report?.periods.map((p) => ({
-            month: p.key,
-            cutoff: p.actual_cutoff,
-          })) || [],
-        ),
-        report?.report_hash,
-        report?.selection,
-        JSON.stringify(report?.source_manifest || {}),
-      ];
-    }),
+    ...statementLines(scope === "combined" ? null : prime, scope, report).map(
+      (row) => {
+        const line = financialLine(report, row.id);
+        return [
+          scope,
+          scope === "combined" ? "All prime agents" : prime,
+          row.label,
+          ...months.map((m) =>
+            row.kind === "section" ? "" : (line?.values[m.key]?.value ?? "TBD"),
+          ),
+          row.kind === "section" ? "" : (line?.total.value ?? "TBD"),
+          (line
+            ? [
+                ...new Set(
+                  Object.values(line.values)
+                    .filter((v) => v.status === "available")
+                    .map((v) => v.basis),
+                ),
+              ].join("; ")
+            : "") ||
+            line?.values[selectedMonth]?.reason ||
+            "Classification or inputs not yet available",
+          JSON.stringify(
+            report?.periods.map((p) => ({
+              month: p.key,
+              cutoff: p.actual_cutoff,
+            })) || [],
+          ),
+          report?.report_hash,
+          report?.selection,
+          JSON.stringify(report?.source_manifest || {}),
+        ];
+      },
+    ),
   ];
 }
 
@@ -89,11 +93,14 @@ export const FINANCIAL_EXPORT_HEADERS = [
   "Perimeter ID",
   "Expected position IDs",
   "Excluded venue IDs",
+  "Source venue ID",
+  "Position ID",
 ];
 export function financialExportMetadata(
   read: FinancialRead<FinancialPortfolio> | null,
   kind: "position" | "portfolio_summary",
   metric?: Metric,
+  member?: { sourceVenueId: string; positionId?: string },
 ): unknown[] {
   const report = read?.report;
   return [
@@ -120,6 +127,8 @@ export function financialExportMetadata(
     report?.portfolio.perimeter_id,
     report?.portfolio.expected_position_ids.join("; "),
     report?.portfolio.excluded_source_venue_ids.join("; "),
+    member?.sourceVenueId || "",
+    member?.positionId || "",
   ];
 }
 export function portfolioSummaryCsv(
@@ -147,5 +156,45 @@ export function portfolioSummaryCsv(
       (doc ? "" : "Financial publication unavailable for the selected screen"),
     ...sourceMetadata,
     ...financialExportMetadata(read, "portfolio_summary", closing),
+  ];
+}
+
+export function positionCsvRow(
+  scope: Scope,
+  month: string,
+  row: PortfolioRow,
+  financial: FinancialRead<FinancialPortfolio> | null,
+  sourceMetadata: unknown[],
+): unknown[] {
+  const v = row.venue;
+  const position = financial?.report?.portfolio.positions.find(
+    (p) => p.source_venue_id === v.venue_id,
+  );
+  const income =
+    position?.income ||
+    financial?.report?.claims?.find((p) => p.source_venue_id === v.venue_id)
+      ?.income;
+  return [
+    scope,
+    "Unconsolidated source position; entity attribution unconfirmed",
+    row.prime,
+    month,
+    row.actualCutoff,
+    v.label,
+    amount(v, "opening_position_value_usd"),
+    amount(v, "position_value_usd"),
+    positionAccruedIncome(financial?.report, v),
+    loanIncomeBalances(v).interestReceivable,
+    loanIncomeBalances(v).incomeReceivedInAdvance,
+    amount(v, "cash_received_usd"),
+    "TBD",
+    "TBD",
+    v.status,
+    v.reason || "",
+    ...sourceMetadata,
+    ...financialExportMetadata(financial, "position", income, {
+      sourceVenueId: v.venue_id,
+      positionId: position?.position_id,
+    }),
   ];
 }

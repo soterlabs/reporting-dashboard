@@ -1,4 +1,8 @@
-import { statementTotalLabel } from "@/lib/financial";
+import {
+  statementTotalLabel,
+  financialPortfolioRows,
+  positionAccruedIncome,
+} from "@/lib/financial";
 import { financialStatements, financialPortfolio } from "@/lib/api";
 import Link from "next/link";
 import {
@@ -120,7 +124,11 @@ export async function PrimeDashboard({
           sourcePortfolio?.actualCutoff || undefined,
         )
       : null;
-  const rows = sourceRows(portfolios);
+  const rows = financialPortfolioRows(
+    prime,
+    sourceRows(portfolios),
+    positionFinancial?.report,
+  );
   const available = portfolios.filter((p) => p.read.report).length;
   const query = new URLSearchParams({
     prime,
@@ -308,7 +316,10 @@ export async function PrimeDashboard({
                 : `${month.label} ${year} · Closing positions`}
             </span>
             <span>
-              {available}/{portfolios.length} source portfolios published
+              {available}/{portfolios.length} venue source publications
+              {positionFinancial?.report
+                ? ` · ${positionFinancial.report.portfolio.positions.filter((p) => p.closing_value.value !== null || p.income.value !== null).length} reviewed financial members`
+                : ""}
               {anyStale ? " · Delayed publication" : ""}
             </span>
           </div>
@@ -321,7 +332,11 @@ export async function PrimeDashboard({
           {view === "income" ? (
             <>
               <IncomeStatement
-                rows={statementLines(combined ? null : prime, scope)}
+                rows={statementLines(
+                  combined ? null : prime,
+                  scope,
+                  financial?.report,
+                )}
                 months={months}
                 title={title}
                 financial={financial?.report}
@@ -427,6 +442,7 @@ export async function PrimeDashboard({
                               {cleanLabel(v.label)}
                             </div>
                             <small>
+                              {v.venue_id} ·{" "}
                               {v.status === "available"
                                 ? "Published position"
                                 : v.reason || "Pending inputs"}
@@ -449,14 +465,10 @@ export async function PrimeDashboard({
                           </td>
                           <td>
                             <Value
-                              value={
-                                positionFinancial?.report?.portfolio.positions.find(
-                                  (p) => p.source_venue_id === v.venue_id,
-                                )?.income.value ??
-                                (v.method === "loan_accrual"
-                                  ? amount(v, "income_usd")
-                                  : null)
-                              }
+                              value={positionAccruedIncome(
+                                positionFinancial?.report,
+                                v,
+                              )}
                             />
                           </td>
                           <td>
