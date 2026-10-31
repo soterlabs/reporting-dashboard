@@ -2,6 +2,8 @@ import {
   statementTotalLabel,
   financialPortfolioRows,
   positionAccruedIncome,
+  metricAmount,
+  statementMonthNote,
 } from "@/lib/financial";
 import { financialStatements, financialPortfolio } from "@/lib/api";
 import Link from "next/link";
@@ -261,11 +263,7 @@ export async function PrimeDashboard({
                     {months.map((m) => (
                       <option key={m.key} value={m.key}>
                         {m.label} {year}
-                        {m.state === "partial"
-                          ? " · MTD"
-                          : m.state === "future"
-                            ? " · Future"
-                            : ""}
+                        {m.state === "partial" ? " · MTD" : ""}
                       </option>
                     ))}
                   </select>
@@ -338,8 +336,9 @@ export async function PrimeDashboard({
                       <h2>Tracked allocation value</h2>
                       <p>
                         {money(
-                          positionFinancial?.report?.portfolio.closing_value
-                            .value ?? null,
+                          metricAmount(
+                            positionFinancial?.report?.portfolio.closing_value,
+                          ),
                         )}{" "}
                         · USD
                       </p>
@@ -350,21 +349,11 @@ export async function PrimeDashboard({
                             "No approved aggregate published"}
                       </p>
                       <p>
-                        {positionFinancial?.report?.portfolio.closing_value
-                          .reason ||
-                          "Reviewed tracked allocations only; entity assets and NAV are unavailable."}
+                        Available reviewed allocations are summed; other
+                        positions shown below may be excluded. TBD means data
+                        is missing or unconfirmed. Entity assets and NAV are
+                        unavailable.
                       </p>
-                      {positionFinancial?.report?.portfolio.closing_value
-                        .known_value != null && (
-                        <p>
-                          Known portion:{" "}
-                          {money(
-                            positionFinancial.report.portfolio.closing_value
-                              .known_value,
-                          )}{" "}
-                          USD
-                        </p>
-                      )}
                       {(positionFinancial?.retained ||
                         positionFinancial?.report?.source_lag ||
                         positionFinancial?.report?.freshness.stale) && (
@@ -555,9 +544,10 @@ export async function PrimeDashboard({
                 Net interest income is interest income less interest expense.
                 Total net revenue is net interest income plus noninterest
                 income. Net income requires confirmed expense and tax inputs,
-                including items hidden from the statement. Partial amounts show
-                only known components, not complete totals or confirmed profit.
-                Missing months and components are never treated as zero.
+                including items hidden from the statement. Displayed totals sum
+                available amounts and can change when TBD inputs become
+                available. Missing months and components are never confirmed
+                zeroes.
               </p>
               <p>
                 Current-month source figures use the latest available
@@ -692,13 +682,13 @@ function SourceIncome({
               {monthly.map((r) => (
                 <th key={r.month.key}>
                   {r.month.label} {r.month.key.slice(0, 4)}
-                  <small>
-                    {r.actualCutoff
-                      ? date(r.actualCutoff)
-                      : r.month.state === "future"
-                        ? "Future"
-                        : "TBD"}
-                  </small>
+                  {r.month.state === "partial" && (
+                    <small>
+                      {statementMonthNote(r.month, {
+                        actual_cutoff: r.actualCutoff,
+                      })}
+                    </small>
+                  )}
                 </th>
               ))}
               <th className="year-total">{totalLabel(months)}</th>

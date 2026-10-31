@@ -1,3 +1,10 @@
+import { rollupPolicies, rwaPolicies } from "./financial-policies.ts";
+export {
+  rollupPolicy,
+  rwaPolicy,
+  rwaPolicies,
+  allocationRewardsPolicy,
+} from "./financial-policies.ts";
 import type { Prime, Venue } from "./reporting.ts";
 import { yearMonths, type Month, type PortfolioRow } from "./prime-reports.ts";
 import Decimal from "decimal.js";
@@ -117,9 +124,6 @@ const policies = new Set([
   "prime-management.allocations.v2.1",
 ]);
 const monthlyPolicy = "prime-management.monthly-statements.v3";
-export const rollupPolicy = "prime-management.statement-rollups.v3.1";
-export const rwaPolicy = "prime-management.rwa-income.v3.2";
-const rollupPolicies = [rollupPolicy, rwaPolicy];
 const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 const decimal = (v: unknown) =>
   typeof v === "string" && /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(v);
@@ -268,7 +272,7 @@ export function validateStatement(
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
-        (v.policy_version === rwaPolicy &&
+        (rwaPolicies.includes(v.policy_version) &&
           l.id === "investment.reviewed_income" &&
           Array.isArray(l.components)));
     if (derived)
@@ -316,7 +320,7 @@ export function validateStatement(
         const source = v.source_manifest?.[cell.source_ref];
         requireValue(source && source.cutoff === p.actual_cutoff);
         if (
-          v.policy_version === rwaPolicy &&
+          rwaPolicies.includes(v.policy_version) &&
           ["investment.rwa.stac", "investment.rwa.jaaa"].includes(l.id)
         ) {
           const split = cell.allocation_split;
@@ -352,7 +356,7 @@ export function validateStatement(
               "funding.sky.net",
               ...(prime === "skybase" ? ["demand.gar"] : []),
               ...(prime === "grove" ? ["demand.chronicle_points"] : []),
-              ...(prime === "grove" && v.policy_version === rwaPolicy
+              ...(prime === "grove" && rwaPolicies.includes(v.policy_version)
                 ? ["investment.rwa.stac", "investment.rwa.jaaa"]
                 : []),
             ].includes(l.id),
@@ -533,10 +537,28 @@ export function metricExplanation(
     )
     .join(", ");
   if (item.status === "partial")
-    return `Partial: known components only; this is not a complete total. Missing: ${missing || "some periods or components"}.`;
+    return `Sum of available amounts; this is not a complete total. Missing: ${missing || "some periods or components"}.`;
   if (item.status === "unavailable" && missing)
     return `Unavailable: no confirmed amount. Missing: ${missing}.`;
   return item.reason?.replaceAll("_", " ") || item.basis.replaceAll("_", " ");
+}
+
+// Presentation only: preserve the API's coverage/recognition metadata while
+// showing its signed available sum, including genuine zeroes and losses.
+export function metricAmount(item?: Metric | null): string | null {
+  if (!item || item.status === "future") return null;
+  return item.value ?? (item.status === "partial" ? item.known_value : null);
+}
+
+export function statementMonthNote(
+  month: Month,
+  period?: Pick<FinancialStatement["periods"][number], "actual_cutoff">,
+): string | null {
+  if (month.state !== "partial") return null;
+  const cutoff = period?.actual_cutoff;
+  return cutoff
+    ? `MTD · ${new Date(`${cutoff}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })}`
+    : "MTD";
 }
 
 // Retained reports keep the API's period classification when the calendar advances.

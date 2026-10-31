@@ -1,4 +1,5 @@
 import type { FinancialStatement } from "./financial.ts";
+import { allocationRewardsPolicy, rwaPolicies } from "./financial-policies.ts";
 import Decimal from "decimal.js";
 import {
   amount,
@@ -252,22 +253,29 @@ export function statementLines(
     [
       "prime-management.statement-rollups.v3.1",
       "prime-management.rwa-income.v3.2",
+      allocationRewardsPolicy,
     ].includes(financial?.policy_version || "") &&
     financial
   ) {
     const base = rows.filter(
       (row) => !row.id.startsWith("allocation-") && row.id !== "obex-maple",
     );
-    if (
-      financial.policy_version === "prime-management.rwa-income.v3.2" &&
-      prime === "grove"
-    ) {
+    if (rwaPolicies.includes(financial.policy_version) && prime === "grove") {
       for (const row of base) {
         if (row.id === "interest")
           row.label = "Investment income from allocations";
         if (row.id === "net-interest")
           row.label = "Net investment income after funding";
       }
+    }
+    if (financial.policy_version === allocationRewardsPolicy) {
+      const interest = base.find((row) => row.id === "interest")!;
+      interest.label =
+        prime === "grove"
+          ? "Investment income from allocations"
+          : "Income from allocations";
+      base.find((row) => row.id === "rewards")!.label =
+        "Other incentives and rewards received";
     }
     const inserts = new Map<string, StatementLine[]>();
     const add = (parent: string, row: StatementLine) =>
@@ -278,11 +286,16 @@ export function statementLines(
         add("demand", line(definition.id, definition.label, 2, "demand"));
         continue;
       }
-      const parent = definition.id.startsWith("investment.")
-        ? "interest"
-        : definition.id.startsWith("rewards.")
-          ? "rewards"
-          : null;
+      const linkedReward =
+        financial.policy_version === allocationRewardsPolicy &&
+        (definition.id.startsWith("rewards.lending.") ||
+          definition.id.startsWith("rewards.issuer."));
+      const parent =
+        definition.id.startsWith("investment.") || linkedReward
+          ? "interest"
+          : definition.id.startsWith("rewards.")
+            ? "rewards"
+            : null;
       if (!parent) continue;
       if (definition.aggregation === "subtotal") {
         // The same leaves are already displayed in disjoint family groups.
@@ -295,15 +308,20 @@ export function statementLines(
       )
         continue;
       const family = definition.family || "Maple";
-      const group =
-        parent === "interest"
+      const group = linkedReward
+        ? "statement.family.allocation_rewards"
+        : parent === "interest"
           ? `statement.family.${family.toLowerCase().replaceAll(" ", "_")}`
           : `rewards-${family.toLowerCase().replaceAll(" ", "-")}`;
       if (!groups.has(group)) {
         add(parent, {
           ...line(
             group,
-            parent === "interest" ? `Reviewed ${family} income` : family,
+            linkedReward
+              ? "Allocation-linked incentives and rewards"
+              : parent === "interest"
+                ? `Reviewed ${family} income`
+                : family,
             2,
             parent,
           ),
