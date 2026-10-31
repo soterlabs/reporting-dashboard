@@ -4,6 +4,7 @@ import {
   statementTotalLabel,
   positionAccruedIncome,
   metricExplanation,
+  metricAmount,
   type FinancialPortfolio,
   type FinancialRead,
   type FinancialStatement,
@@ -33,8 +34,7 @@ export function statementCsvRows(
       "Prime agent",
       "Line item",
       ...months.map(
-        (m) =>
-          `${m.label} ${year}${m.state === "partial" ? " MTD" : m.state === "future" ? " future" : ""}`,
+        (m) => `${m.label} ${year}${m.state === "partial" ? " MTD" : ""}`,
       ),
       statementTotalLabel(report, totalLabel(months)),
       "Accounting basis",
@@ -59,15 +59,13 @@ export function statementCsvRows(
           ...months.map((m) =>
             row.kind === "section" || row.structural
               ? ""
-              : line?.values[m.key]?.status === "partial"
-                ? "Partial"
-                : (line?.values[m.key]?.value ?? "TBD"),
+              : m.state === "future"
+                ? "—"
+                : (metricAmount(line?.values[m.key]) ?? "TBD"),
           ),
           row.kind === "section" || row.structural
             ? ""
-            : line?.total.status === "partial"
-              ? "Partial"
-              : (line?.total.value ?? "TBD"),
+            : (metricAmount(line?.total) ?? "TBD"),
           (line
             ? [
                 ...new Set(
@@ -200,7 +198,7 @@ export function portfolioSummaryCsv(
     doc?.cutoff,
     "Tracked allocations (portfolio summary)",
     doc?.portfolio.opening_value.value,
-    closing?.value,
+    metricAmount(closing),
     ...Array(6).fill(null),
     closing?.status || "unavailable",
     closing?.reason ||

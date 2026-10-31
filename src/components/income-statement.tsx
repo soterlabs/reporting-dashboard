@@ -6,7 +6,10 @@ import {
   statementMonths,
   statementTotalLabel,
   metricExplanation,
-  rwaPolicy,
+  rwaPolicies,
+  allocationRewardsPolicy,
+  metricAmount,
+  statementMonthNote,
   type Metric,
   type FinancialStatement,
 } from "@/lib/financial";
@@ -54,6 +57,14 @@ export function IncomeStatement({
         <div>
           <h2>{title} income statement</h2>
           <p>USD · Accrual basis intended · Unaudited</p>
+          <p className="statement-help">
+            Completed months are reported through month end. MTD = month to
+            date.
+          </p>
+          <p className="statement-help">
+            TBD means data is missing or unconfirmed. Totals sum available
+            amounts and may change as data is added.
+          </p>
         </div>
         <button
           className="button"
@@ -83,24 +94,17 @@ export function IncomeStatement({
               {months.map((m) => (
                 <th scope="col" key={m.key}>
                   {m.label} {m.key.slice(0, 4)}
-                  <small>
-                    {financial?.periods.find((p) => p.key === m.key)
-                      ?.actual_cutoff && (
-                      <span>
-                        Through{" "}
-                        {
-                          financial.periods.find((p) => p.key === m.key)!
-                            .actual_cutoff
-                        }
-                        <br />
-                      </span>
-                    )}
-                    {m.state === "partial"
-                      ? "MTD"
-                      : m.state === "future"
-                        ? "Future"
-                        : "Month end"}
-                  </small>
+                  {statementMonthNote(
+                    m,
+                    financial?.periods.find((p) => p.key === m.key),
+                  ) && (
+                    <small>
+                      {statementMonthNote(
+                        m,
+                        financial?.periods.find((p) => p.key === m.key),
+                      )}
+                    </small>
+                  )}
                 </th>
               ))}
               <th scope="col" className="year-total">
@@ -134,7 +138,10 @@ export function IncomeStatement({
                   return (
                     <td key={m.key} title={metricExplanation(item, financial)}>
                       {row.kind !== "section" && !row.structural && (
-                        <MetricValue item={item} />
+                        <MetricValue
+                          item={item}
+                          future={m.state === "future"}
+                        />
                       )}
                     </td>
                   );
@@ -158,11 +165,19 @@ export function IncomeStatement({
         </table>
       </div>
       <div className="panel-note">
-        Approved components: AR, Sky funding, reviewed lending/vault income and
-        separately classified rewards. Vault income is after embedded fees;
-        lending distributions and USDG use receipt recognition.
-        {financial?.policy_version === rwaPolicy &&
-          financial.prime === "grove" && (
+        Reported amounts include AR, Sky funding, reviewed allocation income and
+        classified rewards. Vault income is after embedded fees; lending
+        distributions and USDG use receipt recognition.
+        {financial?.policy_version === allocationRewardsPolicy && (
+          <>
+            {" "}
+            Allocation-linked incentives and rewards are included in allocation
+            income. Other incentives and rewards received covers income
+            unrelated to an allocation.
+          </>
+        )}
+        {rwaPolicies.includes(financial?.policy_version || "") &&
+          financial?.prime === "grove" && (
             <>
               {" "}
               RWA fund income includes NAV changes and distributions after
@@ -170,30 +185,22 @@ export function IncomeStatement({
               cash received.{" "}
             </>
           )}
-        Reviewed subtotals exclude unclassified sources. These components do not
-        certify their parent totals. Partial = known components only, with
-        missing inputs; hover for details. A partial net-income amount does not
-        establish profit. TBD = no confirmed amount. Missing data is never zero;
-        future months are not forecasts.
+        Hover over amounts for coverage and source details. Missing amounts are
+        not confirmed zeroes; pending months are not forecasts.
       </div>
     </section>
   );
 }
 
-function MetricValue({ item }: { item?: Metric }) {
-  if (item?.status === "partial")
-    return (
-      <span className="partial-value">
-        <strong>Partial</strong>
-        {item.known_value !== null && (
-          <small>Known components: {money(item.known_value)}</small>
-        )}
-      </span>
-    );
-  if (item?.status === "future") return <span className="tbd">—</span>;
-  return (
-    <span className={item?.value == null ? "tbd" : ""}>
-      {money(item?.value ?? null)}
-    </span>
-  );
+function MetricValue({
+  item,
+  future = false,
+}: {
+  item?: Metric;
+  future?: boolean;
+}) {
+  if (future || item?.status === "future")
+    return <span className="tbd">—</span>;
+  const value = metricAmount(item);
+  return <span className={value === null ? "tbd" : ""}>{money(value)}</span>;
 }

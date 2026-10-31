@@ -1206,13 +1206,8 @@ footer {
   filter: brightness(0.985);
 }
 
-.partial-value {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;
-}
-.partial-value small {
-  font-size: 10px;
-  font-weight: 400;
+.panel-heading .statement-help {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 6px;
 }

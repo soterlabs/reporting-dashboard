@@ -80,7 +80,10 @@ test("the same CSV contains numeric history and YTD for the two venues without i
   const investment = rows.find(
     (row) => row[2] === "Investment income from allocations",
   )!;
-  assert.equal(investment[15], "Partial");
+  assert.equal(
+    investment[15],
+    financialLine(report, "interest")!.total.known_value,
+  );
   assert.ok(rows.every((row) => row.length === rows[0].length));
 });
 

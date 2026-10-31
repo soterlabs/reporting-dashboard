@@ -53,11 +53,15 @@ test("a retained October MTD statement keeps its labels and exact decimals after
       statement,
     );
     assert.equal(rows[0][12], "Oct 2026 MTD");
-    assert.equal(rows[0][13], "Nov 2026 future");
+    assert.equal(rows[0][13], "Nov 2026");
     assert.equal(rows[0][15], "YTD 2026");
     const ar = rows.find((r) => r[2] === "Agent rate (AR)")!;
     assert.equal(ar[12], "12.000000000000000001");
-    assert.equal(ar[15], "Partial");
+    assert.equal(
+      ar[15],
+      statement.lines.find((r) => r.id === "demand.agent_rate")!.total
+        .known_value,
+    );
     assert.equal(ar[18], statement.report_hash);
     assert.equal(ar[19], statement.selection);
     assert.ok(rows.every((r) => r.length === rows[0].length));
@@ -85,7 +89,7 @@ test("portfolio CSV distinguishes summary from position rows and retains partial
     Array(7).fill(null),
   );
   assert.equal(row.length, 23 + FINANCIAL_EXPORT_HEADERS.length);
-  assert.equal(row[7], null);
+  assert.equal(row[7], "1100");
   assert.equal(row[14], "partial");
   assert.equal(row[23], "portfolio_summary");
   assert.equal(row[24], portfolio.financial_revision);
@@ -107,7 +111,7 @@ test("portfolio CSV distinguishes summary from position rows and retains partial
     null,
     Array(7).fill(null),
   );
-  assert.equal(missing[7], undefined);
+  assert.equal(missing[7], null);
   assert.equal(missing[14], "unavailable");
 });
 

@@ -65,7 +65,7 @@ test("every expandable group starts collapsed, including API-created families", 
   assert.ok(collapsed.has("demand"));
 });
 
-test("UI and CSV remove requested lines and keep partial numbers separate from full totals", () => {
+test("UI and CSV remove requested lines and show available sums with coverage retained", () => {
   const report = validateStatement(fixture, "obex", 2026);
   const csv = statementCsvRows(
     "obex",
@@ -90,7 +90,7 @@ test("UI and CSV remove requested lines and keep partial numbers separate from f
     (r) => r[2] === "Interest income from allocations",
   )!;
   const column = (label: string) => csv[0].indexOf(label);
-  assert.equal(interest[12], "Partial");
+  assert.equal(interest[12], "100");
   assert.equal(
     JSON.parse(interest[column("Monthly known components USD")] as string)[
       "2026-10"
