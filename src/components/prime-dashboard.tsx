@@ -349,8 +349,9 @@ export async function PrimeDashboard({
                             "No approved aggregate published"}
                       </p>
                       <p>
-                        Available tracked positions are summed. TBD means data
-                        is missing or unconfirmed; entity assets and NAV are
+                        Available reviewed allocations are summed; other
+                        positions shown below may be excluded. TBD means data
+                        is missing or unconfirmed. Entity assets and NAV are
                         unavailable.
                       </p>
                       {(positionFinancial?.retained ||
