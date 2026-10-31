@@ -1,9 +1,14 @@
-import { rollupPolicies, rwaPolicies } from "./financial-policies.ts";
+import {
+  rollupPolicies,
+  rwaPolicies,
+  offchainPolicy,
+} from "./financial-policies.ts";
 export {
   rollupPolicy,
   rwaPolicy,
   rwaPolicies,
   allocationRewardsPolicy,
+  offchainPolicy,
 } from "./financial-policies.ts";
 import type { Prime, Venue } from "./reporting.ts";
 import { yearMonths, type Month, type PortfolioRow } from "./prime-reports.ts";
@@ -21,6 +26,9 @@ export interface Metric {
   source_ref?: string;
   source_refs?: string[];
   missing_components?: string[];
+  quality?: "supported" | "estimate";
+  period_start?: string;
+  period_end?: string;
   allocation_split?: {
     gross_income_usd: string;
     sky_income_usd: string;
@@ -48,6 +56,7 @@ export interface FinancialStatement {
     stale: boolean;
     financial_revision: string | null;
     monthly_revision?: string | null;
+    offchain_revision?: string | null;
   }[];
   lines: {
     id: string;
@@ -65,7 +74,7 @@ export interface FinancialStatement {
       cutoff: string;
       revision_id: string;
       result_hash: string;
-      kind?: "published_monthly_summary";
+      kind?: "published_monthly_summary" | "counterparty_monthly_accrual";
       repository?: string;
       commit?: string;
       path?: string;
@@ -74,7 +83,24 @@ export interface FinancialStatement {
       display_precision?: string;
     }
   >;
+  offchain_positions?: OffchainPosition[];
   source_lag_periods: string[];
+}
+export interface OffchainPosition {
+  source_venue_id: string;
+  label: string;
+  values: Record<
+    string,
+    {
+      component: string;
+      source_venue_id: string;
+      position_id: string;
+      label: string;
+      period_start: string;
+      period_end: string;
+      metrics: Record<string, Metric>;
+    }
+  >;
 }
 export interface FinancialPortfolio {
   schema_version: "3.0";
@@ -167,6 +193,15 @@ function metric(v: Metric) {
           (id) => typeof id === "string" && id.length > 0,
         )),
   );
+  requireValue(
+    v.quality === undefined || ["supported", "estimate"].includes(v.quality),
+  );
+  if (v.period_start !== undefined || v.period_end !== undefined)
+    requireValue(
+      date(v.period_start) &&
+        date(v.period_end) &&
+        v.period_start! <= v.period_end!,
+    );
   if (v.allocation_split !== undefined) {
     const split = v.allocation_split;
     requireValue(split && typeof split === "object" && !Array.isArray(split));
@@ -190,6 +225,102 @@ function metric(v: Metric) {
     );
   }
 }
+function validateOffchain(v: FinancialStatement, prime: Prime) {
+  requireValue(Array.isArray(v.offchain_positions));
+  const identities: Record<string, [string, string]> = {
+    E21: ["gaclo", "GACLO1"],
+    E42: ["warehouse", "GLXYWH"],
+  };
+  requireValue(v.offchain_positions!.length === (prime === "grove" ? 2 : 0));
+  requireValue(
+    new Set(v.offchain_positions!.map((p) => p.source_venue_id)).size ===
+      v.offchain_positions!.length,
+  );
+  for (const p of v.periods)
+    if (p.offchain_revision) {
+      const source = v.source_manifest[p.offchain_revision];
+      requireValue(
+        prime === "grove" &&
+          p.state !== "future" &&
+          source &&
+          source.kind === "counterparty_monthly_accrual" &&
+          source.revision_id === p.offchain_revision &&
+          hash(source.result_hash) &&
+          source.currency === "USD" &&
+          source.cutoff.startsWith(p.key) &&
+          source.cutoff <= p.expected_cutoff!,
+      );
+    }
+  for (const position of v.offchain_positions!) {
+    const identity = identities[position.source_venue_id];
+    requireValue(
+      identity && typeof position.label === "string" && position.values,
+    );
+    for (const [month, row] of Object.entries(position.values)) {
+      const period = v.periods.find((p) => p.key === month);
+      requireValue(
+        period &&
+          period.state !== "future" &&
+          period.offchain_revision &&
+          row.source_venue_id === position.source_venue_id &&
+          row.component === identity[0] &&
+          row.position_id === identity[1] &&
+          row.period_start === `${month}-01` &&
+          date(row.period_end) &&
+          row.period_end <= v.source_manifest[period.offchain_revision].cutoff,
+      );
+      for (const key of [
+        "opening_principal",
+        "principal_additions",
+        "principal_returns",
+        "closing_principal",
+        "earned_income",
+        "cash_received",
+        "opening_receivable",
+        "closing_receivable",
+        "fees",
+        "adjustments",
+        "valuation_changes",
+      ]) {
+        const item = row.metrics[key];
+        metric(item);
+        requireValue(
+          item.source_ref === period.offchain_revision &&
+            item.period_start === row.period_start &&
+            item.period_end === row.period_end &&
+            ["supported", "estimate"].includes(item.quality!),
+        );
+      }
+      const income = v.lines.find(
+        (l) => l.id === `investment.offchain.${identity[0]}`,
+      )?.values[month];
+      requireValue(
+        income &&
+          JSON.stringify(income) === JSON.stringify(row.metrics.earned_income),
+      );
+      const amount = (key: string) =>
+        new SplitDecimal(metricAmount(row.metrics[key])!);
+      requireValue(
+        amount("opening_principal")
+          .plus(amount("principal_additions"))
+          .minus(amount("principal_returns"))
+          .minus(amount("closing_principal"))
+          .abs()
+          .lte("0.01"),
+      );
+      requireValue(
+        amount("opening_receivable")
+          .plus(amount("earned_income"))
+          .minus(amount("cash_received"))
+          .plus(amount("adjustments"))
+          .minus(amount("closing_receivable"))
+          .abs()
+          .lte("0.01"),
+      );
+    }
+  }
+}
+
 export function validateStatement(
   value: unknown,
   prime: Prime,
@@ -220,6 +351,28 @@ export function validateStatement(
   );
   const expected = yearMonths(year, new Date(Date.parse(v.as_of) + 86400000));
   const monthly = [monthlyPolicy, ...rollupPolicies].includes(v.policy_version);
+  const offchain = v.policy_version === offchainPolicy;
+  const refs = (p: FinancialStatement["periods"][number]) => [
+    p.financial_revision,
+    p.monthly_revision,
+    ...(offchain ? [p.offchain_revision] : []),
+  ];
+  const validSource = (
+    ref: string,
+    p: FinancialStatement["periods"][number],
+  ) => {
+    const source = v.source_manifest?.[ref];
+    return (
+      refs(p).includes(ref) &&
+      source &&
+      (ref === p.offchain_revision
+        ? source.kind === "counterparty_monthly_accrual" &&
+          date(source.cutoff) &&
+          source.cutoff.startsWith(p.key) &&
+          source.cutoff <= p.expected_cutoff!
+        : source.cutoff === p.actual_cutoff)
+    );
+  };
   requireValue(
     v.total_label ===
       (expected.every((p) => p.state === "complete") ? "FY" : "YTD"),
@@ -235,12 +388,16 @@ export function validateStatement(
     requireValue(
       typeof p.stale === "boolean" &&
         (p.financial_revision === null || hash(p.financial_revision)) &&
-        (!monthly || p.monthly_revision === null || hash(p.monthly_revision)),
+        (!monthly || p.monthly_revision === null || hash(p.monthly_revision)) &&
+        (!offchain ||
+          p.offchain_revision === null ||
+          hash(p.offchain_revision)),
     );
     requireValue(
       (p.actual_cutoff === null) ===
         (p.financial_revision === null &&
-          (!monthly || p.monthly_revision === null)),
+          (!monthly || p.monthly_revision === null) &&
+          (!offchain || p.offchain_revision === null)),
     );
     requireValue(
       p.actual_cutoff === null ||
@@ -248,7 +405,12 @@ export function validateStatement(
           bounds.cutoff &&
           p.actual_cutoff.startsWith(bounds.key) &&
           p.actual_cutoff <= bounds.cutoff &&
-          (bounds.state !== "complete" || p.actual_cutoff === bounds.cutoff)),
+          (bounds.state !== "complete" ||
+            p.actual_cutoff === bounds.cutoff ||
+            (offchain &&
+              p.financial_revision === null &&
+              p.monthly_revision === null &&
+              p.offchain_revision !== null))),
     );
     requireValue(
       p.stale ===
@@ -291,6 +453,7 @@ export function validateStatement(
       requireValue(
         p.financial_revision !== null ||
           (monthly && p.monthly_revision !== null) ||
+          (offchain && p.offchain_revision !== null) ||
           (cell.value === null && cell.known_value === null),
       );
       if (
@@ -301,24 +464,29 @@ export function validateStatement(
         requireValue(
           Array.isArray(cell.source_refs) &&
             cell.source_refs.length > 0 &&
-            cell.source_refs.every(
-              (ref) =>
-                [p.financial_revision, p.monthly_revision].includes(ref) &&
-                v.source_manifest?.[ref]?.cutoff === p.actual_cutoff,
-            ),
+            cell.source_refs.every((ref) => validSource(ref, p)),
         );
       } else if (
         monthly &&
         (cell.value !== null || cell.known_value !== null)
       ) {
-        requireValue(
-          cell.source_ref &&
-            [p.financial_revision, p.monthly_revision].includes(
-              cell.source_ref,
-            ),
-        );
+        requireValue(cell.source_ref && refs(p).includes(cell.source_ref));
         const source = v.source_manifest?.[cell.source_ref];
-        requireValue(source && source.cutoff === p.actual_cutoff);
+        requireValue(source && validSource(cell.source_ref, p));
+        if (cell.source_ref === p.offchain_revision)
+          requireValue(
+            offchain &&
+              prime === "grove" &&
+              [
+                "investment.offchain.gaclo",
+                "investment.offchain.warehouse",
+              ].includes(l.id) &&
+              cell.recognition === "accrual" &&
+              ["supported", "estimate"].includes(cell.quality!) &&
+              cell.period_start === `${p.key}-01` &&
+              date(cell.period_end) &&
+              cell.period_end! <= source.cutoff,
+          );
         if (
           rwaPolicies.includes(v.policy_version) &&
           ["investment.rwa.stac", "investment.rwa.jaaa"].includes(l.id)
@@ -403,6 +571,8 @@ export function validateStatement(
             s.display_precision === "0.01",
         );
       }
+  if (offchain) validateOffchain(v, prime);
+
   return v;
 }
 export function validatePortfolio(
@@ -536,11 +706,22 @@ export function metricExplanation(
           .replaceAll(".", " · "),
     )
     .join(", ");
+  const estimate =
+    item.quality === "estimate"
+      ? `Estimate${item.period_end ? ` through ${item.period_end}` : " included"}. `
+      : "";
   if (item.status === "partial")
-    return `Sum of available amounts; this is not a complete total. Missing: ${missing || "some periods or components"}.`;
+    return (
+      estimate +
+      `Sum of available amounts; this is not a complete total. Missing: ${missing || "some periods or components"}.`
+    );
   if (item.status === "unavailable" && missing)
     return `Unavailable: no confirmed amount. Missing: ${missing}.`;
-  return item.reason?.replaceAll("_", " ") || item.basis.replaceAll("_", " ");
+  return (
+    estimate +
+    (item.reason?.replaceAll("_", " ") || item.basis.replaceAll("_", " ")) +
+    (item.period_end ? ` · Through ${item.period_end}` : "")
+  );
 }
 
 // Presentation only: preserve the API's coverage/recognition metadata while

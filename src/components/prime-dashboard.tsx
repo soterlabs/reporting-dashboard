@@ -16,6 +16,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Controls } from "@/app/controls";
+import { OffchainAccruals } from "./offchain-accruals";
 import { IncomeStatement } from "./income-statement";
 import { annualReports, portfolioReports } from "@/lib/report-data";
 import {
@@ -292,7 +293,7 @@ export async function PrimeDashboard({
             <span>
               {view === "positions"
                 ? `${available}/${portfolios.length} venue source publications`
-                : "Monthly reporting API"}
+                : ""}
               {positionFinancial?.report
                 ? ` · ${positionFinancial.report.portfolio.positions.filter((p) => p.closing_value.value !== null || p.income.value !== null).length} reviewed financial members`
                 : ""}
@@ -318,6 +319,7 @@ export async function PrimeDashboard({
                 title={title}
                 financial={financial?.report}
               />
+              <OffchainAccruals report={financial?.report} />
               {scope === "individual" && (
                 <SourceIncome
                   monthly={annual}
@@ -325,7 +327,9 @@ export async function PrimeDashboard({
                   query={query.toString()}
                 />
               )}
-              <ScopePerimeter prime={prime} scope={scope} />
+              {scope !== "individual" && (
+                <ScopePerimeter prime={prime} scope={scope} />
+              )}
             </>
           ) : (
             <>
@@ -349,10 +353,8 @@ export async function PrimeDashboard({
                             "No approved aggregate published"}
                       </p>
                       <p>
-                        Available reviewed allocations are summed; other
-                        positions shown below may be excluded. TBD means data
-                        is missing or unconfirmed. Entity assets and NAV are
-                        unavailable.
+                        Reviewed positions only · TBD = missing data. Entity NAV
+                        pending.
                       </p>
                       {(positionFinancial?.retained ||
                         positionFinancial?.report?.source_lag ||
@@ -471,10 +473,8 @@ export async function PrimeDashboard({
                   </table>
                 </div>
                 <div className="panel-note">
-                  Closing values are reported valuations. Income and receivables
-                  are separate measures; they must not be added to a value that
-                  already includes them. Portfolio totals remain TBD pending
-                  overlap controls.
+                  Income and receivables may already be included in valuations;
+                  do not add them again.
                 </div>
               </section>
               {scope !== "individual" && (
@@ -482,8 +482,8 @@ export async function PrimeDashboard({
               )}
             </>
           )}
-          <section className="panel source-coverage">
-            <div className="panel-heading">
+          <details className="panel source-coverage">
+            <summary className="panel-heading">
               <div>
                 <h2>Publication coverage</h2>
                 <p>
@@ -498,7 +498,7 @@ export async function PrimeDashboard({
               >
                 Reporting API guide <ArrowUpRight size={13} />
               </a>
-            </div>
+            </summary>
             <div className="table-wrap">
               <table>
                 <thead>
@@ -524,7 +524,7 @@ export async function PrimeDashboard({
                 </tbody>
               </table>
             </div>
-          </section>
+          </details>
           <details className="source-details">
             <summary>
               <FileText size={15} />
@@ -533,28 +533,23 @@ export async function PrimeDashboard({
             </summary>
             <div className="source-body">
               <p>
-                Draft management reporting. Accrual-basis income is shown only
-                where the saved method or approved financial policy supports it.
-                Published monthly summaries provide demand-side figures;
-                approved financial publications provide allocation income and
-                Sky funding. Other classifications and expenses remain
-                incomplete.
+                Draft management figures. Available amounts are summed; TBD is
+                not zero. Allocation-linked rewards belong to allocation income.
+                Vault returns include embedded fees; other income may use
+                receipts.
               </p>
+              {prime === "grove" && (
+                <p>
+                  Offchain schedules show supplied accruals, cash and unpaid
+                  income. * marks estimates, including GACLO’s proposed opening
+                  carry. Separate fees await confirmation. Warehouse October
+                  covers October 1–25 only; servicing confirmation is pending.
+                </p>
+              )}
               <p>
-                Net interest income is interest income less interest expense.
-                Total net revenue is net interest income plus noninterest
-                income. Net income requires confirmed expense and tax inputs,
-                including items hidden from the statement. Displayed totals sum
-                available amounts and can change when TBD inputs become
-                available. Missing months and components are never confirmed
-                zeroes.
-              </p>
-              <p>
-                Current-month source figures use the latest available
-                publication within that month, with the actual cutoff shown.
-                Past months require a month-end publication. Daily publications
-                remain provisional, including at month-end. Statement cells use
-                explicit component definitions to prevent overlap.
+                Closed months use month-end sources. MTD uses the latest saved
+                publication. Source revisions and accounting methods are
+                retained below and in exports.
               </p>
               {(annual.length
                 ? annual.map((r) => ({ prime, ...r }))
@@ -658,9 +653,7 @@ function SourceIncome({
       <summary className="panel-heading">
         <div>
           <h2>Supporting allocation income</h2>
-          <p>
-            Published source amounts · Classification and overlap checks pending
-          </p>
+          <p>Source figures · Not additive to statement totals</p>
         </div>
         <ChevronRight size={16} />
       </summary>
@@ -735,9 +728,7 @@ function SourceIncome({
         </table>
       </div>
       <div className="panel-note">
-        Supporting figures are not statement totals. Reported and accrual-basis
-        rows are two views of the same income, not additive. No totals across
-        allocations are inferred.
+        Reported and accrued rows are alternate views of the same income.
       </div>
     </details>
   );

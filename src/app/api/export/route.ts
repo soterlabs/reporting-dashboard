@@ -6,6 +6,7 @@ import {
   portfolioSummaryCsv,
   positionCsvRow,
   statementCsvRows,
+  offchainCsvRows,
 } from "@/lib/financial-export";
 import { annualReports, portfolioReports } from "@/lib/report-data";
 import {
@@ -47,6 +48,7 @@ export async function GET(request: Request) {
   const month = chooseMonth(months, q.get("month") || undefined);
   const positions = q.get("view") === "positions";
   const source = q.get("dataset") === "source";
+  const offchain = q.get("dataset") === "offchain";
   const rows: unknown[][] = [];
   if (positions) {
     const sourceRevision = q.get("source_revision");
@@ -184,6 +186,18 @@ export async function GET(request: Request) {
       for (const row of publishedRows)
         rows.push(positionCsvRow(scope, month.key, row, financial, metadata));
     }
+  } else if (offchain) {
+    const financial = await financialStatements(
+      prime,
+      year,
+      q.get("financial_revision") || undefined,
+    );
+    if (!financial.report)
+      return Response.json(
+        { error: financial.message || "Financial report unavailable" },
+        { status: 503 },
+      );
+    rows.push(...offchainCsvRows(financial.report));
   } else if (source) {
     if (scope !== "individual")
       return Response.json(
@@ -286,7 +300,7 @@ export async function GET(request: Request) {
     {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": `attachment; filename="${prime}-${scope}-${positions ? `positions-${month.key}` : source ? `source-income-${year}` : `income-statement-${year}`}.csv"`,
+        "Content-Disposition": `attachment; filename="${prime}-${scope}-${positions ? `positions-${month.key}` : offchain ? `offchain-accruals-${year}` : source ? `source-income-${year}` : `income-statement-${year}`}.csv"`,
         "Cache-Control": "no-store",
       },
     },

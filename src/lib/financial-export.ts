@@ -48,6 +48,8 @@ export function statementCsvRows(
       "Total coverage",
       "Total known components USD",
       "Coverage explanation",
+      "Monthly estimates and earning cutoffs",
+      "Total includes estimates",
     ],
     ...statementLines(scope === "combined" ? null : prime, scope, report).map(
       (row) => {
@@ -123,6 +125,18 @@ export function statementCsvRows(
             ),
             total: metricExplanation(line?.total, report),
           }),
+          JSON.stringify(
+            Object.fromEntries(
+              months.map((m) => [
+                m.key,
+                {
+                  quality: line?.values[m.key]?.quality || null,
+                  through: line?.values[m.key]?.period_end || null,
+                },
+              ]),
+            ),
+          ),
+          line?.total.quality === "estimate" ? "yes" : "no",
         ];
       },
     ),
@@ -246,5 +260,57 @@ export function positionCsvRow(
       sourceVenueId: v.venue_id,
       positionId: position?.position_id,
     }),
+  ];
+}
+
+export function offchainCsvRows(report: FinancialStatement): unknown[][] {
+  const keys = [
+    "opening_principal",
+    "principal_additions",
+    "principal_returns",
+    "closing_principal",
+    "earned_income",
+    "cash_received",
+    "opening_receivable",
+    "closing_receivable",
+    "fees",
+    "adjustments",
+    "valuation_changes",
+  ];
+  return [
+    [
+      "Prime",
+      "Venue",
+      "Allocation",
+      "Month",
+      "Through",
+      ...keys.map((key) => `${key} USD`),
+      "Metric quality",
+      "Metric coverage",
+      "Source revision",
+      "Source manifest",
+      "Report selection",
+    ],
+    ...(report.offchain_positions || []).flatMap((position) =>
+      Object.entries(position.values).map(([month, row]) => [
+        report.prime,
+        position.source_venue_id,
+        position.label,
+        month,
+        row.period_end,
+        ...keys.map((key) => metricAmount(row.metrics[key]) ?? "TBD"),
+        JSON.stringify(
+          Object.fromEntries(
+            keys.map((key) => [key, row.metrics[key].quality]),
+          ),
+        ),
+        JSON.stringify(
+          Object.fromEntries(keys.map((key) => [key, row.metrics[key].status])),
+        ),
+        row.metrics.earned_income.source_ref,
+        JSON.stringify(report.source_manifest),
+        report.selection,
+      ]),
+    ),
   ];
 }
