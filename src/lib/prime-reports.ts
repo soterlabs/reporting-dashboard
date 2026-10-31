@@ -1,5 +1,6 @@
+import { allocationRewardsPolicies } from "./financial-policies.ts";
 import type { FinancialStatement } from "./financial.ts";
-import { allocationRewardsPolicy, rwaPolicies } from "./financial-policies.ts";
+import { rwaPolicies } from "./financial-policies.ts";
 import Decimal from "decimal.js";
 import {
   amount,
@@ -253,7 +254,7 @@ export function statementLines(
     [
       "prime-management.statement-rollups.v3.1",
       "prime-management.rwa-income.v3.2",
-      allocationRewardsPolicy,
+      ...allocationRewardsPolicies,
     ].includes(financial?.policy_version || "") &&
     financial
   ) {
@@ -268,7 +269,7 @@ export function statementLines(
           row.label = "Net investment income after funding";
       }
     }
-    if (financial.policy_version === allocationRewardsPolicy) {
+    if (allocationRewardsPolicies.includes(financial.policy_version)) {
       const interest = base.find((row) => row.id === "interest")!;
       interest.label =
         prime === "grove"
@@ -287,7 +288,7 @@ export function statementLines(
         continue;
       }
       const linkedReward =
-        financial.policy_version === allocationRewardsPolicy &&
+        allocationRewardsPolicies.includes(financial.policy_version) &&
         (definition.id.startsWith("rewards.lending.") ||
           definition.id.startsWith("rewards.issuer."));
       const parent =

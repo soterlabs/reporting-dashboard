@@ -6,8 +6,6 @@ import {
   statementMonths,
   statementTotalLabel,
   metricExplanation,
-  rwaPolicies,
-  allocationRewardsPolicy,
   metricAmount,
   statementMonthNote,
   type Metric,
@@ -56,14 +54,10 @@ export function IncomeStatement({
       <div className="panel-heading">
         <div>
           <h2>{title} income statement</h2>
-          <p>USD · Accrual basis intended · Unaudited</p>
+          <p>USD · Month-end unless MTD · Unaudited</p>
           <p className="statement-help">
-            Completed months are reported through month end. MTD = month to
-            date.
-          </p>
-          <p className="statement-help">
-            TBD means data is missing or unconfirmed. Totals sum available
-            amounts and may change as data is added.
+            TBD = missing data. Totals sum available amounts. * Includes
+            estimates.
           </p>
         </div>
         <button
@@ -165,28 +159,7 @@ export function IncomeStatement({
         </table>
       </div>
       <div className="panel-note">
-        Reported amounts include AR, Sky funding, reviewed allocation income and
-        classified rewards. Vault income is after embedded fees; lending
-        distributions and USDG use receipt recognition.
-        {financial?.policy_version === allocationRewardsPolicy && (
-          <>
-            {" "}
-            Allocation-linked incentives and rewards are included in allocation
-            income. Other incentives and rewards received covers income
-            unrelated to an allocation.
-          </>
-        )}
-        {rwaPolicies.includes(financial?.policy_version || "") &&
-          financial?.prime === "grove" && (
-            <>
-              {" "}
-              RWA fund income includes NAV changes and distributions after
-              capital flows and Sky's share; it is not contractual interest or
-              cash received.{" "}
-            </>
-          )}
-        Hover over amounts for coverage and source details. Missing amounts are
-        not confirmed zeroes; pending months are not forecasts.
+        Hover over amounts for sources and coverage.
       </div>
     </section>
   );
@@ -202,5 +175,12 @@ function MetricValue({
   if (future || item?.status === "future")
     return <span className="tbd">—</span>;
   const value = metricAmount(item);
-  return <span className={value === null ? "tbd" : ""}>{money(value)}</span>;
+  return (
+    <>
+      <span className={value === null ? "tbd" : ""}>{money(value)}</span>
+      {value !== null && item?.quality === "estimate" && (
+        <sup title="Includes estimates">*</sup>
+      )}
+    </>
+  );
 }
