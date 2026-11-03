@@ -320,7 +320,8 @@ function buildStatementLines(
     for (const definition of financial.lines) {
       if (
         financial.policy_version === sparkIncomePolicy && prime === "spark" &&
-        definition.id.startsWith("rewards.lending.sparklend.")
+        (definition.id.startsWith("rewards.lending.sparklend.") ||
+          definition.id.startsWith("fees.sparklend."))
       ) {
         add("protocol", line(definition.id, definition.label, 2, "protocol"));
         continue;

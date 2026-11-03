@@ -71,11 +71,17 @@ test("stale and lagging zero evidence stays visible", () => {
 });
 
 test("the real Spark v3.6 projection passes source and derived-subtotal validation", () => {
-  // Retained source metadata and eight fee-related lines from a read-only
+  // Retained source metadata and ten fee-related lines from a read-only
   // production projection. Unrelated lines are omitted from this fixture.
   const path = new URL("./fixtures/spark-fees-statement.json", import.meta.url);
   const doc = validateStatement(JSON.parse(readFileSync(path, "utf8")), "spark", 2026);
   assert.equal(financialLine(doc, "protocol")?.values["2026-10"].recognition, "receipt_in_kind");
+  assert.equal(financialLine(doc, "protocol")?.values["2026-10"].status, "partial");
+  const rows = statementLines("spark", "individual", doc);
+  for (const token of ["rlusd", "usdg"]) {
+    assert.equal(rows.find((row) => row.id === `fees.sparklend.${token}`)?.parent, "protocol");
+    assert.equal(financialLine(doc, `fees.sparklend.${token}`)?.values["2026-10"].value, null);
+  }
   const broken = structuredClone(doc);
   financialLine(broken, "protocol")!.values["2026-10"].source_refs = [];
   assert.throws(() => validateStatement(broken, "spark", 2026));
