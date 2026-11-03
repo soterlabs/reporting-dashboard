@@ -8,10 +8,10 @@ import {
   metricExplanation,
   metricAmount,
   statementMonthNote,
-  type Metric,
   type FinancialStatement,
 } from "@/lib/financial";
-import { money } from "@/lib/reporting";
+import { FinancialNumber } from "./financial-number";
+import { statementUncertainty } from "@/lib/number-confidence";
 import {
   totalLabel,
   collapsedStatementGroups,
@@ -24,11 +24,13 @@ export function IncomeStatement({
   months: calendarMonths,
   title,
   financial,
+  retained = false,
 }: {
   rows: StatementLine[];
   months: Month[];
   title: string;
   financial?: FinancialStatement | null;
+  retained?: boolean;
 }) {
   const months = statementMonths(financial, calendarMonths);
   const [collapsed, setCollapsed] = useState<Set<string>>(() =>
@@ -128,13 +130,22 @@ export function IncomeStatement({
                   )}
                 </th>
                 {months.map((m) => {
-                  const item = financialLine(financial, row.id)?.values[m.key];
+                  const line = financialLine(financial, row.id);
+                  const item = line?.values[m.key];
                   return (
                     <td key={m.key} title={metricExplanation(item, financial)}>
                       {row.kind !== "section" && !row.structural && (
-                        <MetricValue
-                          item={item}
+                        <FinancialNumber
+                          value={metricAmount(item)}
+                          evidence={item}
                           future={m.state === "future"}
+                          uncertainReason={statementUncertainty(
+                            financial,
+                            line?.id || row.id,
+                            m.key,
+                            retained,
+                          )}
+                          detail={metricExplanation(item, financial)}
                         />
                       )}
                     </td>
@@ -148,8 +159,21 @@ export function IncomeStatement({
                   )}
                 >
                   {row.kind !== "section" && !row.structural && (
-                    <MetricValue
-                      item={financialLine(financial, row.id)?.total}
+                    <FinancialNumber
+                      value={metricAmount(
+                        financialLine(financial, row.id)?.total,
+                      )}
+                      evidence={financialLine(financial, row.id)?.total}
+                      uncertainReason={statementUncertainty(
+                        financial,
+                        financialLine(financial, row.id)?.id || row.id,
+                        undefined,
+                        retained,
+                      )}
+                      detail={metricExplanation(
+                        financialLine(financial, row.id)?.total,
+                        financial,
+                      )}
                     />
                   )}
                 </td>
@@ -162,25 +186,5 @@ export function IncomeStatement({
         Hover over amounts for sources and coverage.
       </div>
     </section>
-  );
-}
-
-function MetricValue({
-  item,
-  future = false,
-}: {
-  item?: Metric;
-  future?: boolean;
-}) {
-  if (future || item?.status === "future")
-    return <span className="tbd">—</span>;
-  const value = metricAmount(item);
-  return (
-    <>
-      <span className={value === null ? "tbd" : ""}>{money(value)}</span>
-      {value !== null && item?.quality === "estimate" && (
-        <sup title="Includes estimates">*</sup>
-      )}
-    </>
   );
 }

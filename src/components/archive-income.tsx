@@ -4,7 +4,11 @@ import {
   metricExplanation,
   type FinancialStatement,
 } from "@/lib/financial";
-import { money } from "@/lib/reporting";
+import { FinancialNumber } from "./financial-number";
+import {
+  statementUncertainty,
+  warehouseUncertainty,
+} from "@/lib/number-confidence";
 
 const bases: Record<string, string> = {
   receipt: "Receipts",
@@ -16,8 +20,10 @@ const bases: Record<string, string> = {
 };
 export function ArchiveIncome({
   report,
+  retained = false,
 }: {
   report?: FinancialStatement | null;
+  retained?: boolean;
 }) {
   if (!report?.archive_income?.length) return null;
   const query = new URLSearchParams({
@@ -60,10 +66,17 @@ export function ArchiveIncome({
                 <td>{r.month}</td>
                 <td>{bases[r.metric.recognition] || r.metric.recognition}</td>
                 <td title={metricExplanation(r.metric, report)}>
-                  {money(metricAmount(r.metric))}
-                  {r.metric.quality === "estimate" && (
-                    <sup title="Estimate or nominal USD valuation">*</sup>
-                  )}
+                  <FinancialNumber
+                    value={metricAmount(r.metric)}
+                    evidence={r.metric}
+                    detail={metricExplanation(r.metric, report)}
+                    uncertainReason={statementUncertainty(
+                      report,
+                      r.line_id || "",
+                      r.month,
+                      retained,
+                    )}
+                  />
                 </td>
                 <td>{r.included_in_totals ? "Statement" : "Reference only"}</td>
               </tr>

@@ -4,12 +4,15 @@ import {
   metricExplanation,
   type FinancialStatement,
 } from "@/lib/financial";
-import { money } from "@/lib/reporting";
+import { FinancialNumber } from "./financial-number";
+import { warehouseUncertainty } from "@/lib/number-confidence";
 
 export function OffchainAccruals({
   report,
+  retained = false,
 }: {
   report?: FinancialStatement | null;
+  retained?: boolean;
 }) {
   const positions = report?.offchain_positions?.filter(
     (p) => Object.keys(p.values).length,
@@ -63,12 +66,21 @@ export function OffchainAccruals({
                     const value = metricAmount(item);
                     return (
                       <td key={key} title={metricExplanation(item, report)}>
-                        <span className={value === null ? "tbd" : ""}>
-                          {money(value)}
-                        </span>
-                        {value !== null && item.quality === "estimate" && (
-                          <sup title="Estimate">*</sup>
-                        )}
+                        <FinancialNumber
+                          value={value}
+                          evidence={item}
+                          detail={metricExplanation(item, report)}
+                          uncertainReason={
+                            retained
+                              ? "Retained publication: the latest refresh failed"
+                              : warehouseUncertainty(
+                                  position.source_venue_id === "E42"
+                                    ? "investment.offchain.warehouse"
+                                    : "",
+                                  item,
+                                )
+                          }
+                        />
                       </td>
                     );
                   })}
