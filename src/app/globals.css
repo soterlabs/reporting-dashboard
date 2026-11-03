@@ -22,6 +22,10 @@
   --primary: #252321;
   --on-primary: #faf9f6;
   --negative: #b4352b;
+  --amount-accrual: #166534;
+  --amount-cash: #1d4ed8;
+  --amount-uncertain: #a64b00;
+  --amount-missing: #b91c1c;
   --bar: #557880;
 }
 :root[data-theme="dark"] {
@@ -36,6 +40,10 @@
   --primary: #f3f1eb;
   --on-primary: #252321;
   --negative: #f78f85;
+  --amount-accrual: #86efac;
+  --amount-cash: #93c5fd;
+  --amount-uncertain: #fdba74;
+  --amount-missing: #fca5a5;
   --bar: #86bbc5;
 }
 * {
@@ -390,7 +398,7 @@ select {
   color: var(--muted);
 }
 .tbd {
-  color: var(--muted);
+  color: var(--amount-missing);
   font-weight: 400;
 }
 .section-title {
@@ -1210,4 +1218,52 @@ footer {
   font-size: 12px;
   line-height: 1.5;
   margin-top: 6px;
+}
+
+/* Color expresses evidence and recognition, never profit/loss direction. */
+.amount-accrual {
+  color: var(--amount-accrual);
+}
+.amount-cash {
+  color: var(--amount-cash);
+}
+.amount-uncertain {
+  color: var(--amount-uncertain);
+}
+.amount-missing {
+  color: var(--amount-missing);
+}
+.amount-future {
+  color: var(--muted);
+}
+.number-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 11px;
+  margin: 0 0 14px;
+}
+.financial-table .total {
+  --amount-accrual: #86efac;
+  --amount-cash: #93c5fd;
+  --amount-uncertain: #fdba74;
+  --amount-missing: #fca5a5;
+}
+.financial-table .total .amount-future {
+  color: #b9b5af;
+}
+:root[data-theme="dark"] .financial-table .total {
+  --amount-accrual: #166534;
+  --amount-cash: #1d4ed8;
+  --amount-uncertain: #a64b00;
+  --amount-missing: #b91c1c;
+}
+:root[data-theme="dark"] .financial-table .total .amount-future {
+  color: #64605b;
+}
+
+/* Preserve total-row contrast when the generic table hover style applies. */
+.financial-table tbody tr.total:hover th,
+.financial-table tbody tr.total:hover td {
+  background: var(--primary);
 }

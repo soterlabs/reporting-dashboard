@@ -16,6 +16,8 @@ import {
   FileText,
 } from "lucide-react";
 import { Controls } from "@/app/controls";
+import { FinancialNumber, FinancialLegend } from "./financial-number";
+import { venueEvidence, readUncertainty } from "@/lib/number-confidence";
 import { ArchiveIncome } from "./archive-income";
 import { OffchainAccruals } from "./offchain-accruals";
 import { IncomeStatement } from "./income-statement";
@@ -41,7 +43,6 @@ import {
   amount,
   cleanLabel,
   loanIncomeBalances,
-  money,
   name,
   PRIMES,
   type Prime,
@@ -57,17 +58,7 @@ const date = (d: string) =>
     year: "numeric",
     timeZone: "UTC",
   });
-function Value({ value }: { value?: string | null }) {
-  return (
-    <span
-      className={
-        value == null ? "tbd" : value.startsWith("-") ? "negative" : ""
-      }
-    >
-      {money(value)}
-    </span>
-  );
-}
+
 export function reportHref(
   prime: Prime,
   _scope: Scope,
@@ -307,6 +298,7 @@ export async function PrimeDashboard({
               A newer source correction is awaiting financial publication.
             </p>
           )}
+          <FinancialLegend />
           {view === "income" ? (
             <>
               <IncomeStatement
@@ -319,9 +311,16 @@ export async function PrimeDashboard({
                 months={months}
                 title={title}
                 financial={financial?.report}
+                retained={financial?.retained}
               />
-              <OffchainAccruals report={financial?.report} />
-              <ArchiveIncome report={financial?.report} />
+              <OffchainAccruals
+                report={financial?.report}
+                retained={financial?.retained}
+              />
+              <ArchiveIncome
+                report={financial?.report}
+                retained={financial?.retained}
+              />
               {scope === "individual" && (
                 <SourceIncome
                   monthly={annual}
@@ -341,11 +340,20 @@ export async function PrimeDashboard({
                     <div>
                       <h2>Tracked allocation value</h2>
                       <p>
-                        {money(
-                          metricAmount(
+                        <FinancialNumber
+                          value={metricAmount(
                             positionFinancial?.report?.portfolio.closing_value,
-                          ),
-                        )}{" "}
+                          )}
+                          evidence={
+                            positionFinancial?.report?.portfolio.closing_value
+                          }
+                          uncertainReason={
+                            readUncertainty(positionFinancial) ||
+                            (positionFinancial?.report?.source_lag
+                              ? "A newer source is awaiting financial publication"
+                              : null)
+                          }
+                        />{" "}
                         · USD
                       </p>
                       <p>
@@ -428,46 +436,81 @@ export async function PrimeDashboard({
                           )}
                           <td>{date(actualCutoff)}</td>
                           <td>
-                            <Value
+                            <FinancialNumber
                               value={amount(v, "opening_position_value_usd")}
+                              evidence={venueEvidence(v, "balance")}
                             />
                           </td>
                           <td>
-                            <Value value={amount(v, "position_value_usd")} />
+                            <FinancialNumber
+                              value={amount(v, "position_value_usd")}
+                              evidence={venueEvidence(v, "balance")}
+                            />
                           </td>
                           <td>
-                            <Value
+                            <FinancialNumber
                               value={positionAccruedIncome(
                                 positionFinancial?.report,
                                 v,
                               )}
-                            />
-                          </td>
-                          <td>
-                            <Value
-                              value={loanIncomeBalances(v).interestReceivable}
-                            />
-                          </td>
-                          <td>
-                            <Value
-                              value={
-                                loanIncomeBalances(v).incomeReceivedInAdvance
+                              evidence={
+                                positionFinancial?.report?.portfolio.positions.find(
+                                  (pos) => pos.source_venue_id === v.venue_id,
+                                )?.income ||
+                                positionFinancial?.report?.claims?.find(
+                                  (claim) =>
+                                    claim.source_venue_id === v.venue_id,
+                                )?.income ||
+                                venueEvidence(v, "income")
+                              }
+                              uncertainReason={
+                                readUncertainty(positionFinancial) ||
+                                readUncertainty(
+                                  portfolios.find((row) => row.prime === p)
+                                    ?.read,
+                                ) ||
+                                (positionFinancial?.report?.source_lag
+                                  ? "A newer source is awaiting financial publication"
+                                  : null)
                               }
                             />
                           </td>
                           <td>
-                            <Value value={amount(v, "cash_received_usd")} />
+                            <FinancialNumber
+                              value={loanIncomeBalances(v).interestReceivable}
+                              evidence={venueEvidence(v, "balance")}
+                            />
                           </td>
                           <td>
-                            <Value />
+                            <FinancialNumber
+                              value={
+                                loanIncomeBalances(v).incomeReceivedInAdvance
+                              }
+                              evidence={venueEvidence(v, "balance")}
+                            />
                           </td>
-                          <td className="tbd">TBD</td>
+                          <td>
+                            <FinancialNumber
+                              value={amount(v, "cash_received_usd")}
+                              evidence={venueEvidence(v, "cash")}
+                              uncertainReason={readUncertainty(
+                                portfolios.find((row) => row.prime === p)?.read,
+                              )}
+                            />
+                          </td>
+                          <td>
+                            <FinancialNumber />
+                          </td>
+                          <td>
+                            <FinancialNumber />
+                          </td>
                         </tr>
                       ))}
                       {!rows.length && (
                         <tr>
                           <td className="empty" colSpan={combined ? 11 : 10}>
-                            TBD · No published positions for the selected month
+                            <span className="tbd">TBD</span> · No published
+                            positions for the selected month
                           </td>
                         </tr>
                       )}
@@ -514,7 +557,13 @@ export async function PrimeDashboard({
                   {portfolios.map((p) => (
                     <tr key={p.prime}>
                       <td>{name(p.prime)}</td>
-                      <td>{p.actualCutoff ? date(p.actualCutoff) : "TBD"}</td>
+                      <td>
+                        {p.actualCutoff ? (
+                          date(p.actualCutoff)
+                        ) : (
+                          <span className="tbd">TBD</span>
+                        )}
+                      </td>
                       <td>
                         {p.read.message ||
                           (p.read.report
@@ -629,8 +678,12 @@ function ScopePerimeter({ prime, scope }: { prime: Prime; scope: Scope }) {
             ).map((label) => (
               <tr key={label}>
                 <td>{label}</td>
-                <td className="tbd">TBD</td>
-                <td className="tbd">TBD</td>
+                <td>
+                  <FinancialNumber />
+                </td>
+                <td>
+                  <FinancialNumber />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -709,11 +762,29 @@ function SourceIncome({
                     </th>
                     {values.map((value, i) => (
                       <td key={months[i].key}>
-                        <Value value={value} />
+                        <FinancialNumber
+                          value={value}
+                          evidence={
+                            monthly[i].read.report?.data.result.venues.find(
+                              (row) => row.venue_id === v.venue_id,
+                            )
+                              ? venueEvidence(
+                                  monthly[
+                                    i
+                                  ].read.report!.data.result.venues.find(
+                                    (row) => row.venue_id === v.venue_id,
+                                  )!,
+                                  "income",
+                                )
+                              : undefined
+                          }
+                          future={months[i].state === "future"}
+                          uncertainReason={readUncertainty(monthly[i].read)}
+                        />
                       </td>
                     ))}
                     <td className="year-total">
-                      <Value value={annualAmount(values, months)} />
+                      <FinancialNumber value={annualAmount(values, months)} />
                     </td>
                   </tr>
                 );
@@ -722,7 +793,8 @@ function SourceIncome({
             {!catalog.length && (
               <tr>
                 <td colSpan={14} className="empty">
-                  TBD · No compatible allocation publications in this year
+                  <span className="tbd">TBD</span> · No compatible allocation
+                  publications in this year
                 </td>
               </tr>
             )}

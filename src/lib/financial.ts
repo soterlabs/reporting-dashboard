@@ -28,6 +28,7 @@ export interface Metric {
   source_ref?: string;
   source_refs?: string[];
   missing_components?: string[];
+  component_ids?: string[];
   quality?: "supported" | "estimate";
   period_start?: string;
   period_end?: string;
