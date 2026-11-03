@@ -120,9 +120,9 @@ test("other primes get their own family rows without inheriting Spark reserve te
   assert.ok(!rows.some((r) => r.id.startsWith("allocation-")));
   assert.equal(
     statementLines("obex", "individual", fixture).find(
-      (r) => r.id === "obex-maple",
+      (r) => r.id === "investment.maple_syrup_usdc",
     )?.label,
-    "Maple syrupUSDC — net investment income",
+    "syrupUSDC",
   );
 });
 test("approved financial members render and export even when a legacy source has no v2 venue view", () => {

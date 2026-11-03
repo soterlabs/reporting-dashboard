@@ -40,7 +40,7 @@ test("GAR is only shown for Skybase in statements and CSVs", () => {
         yearMonths(2026),
       );
       assert.equal(
-        csv.some((r) => r[2] === "Governance accessibility rewards (GAR)"),
+        csv.some((r) => r[2] === "GAR (Governance Accessibility Rewards)"),
         prime === "skybase",
       );
     }
@@ -77,7 +77,7 @@ test("monthly sources populate January–August without daily publications and b
     yearMonths(2026, new Date("2027-01-10")),
     report,
   );
-  const dr = rows.find((r) => r[2] === "Distribution rewards (DR)")!;
+  const dr = rows.find((r) => r[2] === "DR (Distribution Rewards)")!;
   assert.equal(dr[3], financialLine(report, "dr")?.values["2026-01"].value);
   assert.equal(dr[10], financialLine(report, "dr")?.values["2026-08"].value);
   assert.equal(dr[12], "TBD");

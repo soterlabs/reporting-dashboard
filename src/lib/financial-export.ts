@@ -1,5 +1,5 @@
+import { statementFinancialLine } from "./statement-values.ts";
 import {
-  financialLine,
   statementMonths,
   statementTotalLabel,
   positionAccruedIncome,
@@ -28,6 +28,12 @@ export function statementCsvRows(
   report?: FinancialStatement | null,
 ): unknown[][] {
   const months = statementMonths(report, calendarMonths);
+  const layout = statementLines(
+    scope === "combined" ? null : prime,
+    scope,
+    report,
+  );
+  const labels = Object.fromEntries(layout.map((row) => [row.id, row.label]));
   return [
     [
       "Scope",
@@ -50,96 +56,106 @@ export function statementCsvRows(
       "Coverage explanation",
       "Monthly estimates and earning cutoffs",
       "Total includes estimates",
+      "Row ID",
+      "Parent row ID",
+      "Depth",
+      "Subtotal derivation",
+      "Subtotal source metric IDs",
     ],
-    ...statementLines(scope === "combined" ? null : prime, scope, report).map(
-      (row) => {
-        const line = financialLine(report, row.id);
-        return [
-          scope,
-          scope === "combined" ? "All prime agents" : prime,
-          row.label,
-          ...months.map((m) =>
-            row.kind === "section" || row.structural
-              ? ""
-              : m.state === "future"
-                ? "—"
-                : (metricAmount(line?.values[m.key]) ?? "TBD"),
-          ),
+    ...layout.map((row) => {
+      const line = statementFinancialLine(report, row);
+      return [
+        scope,
+        scope === "combined" ? "All prime agents" : prime,
+        row.label,
+        ...months.map((m) =>
           row.kind === "section" || row.structural
             ? ""
-            : (metricAmount(line?.total) ?? "TBD"),
-          (line
-            ? [
-                ...new Set(
-                  Object.values(line.values)
-                    .filter((v) => v.value !== null || v.known_value !== null)
-                    .map((v) => v.basis),
-                ),
-              ].join("; ")
-            : "") ||
-            line?.values[selectedMonth]?.reason ||
-            "Classification or inputs not yet available",
-          JSON.stringify(
-            report?.periods.map((p) => ({
-              month: p.key,
-              cutoff: p.actual_cutoff,
-            })) || [],
+            : m.state === "future"
+              ? "—"
+              : (metricAmount(line?.values[m.key]) ?? "TBD"),
+        ),
+        row.kind === "section" || row.structural
+          ? ""
+          : (metricAmount(line?.total) ?? "TBD"),
+        (line
+          ? [
+              ...new Set(
+                Object.values(line.values)
+                  .filter((v) => v.value !== null || v.known_value !== null)
+                  .map((v) => v.basis),
+              ),
+            ].join("; ")
+          : "") ||
+          line?.values[selectedMonth]?.reason ||
+          "Classification or inputs not yet available",
+        JSON.stringify(
+          report?.periods.map((p) => ({
+            month: p.key,
+            cutoff: p.actual_cutoff,
+          })) || [],
+        ),
+        report?.report_hash,
+        report?.selection,
+        JSON.stringify(report?.source_manifest || {}),
+        JSON.stringify(
+          Object.fromEntries(
+            months.map((m) => [
+              m.key,
+              line?.values[m.key]?.source_refs ||
+                line?.values[m.key]?.source_ref ||
+                null,
+            ]),
           ),
-          report?.report_hash,
-          report?.selection,
-          JSON.stringify(report?.source_manifest || {}),
-          JSON.stringify(
-            Object.fromEntries(
-              months.map((m) => [
-                m.key,
-                line?.values[m.key]?.source_refs ||
-                  line?.values[m.key]?.source_ref ||
-                  null,
-              ]),
-            ),
+        ),
+        JSON.stringify(
+          Object.fromEntries(
+            months.map((m) => [
+              m.key,
+              line?.values[m.key]?.status || "unavailable",
+            ]),
           ),
-          JSON.stringify(
-            Object.fromEntries(
-              months.map((m) => [
-                m.key,
-                line?.values[m.key]?.status || "unavailable",
-              ]),
-            ),
+        ),
+        JSON.stringify(
+          Object.fromEntries(
+            months.map((m) => [
+              m.key,
+              line?.values[m.key]?.known_value ?? null,
+            ]),
           ),
-          JSON.stringify(
-            Object.fromEntries(
-              months.map((m) => [
-                m.key,
-                line?.values[m.key]?.known_value ?? null,
-              ]),
-            ),
+        ),
+        line?.total.status || "unavailable",
+        line?.total.known_value ?? "",
+        JSON.stringify({
+          months: Object.fromEntries(
+            months.map((m) => [
+              m.key,
+              metricExplanation(line?.values[m.key], report, labels),
+            ]),
           ),
-          line?.total.status || "unavailable",
-          line?.total.known_value ?? "",
-          JSON.stringify({
-            months: Object.fromEntries(
-              months.map((m) => [
-                m.key,
-                metricExplanation(line?.values[m.key], report),
-              ]),
-            ),
-            total: metricExplanation(line?.total, report),
-          }),
-          JSON.stringify(
-            Object.fromEntries(
-              months.map((m) => [
-                m.key,
-                {
-                  quality: line?.values[m.key]?.quality || null,
-                  through: line?.values[m.key]?.period_end || null,
-                },
-              ]),
-            ),
+          total: metricExplanation(line?.total, report, labels),
+        }),
+        JSON.stringify(
+          Object.fromEntries(
+            months.map((m) => [
+              m.key,
+              {
+                quality: line?.values[m.key]?.quality || null,
+                through: line?.values[m.key]?.period_end || null,
+              },
+            ]),
           ),
-          line?.total.quality === "estimate" ? "yes" : "no",
-        ];
-      },
-    ),
+        ),
+        line?.total.quality === "estimate" ? "yes" : "no",
+        row.id,
+        row.parent || "",
+        row.level,
+        row.sources
+          ? "Dashboard sum of published metrics; report hash identifies the API input"
+          : "Published API metric or unavailable",
+        JSON.stringify(row.sources || []),
+      ];
+    }),
   ];
 }
 

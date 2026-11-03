@@ -26,7 +26,7 @@ test("monthly Grove accruals validate and bind once to allocation income", () =>
     assert.equal(lines.filter((l) => l.id === id).length, 1);
     assert.equal(
       lines.find((l) => l.id === id)?.parent,
-      "statement.family.offchain_lending",
+      id.endsWith("gaclo") ? "statement.family.rwa_funds" : "interest",
     );
   }
   const wh = r.lines.find((l) => l.id === "investment.offchain.warehouse")!;

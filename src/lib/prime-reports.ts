@@ -1,9 +1,5 @@
-import {
-  allocationRewardsPolicies,
-  sparkIncomePolicy,
-} from "./financial-policies.ts";
+import { sheetStatementLines } from "./statement-layout.ts";
 import type { FinancialStatement } from "./financial.ts";
-import { rwaPolicies } from "./financial-policies.ts";
 import Decimal from "decimal.js";
 import {
   amount,
@@ -113,39 +109,43 @@ export interface StatementLine {
   kind?: "section" | "subtotal" | "total";
   parent?: string;
   structural?: boolean;
+  sources?: string[];
 }
 export function collapsedStatementGroups(rows: StatementLine[]) {
   return new Set(rows.flatMap((row) => (row.parent ? [row.parent] : [])));
 }
-const line = (
-  id: string,
-  label: string,
-  level = 1,
-  parent?: string,
-  kind?: StatementLine["kind"],
-): StatementLine => ({ id, label, level, parent, kind });
 export function statementLines(
   prime: Prime | null,
   scope: Scope,
   financial?: FinancialStatement | null,
 ): StatementLine[] {
-  const rows = buildStatementLines(prime, scope, financial);
+  const rows = sheetStatementLines(prime, scope, financial);
   if (!financial || financial.source_lag_periods?.length) return rows;
   const elapsed = financial.periods.filter((p) => p.state !== "future");
   if (!elapsed.length || elapsed.some((p) => p.stale)) return rows;
   const hidden = new Set(
-    rows.filter((row) => {
-      if (row.id !== "gains" && row.parent !== "gains") return false;
-      const source = financial.lines.find(
-        (l) => l.id === (row.id === "gains" ? "statement.gains" : row.id),
-      );
-      return source && elapsed.every((p) => {
-        const cell = source.values[p.key];
-        return cell?.status === "available" && cell.quality !== "estimate" &&
-          cell.recognition !== "unknown" && cell.basis !== "unclassified" &&
-          cell.value !== null && new Decimal(cell.value).isZero();
-      });
-    }).map((row) => row.id),
+    rows
+      .filter((row) => {
+        if (row.id !== "gains" && row.parent !== "gains") return false;
+        const source = financial.lines.find(
+          (l) => l.id === (row.id === "gains" ? "statement.gains" : row.id),
+        );
+        return (
+          source &&
+          elapsed.every((p) => {
+            const cell = source.values[p.key];
+            return (
+              cell?.status === "available" &&
+              cell.quality !== "estimate" &&
+              cell.recognition !== "unknown" &&
+              cell.basis !== "unclassified" &&
+              cell.value !== null &&
+              new Decimal(cell.value).isZero()
+            );
+          })
+        );
+      })
+      .map((row) => row.id),
   );
   // Unknown children remain visible even if an inconsistent parent says zero.
   if (rows.some((row) => row.parent === "gains" && !hidden.has(row.id)))
@@ -153,334 +153,6 @@ export function statementLines(
   return rows.filter((row) => !hidden.has(row.id));
 }
 
-function buildStatementLines(
-  prime: Prime | null,
-  scope: Scope,
-  financial?: FinancialStatement | null,
-): StatementLine[] {
-  const rows: StatementLine[] = [
-    line("revenue", "Revenue", 0, undefined, "section"),
-    line("demand", "Demand-side revenue"),
-    line("dr", "Distribution rewards (DR)", 2, "demand"),
-    line("ar", "Agent rate (AR)", 2, "demand"),
-    ...(prime === "skybase"
-      ? [line("gar", "Governance accessibility rewards (GAR)", 2, "demand")]
-      : []),
-    line("protocol", prime === "spark" ? "SparkLend fees" : "Protocol fees"),
-    line("curator", "Curator fees"),
-    line("rewards", "Incentives and rewards received"),
-    line("gains", "Gains (losses) on non-stable assets, net"),
-  ];
-  if (prime === "spark")
-    rows.push(
-      ...[
-        ["gains.morpho", "MORPHO"],
-        ["gains.avax", "AVAX"],
-        ["gains.eth_weth", "ETH / WETH"],
-        ["gains.sparklend_nonstable", "SparkLend non-stable tokens"],
-      ].map(([id, label]) => line(id, label, 2, "gains")),
-    );
-  rows.push(
-    line("noninterest-income", "Noninterest income", 0, undefined, "subtotal"),
-    line("interest", "Interest income from allocations"),
-  );
-  if (prime === "spark") {
-    const groups: [string, string[]][] = [
-      [
-        "SparkLend",
-        [
-          "USDS market",
-          "USDC market",
-          "USDT market",
-          "DAI market",
-          "PYUSD market",
-          "RLUSD market",
-          "WETH market",
-        ],
-      ],
-      [
-        "Aave v3",
-        [
-          "Ethereum USDS",
-          "Ethereum Lido USDS",
-          "Ethereum USDC",
-          "Ethereum USDT",
-          "Base USDC",
-          "Arbitrum USDCn",
-          "Avalanche USDC",
-        ],
-      ],
-      [
-        "Morpho vaults",
-        [
-          "Spark Blue Chip USDC",
-          "Spark Blue Chip USDT",
-          "Spark DAI",
-          "Spark USDS",
-          "Spark USDC (Base)",
-          "Sentora RLUSD",
-        ],
-      ],
-      ["Maple", ["syrupUSDC", "syrupUSDT"]],
-      ["Arkis Spark Prime USDC 1", []],
-      ["Anchorage", []],
-      ["PYUSD", []],
-      ["RLUSD", []],
-    ];
-    groups.forEach(([label, children], index) => {
-      const id = `allocation-${index}`;
-      rows.push(line(id, label, 2, "interest"));
-      children.forEach((child, i) =>
-        rows.push(line(`${id}-${i}`, child, 3, id)),
-      );
-    });
-  }
-  if (prime === "obex" && scope === "individual")
-    rows.push(
-      line(
-        "obex-maple",
-        "Maple syrupUSDC — net investment income",
-        2,
-        "interest",
-      ),
-    );
-  rows.push(
-    line("interest-expense", "Interest expense (cost of funding)"),
-    line("sky-funding", "Sky funding interest, net", 2, "interest-expense"),
-    line("net-interest", "Net interest income", 0, undefined, "subtotal"),
-    line("net-revenue", "Total net revenue", 0, undefined, "subtotal"),
-    line("expenses", "Expenses", 0, undefined, "section"),
-    line("operating", "Operating expenses"),
-    line("engineering", "Engineering", 2, "operating"),
-    line("legal", "Legal", 2, "operating"),
-    line("security", "Audits and security", 2, "operating"),
-    line("other-operating", "Other operating expenses", 2, "operating"),
-    line("other-expenses", "Other expenses"),
-  );
-  if (prime === "spark")
-    rows.push(
-      line(
-        "licence",
-        "Aave profit share (SparkLend licence)",
-        2,
-        "other-expenses",
-      ),
-    );
-  rows.push(
-    line("incentives", "Incentives expense"),
-    line("own-token", "Own-token incentives", 2, "incentives"),
-    line("stablecoin", "Stablecoin incentives", 2, "incentives"),
-    line("distribution", "Distribution costs"),
-    line(
-      "noninterest-expense",
-      "Total noninterest expense",
-      0,
-      undefined,
-      "subtotal",
-    ),
-  );
-  if (scope !== "individual")
-    rows.push(
-      line("eliminations", "Consolidation and elimination adjustments", 0),
-    );
-  rows.push(line("net-income", "Net income", 0, undefined, "total"));
-  if (
-    scope === "individual" &&
-    [
-      "prime-management.statement-rollups.v3.1",
-      "prime-management.rwa-income.v3.2",
-      ...allocationRewardsPolicies,
-    ].includes(financial?.policy_version || "") &&
-    financial
-  ) {
-    const base = rows.filter(
-      (row) => !row.id.startsWith("allocation-") && row.id !== "obex-maple",
-    );
-    if (rwaPolicies.includes(financial.policy_version) && prime === "grove") {
-      for (const row of base) {
-        if (row.id === "interest")
-          row.label = "Investment income from allocations";
-        if (row.id === "net-interest")
-          row.label = "Net investment income after funding";
-      }
-    }
-    if (allocationRewardsPolicies.includes(financial.policy_version)) {
-      const interest = base.find((row) => row.id === "interest")!;
-      interest.label =
-        prime === "grove"
-          ? "Investment income from allocations"
-          : prime === "spark" ? "Revenue from allocations" : "Income from allocations";
-      base.find((row) => row.id === "rewards")!.label =
-        "Other incentives and rewards received";
-    }
-    const inserts = new Map<string, StatementLine[]>();
-    const add = (parent: string, row: StatementLine) =>
-      inserts.set(parent, [...(inserts.get(parent) || []), row]);
-    const groups = new Set<string>();
-    for (const definition of financial.lines) {
-      if (financial.policy_version === sparkIncomePolicy && prime === "spark" &&
-          definition.id.startsWith("fees.curator.")) {
-        add("curator", line(definition.id, definition.label, 2, "curator"));
-        continue;
-      }
-      if (
-        financial.policy_version === sparkIncomePolicy && prime === "spark" &&
-        (definition.id.startsWith("rewards.lending.sparklend.") ||
-          definition.id.startsWith("fees.sparklend."))
-      ) {
-        add("protocol", line(definition.id, definition.label, 2, "protocol"));
-        continue;
-      }
-      if (definition.id === "demand.chronicle_points") {
-        add("demand", line(definition.id, definition.label, 2, "demand"));
-        continue;
-      }
-      const linkedReward =
-        allocationRewardsPolicies.includes(financial.policy_version) &&
-        (definition.id.startsWith("rewards.lending.") ||
-          definition.id.startsWith("rewards.issuer."));
-      if (
-        definition.id.startsWith("gains.") &&
-        definition.aggregation === "leaf"
-      ) {
-        const existing = base.find((row) => row.id === definition.id);
-        if (existing) existing.label = definition.label;
-        else add("gains", line(definition.id, definition.label, 2, "gains"));
-        continue;
-      }
-      const parent =
-        definition.id.startsWith("investment.") || linkedReward
-          ? "interest"
-          : definition.id.startsWith("rewards.")
-            ? "rewards"
-            : null;
-      if (!parent) continue;
-      if (definition.aggregation === "subtotal") {
-        // The same leaves are already displayed in disjoint family groups.
-        // An alternate reviewed subtotal here would duplicate those children.
-        continue;
-      }
-      if (
-        definition.aggregation !== "leaf" &&
-        !(prime === "obex" && definition.id === "investment.maple_syrup_usdc")
-      )
-        continue;
-      const family = definition.family || "Maple";
-      const group = linkedReward
-        ? "statement.family.allocation_rewards"
-        : parent === "interest"
-          ? `statement.family.${family.toLowerCase().replaceAll(" ", "_")}`
-          : `rewards-${family.toLowerCase().replaceAll(" ", "-")}`;
-      if (!groups.has(group)) {
-        add(parent, {
-          ...line(
-            group,
-            linkedReward
-              ? "Allocation-linked incentives and rewards"
-              : parent === "interest"
-                ? prime === "spark"
-                  ? family === "Other reviewed vaults" ? "Other reviewed income" : `${family} revenue`
-                  : `Reviewed ${family} income`
-                : family,
-            2,
-            parent,
-          ),
-          structural: parent === "rewards",
-        });
-        groups.add(group);
-      }
-      add(group, line(definition.id, definition.label, 3, group));
-    }
-    const expand = (row: StatementLine): StatementLine[] => [
-      row,
-      ...(inserts.get(row.id) || []).flatMap(expand),
-    ];
-    return base.flatMap(expand);
-  }
-  if (
-    scope === "individual" &&
-    [
-      "prime-management.allocations.v2",
-      "prime-management.allocations.v2.1",
-      "prime-management.monthly-statements.v3",
-      "prime-management.statement-rollups.v3.1",
-    ].includes(financial?.policy_version || "") &&
-    financial
-  ) {
-    const bindings: Record<string, string> = {
-      "allocation-0-0": "investment.sparklend.usds",
-      "allocation-0-1": "investment.sparklend.usdc",
-      "allocation-0-2": "investment.sparklend.usdt",
-      "allocation-0-3": "investment.sparklend.dai",
-      "allocation-0-4": "investment.sparklend.pyusd",
-      "allocation-1-0": "investment.aave.eth_usds",
-      "allocation-1-1": "investment.aave.eth_lido_usds",
-      "allocation-1-2": "investment.aave.eth_usdc",
-      "allocation-1-3": "investment.aave.eth_usdt",
-      "allocation-1-4": "investment.aave.base_usdc",
-      "allocation-1-5": "investment.aave.arbitrum_usdc",
-      "allocation-1-6": "investment.aave.avalanche_usdc",
-      "allocation-2-0": "investment.morpho.blue_chip_usdc",
-      "allocation-2-1": "investment.morpho.blue_chip_usdt",
-      "allocation-2-2": "investment.morpho.dai",
-      "allocation-2-3": "investment.morpho.usds",
-      "allocation-2-4": "investment.morpho.base_usdc",
-      "allocation-3-0": "investment.maple_syrup_usdc",
-      "allocation-3-1": "investment.maple_syrup_usdt",
-      "allocation-4": "investment.arkis.usdc",
-    };
-    const bound = new Set<string>();
-    if (prime === "spark")
-      for (const row of rows)
-        if (bindings[row.id]) {
-          row.id = bindings[row.id];
-          bound.add(row.id);
-        }
-    const inserts = new Map<string, StatementLine[]>();
-    const add = (parent: string, row: StatementLine) => {
-      const group = inserts.get(parent) || [];
-      group.push(row);
-      inserts.set(parent, group);
-    };
-    const groups = new Set<string>();
-    for (const definition of financial.lines) {
-      if (!definition.family || bound.has(definition.id)) continue;
-      if (definition.id === "demand.chronicle_points") {
-        add("demand", line(definition.id, definition.label, 2, "demand"));
-        continue;
-      }
-      const parent = definition.id.startsWith("investment.")
-        ? "interest"
-        : definition.id.startsWith("rewards.")
-          ? "rewards"
-          : null;
-      if (!parent) continue;
-      if (definition.aggregation === "subtotal") {
-        continue;
-      }
-      const group = `${parent}-${definition.family.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-      if (!groups.has(group)) {
-        add(parent, line(group, definition.family, 2, parent));
-        groups.add(group);
-      }
-      add(parent, line(definition.id, definition.label, 3, group));
-    }
-    const expanded = rows.flatMap((row) => [
-      row,
-      ...(inserts.get(row.id) || []),
-    ]);
-    // Family headers with no certified metric are navigation, not missing totals.
-    for (const row of expanded) {
-      if (
-        (row.id.startsWith("interest-") || row.id.startsWith("rewards-")) &&
-        expanded.some((child) => child.parent === row.id)
-      )
-        row.structural = true;
-    }
-    return expanded;
-  }
-  return rows;
-}
 export interface MonthReport {
   month: Month;
   read: ReadResult;

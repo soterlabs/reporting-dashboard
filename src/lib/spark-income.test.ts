@@ -95,8 +95,8 @@ test("the real Spark v3.6 projection passes source and derived-subtotal validati
 test("Spark monthly components retain their source, confidence and native venue hierarchy", () => {
   const doc = validateStatement(JSON.parse(readFileSync(new URL("./fixtures/spark-fees-statement.json", import.meta.url), "utf8")), "spark", 2026);
   const rows = statementLines("spark", "individual", doc);
-  assert.equal(rows.find((row) => row.id === "interest")?.label, "Revenue from allocations");
-  assert.ok(rows.some((row) => row.label === "Maple revenue"));
+  assert.equal(rows.find((row) => row.id === "interest")?.label, "Allocation revenue");
+  assert.ok(rows.some((row) => row.label === "Maple"));
   assert.ok(rows.some((row) => row.label === "Other reviewed income"));
   assert.equal(rows.some((row) => row.label.startsWith("Reviewed ")), false);
   assert.equal(doc.lines.filter((row) => row.id.startsWith("investment.venue.")).length, 27);

@@ -87,7 +87,7 @@ test("UI and CSV remove requested lines and show available sums with coverage re
       false,
     );
   const interest = csv.find(
-    (r) => r[2] === "Interest income from allocations",
+    (r) => r[2] === "Allocation revenue",
   )!;
   const column = (label: string) => csv[0].indexOf(label);
   assert.equal(interest[12], "100");

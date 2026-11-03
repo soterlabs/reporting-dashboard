@@ -42,11 +42,11 @@ test("archive income validates and each new leaf has one statement location", ()
   );
   assert.equal(
     rows.find((row) => row.id === "rewards.issuer.agora")!.parent,
-    "statement.family.allocation_rewards",
+    "interest",
   );
   assert.equal(
     rows.find((row) => row.id === "rewards.partnership.plume")!.parent,
-    "rewards-partnership-income",
+    "rewards",
   );
 });
 

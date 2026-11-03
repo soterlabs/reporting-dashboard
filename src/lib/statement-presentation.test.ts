@@ -82,7 +82,7 @@ test("new policy puts allocation-linked rewards under allocation income exactly 
     (row) => row.id === "statement.family.allocation_rewards",
   )!;
   assert.equal(group.parent, "interest");
-  assert.equal(group.structural, false);
+  assert.equal(Boolean(group.structural), false);
   const rewards = report.lines.filter(
     (r) => r.aggregation === "leaf" && r.id.startsWith("rewards.lending."),
   );
@@ -122,7 +122,7 @@ test("CSV uses the same exact available sums as the screen and keeps source cove
   );
   const cols = rows[0];
   const income = rows.find(
-    (row) => row[2] === "Investment income from allocations",
+    (row) => row[2] === "Allocation revenue",
   )!;
   assert.equal(
     income[12],
