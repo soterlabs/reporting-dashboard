@@ -2,6 +2,8 @@ import {
   rollupPolicies,
   rwaPolicies,
   offchainPolicy,
+  offchainPolicies,
+  archivePolicy,
 } from "./financial-policies.ts";
 export {
   rollupPolicy,
@@ -29,6 +31,8 @@ export interface Metric {
   quality?: "supported" | "estimate";
   period_start?: string;
   period_end?: string;
+  source_currency?: string;
+  conversion?: string;
   allocation_split?: {
     gross_income_usd: string;
     sky_income_usd: string;
@@ -74,7 +78,10 @@ export interface FinancialStatement {
       cutoff: string;
       revision_id: string;
       result_hash: string;
-      kind?: "published_monthly_summary" | "counterparty_monthly_accrual";
+      kind?:
+        | "published_monthly_summary"
+        | "counterparty_monthly_accrual"
+        | "counterparty_monthly_archive";
       repository?: string;
       commit?: string;
       path?: string;
@@ -84,7 +91,17 @@ export interface FinancialStatement {
     }
   >;
   offchain_positions?: OffchainPosition[];
+  archive_income?: ArchiveIncome[];
   source_lag_periods: string[];
+}
+export interface ArchiveIncome {
+  id: string;
+  line_id: string | null;
+  label: string;
+  month: string;
+  included_in_totals: boolean;
+  balances?: Record<string, Metric>;
+  metric: Metric;
 }
 export interface OffchainPosition {
   source_venue_id: string;
@@ -225,6 +242,110 @@ function metric(v: Metric) {
     );
   }
 }
+export const archiveLineIds = new Set([
+  "investment.morpho.grove_monad_ausd",
+  "rewards.issuer.agora",
+  "rewards.issuer.usdg",
+  "rewards.partnership.plume",
+  "gains.plume_disposal",
+  "rewards.lending.aave.eth_rlusd",
+  "rewards.lending.aave.horizon_rlusd",
+]);
+function validateArchive(v: FinancialStatement, prime: Prime) {
+  requireValue(
+    Array.isArray(v.archive_income) &&
+      (prime === "grove" || !v.archive_income.length),
+  );
+  const ids = new Set<string>();
+  for (const row of v.archive_income!) {
+    const p = v.periods.find((p) => p.key === row.month);
+    requireValue(
+      typeof row.id === "string" &&
+        typeof row.label === "string" &&
+        p &&
+        p.state !== "future" &&
+        p.offchain_revision,
+    );
+    const key = `${row.month}:${row.id}`;
+    requireValue(!ids.has(key));
+    ids.add(key);
+    metric(row.metric);
+    const m = row.metric;
+    requireValue(
+      m.source_ref === p.offchain_revision &&
+        m.period_start === `${row.month}-01` &&
+        m.period_end === p.expected_cutoff &&
+        ["supported", "estimate"].includes(m.quality!) &&
+        typeof m.source_currency === "string" &&
+        typeof m.conversion === "string" &&
+        typeof row.included_in_totals === "boolean",
+    );
+    requireValue((row.id === "monad") === (row.balances !== undefined));
+    if (row.balances !== undefined) {
+      requireValue(row.id === "monad");
+      for (const key of [
+        "opening_value",
+        "closing_value",
+        "deposits",
+        "withdrawals",
+      ]) {
+        metric(row.balances[key]);
+        requireValue(
+          row.balances[key].source_ref === m.source_ref &&
+            row.balances[key].quality === "estimate" &&
+            row.balances[key].source_currency === "AUSD" &&
+            row.balances[key].period_start === m.period_start &&
+            row.balances[key].period_end === m.period_end &&
+            row.balances[key].status === "available" &&
+            new SplitDecimal(row.balances[key].value!).gte(0),
+        );
+      }
+      const b = row.balances;
+      requireValue(
+        new SplitDecimal(b.closing_value.value!)
+          .minus(b.opening_value.value!)
+          .minus(b.deposits.value!)
+          .plus(b.withdrawals.value!)
+          .minus(metricAmount(m)!)
+          .abs()
+          .lte("1e-18"),
+      );
+    }
+    if (row.included_in_totals) {
+      requireValue(row.line_id && archiveLineIds.has(row.line_id));
+      const cell = v.lines.find((l) => l.id === row.line_id)?.values[row.month];
+      requireValue(cell && JSON.stringify(cell) === JSON.stringify(m));
+      requireValue(
+        !["estimated_accrual", "recorded_change"].includes(m.recognition),
+      );
+    } else
+      requireValue(
+        row.line_id === null &&
+          ["estimated_accrual", "recorded_change"].includes(m.recognition) &&
+          m.quality === "estimate",
+      );
+  }
+  // Every new archive-sourced leaf must have one and only one schedule member.
+  for (const line of v.lines)
+    for (const p of v.periods) {
+      const m = line.values[p.key];
+      if (
+        archiveLineIds.has(line.id) &&
+        m.source_ref &&
+        m.source_ref === p.offchain_revision &&
+        v.source_manifest[m.source_ref].kind === "counterparty_monthly_archive"
+      )
+        requireValue(
+          v.archive_income!.filter(
+            (r) =>
+              r.included_in_totals &&
+              r.line_id === line.id &&
+              r.month === p.key,
+          ).length === 1,
+        );
+    }
+}
+
 function validateOffchain(v: FinancialStatement, prime: Prime) {
   requireValue(Array.isArray(v.offchain_positions));
   const identities: Record<string, [string, string]> = {
@@ -243,7 +364,9 @@ function validateOffchain(v: FinancialStatement, prime: Prime) {
         prime === "grove" &&
           p.state !== "future" &&
           source &&
-          source.kind === "counterparty_monthly_accrual" &&
+          (source.kind === "counterparty_monthly_accrual" ||
+            (v.policy_version === archivePolicy &&
+              source.kind === "counterparty_monthly_archive")) &&
           source.revision_id === p.offchain_revision &&
           hash(source.result_hash) &&
           source.currency === "USD" &&
@@ -351,7 +474,7 @@ export function validateStatement(
   );
   const expected = yearMonths(year, new Date(Date.parse(v.as_of) + 86400000));
   const monthly = [monthlyPolicy, ...rollupPolicies].includes(v.policy_version);
-  const offchain = v.policy_version === offchainPolicy;
+  const offchain = offchainPolicies.includes(v.policy_version);
   const refs = (p: FinancialStatement["periods"][number]) => [
     p.financial_revision,
     p.monthly_revision,
@@ -366,7 +489,9 @@ export function validateStatement(
       refs(p).includes(ref) &&
       source &&
       (ref === p.offchain_revision
-        ? source.kind === "counterparty_monthly_accrual" &&
+        ? (source.kind === "counterparty_monthly_accrual" ||
+            (v.policy_version === archivePolicy &&
+              source.kind === "counterparty_monthly_archive")) &&
           date(source.cutoff) &&
           source.cutoff.startsWith(p.key) &&
           source.cutoff <= p.expected_cutoff!
@@ -477,11 +602,13 @@ export function validateStatement(
           requireValue(
             offchain &&
               prime === "grove" &&
-              [
+              ([
                 "investment.offchain.gaclo",
                 "investment.offchain.warehouse",
-              ].includes(l.id) &&
-              cell.recognition === "accrual" &&
+              ].includes(l.id)
+                ? cell.recognition === "accrual"
+                : v.policy_version === archivePolicy &&
+                  archiveLineIds.has(l.id)) &&
               ["supported", "estimate"].includes(cell.quality!) &&
               cell.period_start === `${p.key}-01` &&
               date(cell.period_end) &&
@@ -572,6 +699,7 @@ export function validateStatement(
         );
       }
   if (offchain) validateOffchain(v, prime);
+  if (v.policy_version === archivePolicy) validateArchive(v, prime);
 
   return v;
 }
@@ -679,6 +807,7 @@ export function financialLine(
     "net-revenue": "statement.net_revenue",
     "noninterest-expense": "statement.noninterest_expense",
     "net-income": "statement.net_income",
+    gains: "statement.gains",
     "allocation-0": "statement.family.sparklend",
     "allocation-1": "statement.family.aave_v3",
     "allocation-2": "statement.family.morpho_vaults",
