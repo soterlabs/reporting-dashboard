@@ -26,9 +26,9 @@ export function FinancialNumber({
       className={`financial-number amount-${tone}`}
       data-tone={tone}
       title={[reason, detail].filter(Boolean).join(" · ")}
-      aria-label={`${text} — ${reason}`}
     >
       {text}
+      <span className="number-basis"> — {reason}</span>
       {value != null &&
         tone !== "future" &&
         evidence?.quality === "estimate" && <sup aria-hidden="true">*</sup>}

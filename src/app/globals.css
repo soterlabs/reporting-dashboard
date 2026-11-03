@@ -1267,3 +1267,16 @@ footer {
 .financial-table tbody tr.total:hover td {
   background: var(--primary);
 }
+
+/* Keep accounting meaning available to screen readers without extra UI copy. */
+.number-basis {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

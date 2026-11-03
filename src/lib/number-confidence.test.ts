@@ -55,6 +55,8 @@ test("uncertainty wins over recognition; partial or mixed aggregates cannot appe
     { ...supported, recognition: "mixed_management_components" },
     { ...supported, recognition: "unknown" },
     { ...supported, basis: "unclassified" },
+    { ...supported, basis: "  UNCLASSIFIED  " },
+    { ...supported, basis: " " },
     { ...supported, recognition: "valuation" },
     { ...supported, recognition: "balance" },
     { ...supported, recognition: "capital_flow" },
@@ -190,4 +192,17 @@ test("cyclic component metadata cannot recurse forever", () => {
     a = r.lines.find((row) => row.id === "investment.rwa.stac")!;
   a.components = [{ id: a.id, sign: 1 }];
   assert.match(statementUncertainty(r, a.id, "2026-01")!, /cyclic/);
+});
+
+test("published override follows its actual dependency, not unavailable template children", () => {
+  const r = structuredClone(fixture);
+  const demand = r.lines.find((row) => row.id === "statement.demand")!;
+  demand.components = [{ id: "unknown.template.child", sign: 1 }];
+  assert.deepEqual(demand.values["2026-01"].component_ids, ["demand.total"]);
+  assert.equal(statementUncertainty(r, demand.id, "2026-01"), null);
+  demand.values["2026-01"].component_ids = [];
+  assert.match(
+    statementUncertainty(r, demand.id, "2026-01")!,
+    /Component confidence/,
+  );
 });

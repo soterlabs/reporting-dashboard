@@ -42,10 +42,12 @@ export function numberConfidence(
       tone: "uncertain",
       reason: "Partial amount: some components or periods are missing",
     };
+  const basis = evidence?.basis?.trim().toLowerCase();
   if (
     evidence?.status !== "available" ||
-    !evidence.basis ||
-    ["unknown", "unclassified"].includes(evidence.basis)
+    !basis ||
+    ["unknown", "unclassified", "existing"].includes(basis) ||
+    (evidence.quality !== undefined && evidence.quality !== "supported")
   )
     return {
       tone: "uncertain",
@@ -135,7 +137,8 @@ export function statementUncertainty(
       : (line.components || []).map((term) => term.id);
   if (
     !Array.isArray(components) ||
-    components.some((id) => typeof id !== "string")
+    components.some((id) => typeof id !== "string") ||
+    (!!line.components?.length && components.length === 0)
   )
     return "Component confidence is not established";
   for (const component of components) {

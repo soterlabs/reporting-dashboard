@@ -566,9 +566,11 @@ export async function PrimeDashboard({
                       </td>
                       <td>
                         {p.read.message ||
-                          (p.read.report
-                            ? `${p.read.report.freshness.stale ? "Delayed · " : ""}${p.read.report.data.result.venues.filter((v) => v.enabled).length} enabled allocations${p.read.report.data.result.complete ? "" : " · Inputs incomplete"}`
-                            : "TBD")}
+                          (p.read.report ? (
+                            `${p.read.report.freshness.stale ? "Delayed · " : ""}${p.read.report.data.result.venues.filter((v) => v.enabled).length} enabled allocations${p.read.report.data.result.complete ? "" : " · Inputs incomplete"}`
+                          ) : (
+                            <span className="tbd">TBD</span>
+                          ))}
                       </td>
                     </tr>
                   ))}
@@ -657,7 +659,7 @@ function ScopePerimeter({ prime, scope }: { prime: Prime; scope: Scope }) {
               : "Membership and elimination rules pending confirmation"}
           </p>
         </div>
-        <span className="badge">TBD</span>
+        <span className="badge amount-missing">TBD</span>
       </div>
       <div className="table-wrap">
         <table>
