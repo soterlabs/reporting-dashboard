@@ -352,8 +352,12 @@ function validateArchive(v: FinancialStatement, prime: Prime) {
 function offchainSourceKind(policy: string, prime: Prime, kind?: string) {
   if (prime === "spark" && policy === sparkIncomePolicy)
     return kind === "spark_onchain_components";
-  return prime === "grove" && (kind === "counterparty_monthly_accrual" ||
-    (archivePolicies.includes(policy) && kind === "counterparty_monthly_archive"));
+  return (
+    prime === "grove" &&
+    (kind === "counterparty_monthly_accrual" ||
+      (archivePolicies.includes(policy) &&
+        kind === "counterparty_monthly_archive"))
+  );
 }
 function validateOffchain(v: FinancialStatement, prime: Prime) {
   requireValue(Array.isArray(v.offchain_positions));
@@ -563,8 +567,11 @@ export function validateStatement(
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
-        (v.policy_version === sparkIncomePolicy && ["fees.sparklend", "fees.curator"].includes(l.id)) ||
-        (v.policy_version === sparkIncomePolicy && l.id.startsWith("investment.") && Array.isArray(l.components)) ||
+        (v.policy_version === sparkIncomePolicy &&
+          ["fees.sparklend", "fees.curator"].includes(l.id)) ||
+        (v.policy_version === sparkIncomePolicy &&
+          l.id.startsWith("investment.") &&
+          Array.isArray(l.components)) ||
         (rwaPolicies.includes(v.policy_version) &&
           l.id === "investment.reviewed_income" &&
           Array.isArray(l.components)));
@@ -607,15 +614,21 @@ export function validateStatement(
         if (cell.source_ref === p.offchain_revision)
           requireValue(
             offchain &&
-              ((prime === "spark" && v.policy_version === sparkIncomePolicy &&
-                (l.id.startsWith("fees.") || l.id.startsWith("gains.") || l.id.startsWith("investment.venue.") || l.id.startsWith("rewards.lending.sparklend.") || l.id === "rewards.unattributed_sparklend_receipts")) ||
-              (prime === "grove" && ([
-                "investment.offchain.gaclo",
-                "investment.offchain.warehouse",
-              ].includes(l.id)
-                ? cell.recognition === "accrual"
-                : archivePolicies.includes(v.policy_version) &&
-                  archiveLineIds.has(l.id)))) &&
+              ((prime === "spark" &&
+                v.policy_version === sparkIncomePolicy &&
+                (l.id.startsWith("fees.") ||
+                  l.id.startsWith("gains.") ||
+                  l.id.startsWith("investment.venue.") ||
+                  l.id.startsWith("rewards.lending.sparklend.") ||
+                  l.id === "rewards.unattributed_sparklend_receipts")) ||
+                (prime === "grove" &&
+                  ([
+                    "investment.offchain.gaclo",
+                    "investment.offchain.warehouse",
+                  ].includes(l.id)
+                    ? cell.recognition === "accrual"
+                    : archivePolicies.includes(v.policy_version) &&
+                      archiveLineIds.has(l.id)))) &&
               ["supported", "estimate"].includes(cell.quality!) &&
               cell.period_start === `${p.key}-01` &&
               date(cell.period_end) &&
@@ -831,12 +844,14 @@ export function financialLine(
 export function metricExplanation(
   item?: Metric,
   report?: FinancialStatement | null,
+  labels?: Record<string, string>,
 ) {
   if (!item) return "Classification or inputs not yet available";
   if (item.status === "future") return "Future period; no forecast";
   const missing = item.missing_components
     ?.map(
       (id) =>
+        labels?.[id] ||
         report?.lines.find((line) => line.id === id)?.label ||
         id
           .replace(/^(unclassified|statement)\./, "")

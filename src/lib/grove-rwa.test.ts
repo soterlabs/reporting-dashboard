@@ -48,11 +48,11 @@ test("both RWA income rows contain real values for every month from January thro
   assert.ok(collapsedStatementGroups(rows).has("statement.family.rwa_funds"));
   assert.equal(
     rows.find((row) => row.id === "interest")!.label,
-    "Investment income from allocations",
+    "Allocation revenue",
   );
   assert.equal(
     rows.find((row) => row.id === "net-interest")!.label,
-    "Net investment income after funding",
+    "Net interest income",
   );
 });
 
@@ -68,7 +68,7 @@ test("the same CSV contains numeric history and YTD for the two venues without i
   );
   for (const id of ["investment.rwa.stac", "investment.rwa.jaaa"]) {
     const metric = financialLine(report, id)!;
-    const exported = rows.find((row) => row[2] === metric.label)!;
+    const exported = rows.find((row) => row[rows[0].indexOf("Row ID")] === id)!;
     for (let month = 1; month <= 10; month++) {
       assert.equal(
         exported[month + 2],
@@ -78,7 +78,7 @@ test("the same CSV contains numeric history and YTD for the two venues without i
     assert.equal(exported[15], metric.total.value);
   }
   const investment = rows.find(
-    (row) => row[2] === "Investment income from allocations",
+    (row) => row[2] === "Allocation revenue",
   )!;
   assert.equal(
     investment[15],

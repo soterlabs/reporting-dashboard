@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import {
-  financialLine,
   statementMonths,
   statementTotalLabel,
   metricExplanation,
@@ -11,7 +10,12 @@ import {
   type FinancialStatement,
 } from "@/lib/financial";
 import { FinancialNumber } from "./financial-number";
-import { statementUncertainty } from "@/lib/number-confidence";
+import {
+  statementFinancialLine,
+  statementRowUncertainty,
+} from "@/lib/statement-values";
+import { visibleStatementLines } from "@/lib/statement-layout";
+import type { CSSProperties } from "react";
 import {
   totalLabel,
   collapsedStatementGroups,
@@ -33,18 +37,17 @@ export function IncomeStatement({
   retained?: boolean;
 }) {
   const months = statementMonths(financial, calendarMonths);
-  const [collapsed, setCollapsed] = useState<Set<string>>(() =>
-    collapsedStatementGroups(rows),
+  const labels = Object.fromEntries(rows.map((row) => [row.id, row.label]));
+  const values = new Map(
+    rows.map((row) => [row.id, statementFinancialLine(financial, row)]),
   );
-  const hasChildren = (id: string) => rows.some((r) => r.parent === id);
-  function visible(row: StatementLine): boolean {
-    if (!row.parent) return true;
-    if (collapsed.has(row.parent)) return false;
-    const parent = rows.find((r) => r.id === row.parent);
-    return !parent || visible(parent);
-  }
+  // Expanded IDs keep newly arriving API groups collapsed by default.
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
+  const groups = collapsedStatementGroups(rows);
+  const collapsed = new Set([...groups].filter((id) => !expanded.has(id)));
+  const hasChildren = (id: string) => groups.has(id);
   function toggle(id: string) {
-    setCollapsed((current) => {
+    setExpanded((current) => {
       const next = new Set(current);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -65,13 +68,7 @@ export function IncomeStatement({
         <button
           className="button"
           onClick={() =>
-            setCollapsed(
-              collapsed.size
-                ? new Set()
-                : new Set(
-                    rows.filter((r) => hasChildren(r.id)).map((r) => r.id),
-                  ),
-            )
+            setExpanded(collapsed.size ? new Set(groups) : new Set())
           }
         >
           {collapsed.size ? "Expand all" : "Collapse all"}
@@ -109,12 +106,20 @@ export function IncomeStatement({
             </tr>
           </thead>
           <tbody>
-            {rows.filter(visible).map((row) => (
-              <tr key={row.id} className={row.kind || ""}>
-                <th scope="row" style={{ paddingLeft: 18 + row.level * 17 }}>
+            {visibleStatementLines(rows, collapsed).map((row) => (
+              <tr
+                key={row.id}
+                data-row-id={row.id}
+                data-depth={row.level}
+                className={row.kind || (hasChildren(row.id) ? "group" : "")}
+              >
+                <th
+                  scope="row"
+                  style={{ "--statement-depth": row.level } as CSSProperties}
+                >
                   {hasChildren(row.id) ? (
                     <button
-                      className="row-toggle"
+                      className="row-toggle statement-label"
                       aria-expanded={!collapsed.has(row.id)}
                       onClick={() => toggle(row.id)}
                     >
@@ -123,29 +128,35 @@ export function IncomeStatement({
                       ) : (
                         <ChevronDown size={13} />
                       )}
-                      {row.label}
+                      <span>{row.label}</span>
                     </button>
                   ) : (
-                    row.label
+                    <span className="statement-label">
+                      <span className="row-toggle-spacer" aria-hidden="true" />
+                      <span>{row.label}</span>
+                    </span>
                   )}
                 </th>
                 {months.map((m) => {
-                  const line = financialLine(financial, row.id);
+                  const line = values.get(row.id);
                   const item = line?.values[m.key];
                   return (
-                    <td key={m.key} title={metricExplanation(item, financial)}>
+                    <td
+                      key={m.key}
+                      title={metricExplanation(item, financial, labels)}
+                    >
                       {row.kind !== "section" && !row.structural && (
                         <FinancialNumber
                           value={metricAmount(item)}
                           evidence={item}
                           future={m.state === "future"}
-                          uncertainReason={statementUncertainty(
+                          uncertainReason={statementRowUncertainty(
                             financial,
-                            line?.id || row.id,
+                            row,
                             m.key,
                             retained,
                           )}
-                          detail={metricExplanation(item, financial)}
+                          detail={metricExplanation(item, financial, labels)}
                         />
                       )}
                     </td>
@@ -154,25 +165,25 @@ export function IncomeStatement({
                 <td
                   className="year-total"
                   title={metricExplanation(
-                    financialLine(financial, row.id)?.total,
+                    values.get(row.id)?.total,
                     financial,
+                    labels,
                   )}
                 >
                   {row.kind !== "section" && !row.structural && (
                     <FinancialNumber
-                      value={metricAmount(
-                        financialLine(financial, row.id)?.total,
-                      )}
-                      evidence={financialLine(financial, row.id)?.total}
-                      uncertainReason={statementUncertainty(
+                      value={metricAmount(values.get(row.id)?.total)}
+                      evidence={values.get(row.id)?.total}
+                      uncertainReason={statementRowUncertainty(
                         financial,
-                        financialLine(financial, row.id)?.id || row.id,
+                        row,
                         undefined,
                         retained,
                       )}
                       detail={metricExplanation(
-                        financialLine(financial, row.id)?.total,
+                        values.get(row.id)?.total,
                         financial,
+                        labels,
                       )}
                     />
                   )}

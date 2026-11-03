@@ -1004,7 +1004,7 @@ footer {
   scrollbar-color: var(--border) transparent;
 }
 .financial-table {
-  min-width: 1720px;
+  min-width: 1750px;
   isolation: isolate;
   table-layout: fixed;
 }
@@ -1015,7 +1015,7 @@ footer {
   z-index: 2;
 }
 .financial-table th:first-child {
-  width: 340px;
+  width: 370px;
   position: sticky;
   left: 0;
   text-align: left;
@@ -1066,10 +1066,27 @@ footer {
   border-left: 1px solid var(--border);
   font-weight: 500;
 }
+.financial-table tbody th {
+  padding-inline-start: calc(14px + var(--statement-depth, 0) * 20px);
+}
+.financial-table .group th {
+  font-weight: 550;
+}
+.statement-label {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: 7px;
+  align-items: start;
+}
+.statement-label > svg,
+.row-toggle-spacer {
+  width: 14px;
+  height: 17px;
+}
+.statement-label > span:last-child {
+  overflow-wrap: anywhere;
+}
 .row-toggle {
-  display: flex;
-  gap: 6px;
-  align-items: center;
   padding: 0;
   text-align: left;
   border: 0;
@@ -1166,10 +1183,10 @@ footer {
     min-width: 105px;
   }
   .financial-table th:first-child {
-    width: 205px;
+    width: 255px;
   }
   .financial-table {
-    min-width: 1585px;
+    min-width: 1635px;
   }
   .financial-table tbody th {
     font-size: 11px;
@@ -1182,8 +1199,11 @@ footer {
   .financial-wrap {
     max-height: 630px;
   }
-  .row-toggle {
-    gap: 3px;
+  .financial-table tbody th {
+    padding-inline-start: calc(10px + var(--statement-depth, 0) * 14px);
+  }
+  .statement-label {
+    gap: 5px;
   }
   .report-status {
     font-size: 10px;
