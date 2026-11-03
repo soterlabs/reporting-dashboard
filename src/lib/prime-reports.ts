@@ -309,7 +309,7 @@ function buildStatementLines(
       interest.label =
         prime === "grove"
           ? "Investment income from allocations"
-          : "Income from allocations";
+          : prime === "spark" ? "Revenue from allocations" : "Income from allocations";
       base.find((row) => row.id === "rewards")!.label =
         "Other incentives and rewards received";
     }
@@ -318,6 +318,11 @@ function buildStatementLines(
       inserts.set(parent, [...(inserts.get(parent) || []), row]);
     const groups = new Set<string>();
     for (const definition of financial.lines) {
+      if (financial.policy_version === sparkIncomePolicy && prime === "spark" &&
+          definition.id.startsWith("fees.curator.")) {
+        add("curator", line(definition.id, definition.label, 2, "curator"));
+        continue;
+      }
       if (
         financial.policy_version === sparkIncomePolicy && prime === "spark" &&
         (definition.id.startsWith("rewards.lending.sparklend.") ||
@@ -373,7 +378,9 @@ function buildStatementLines(
             linkedReward
               ? "Allocation-linked incentives and rewards"
               : parent === "interest"
-                ? `Reviewed ${family} income`
+                ? prime === "spark"
+                  ? family === "Other reviewed vaults" ? "Other reviewed income" : `${family} revenue`
+                  : `Reviewed ${family} income`
                 : family,
             2,
             parent,

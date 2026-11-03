@@ -71,8 +71,7 @@ test("stale and lagging zero evidence stays visible", () => {
 });
 
 test("the real Spark v3.6 projection passes source and derived-subtotal validation", () => {
-  // Retained source metadata and ten fee-related lines from a read-only
-  // production projection. Unrelated lines are omitted from this fixture.
+  // Read-only production projection plus a pinned live reporting-component snapshot.
   const path = new URL("./fixtures/spark-fees-statement.json", import.meta.url);
   const doc = validateStatement(JSON.parse(readFileSync(path, "utf8")), "spark", 2026);
   assert.equal(financialLine(doc, "protocol")?.values["2026-10"].recognition, "receipt_in_kind");
@@ -90,4 +89,26 @@ test("the real Spark v3.6 projection passes source and derived-subtotal validati
   // Unpublished months must omit optional references, rather than emit null.
   Object.assign(residual.values["2026-01"], { source_ref: null });
   assert.throws(() => validateStatement(missing, "spark", 2026));
+});
+
+
+test("Spark monthly components retain their source, confidence and native venue hierarchy", () => {
+  const doc = validateStatement(JSON.parse(readFileSync(new URL("./fixtures/spark-fees-statement.json", import.meta.url), "utf8")), "spark", 2026);
+  const rows = statementLines("spark", "individual", doc);
+  assert.equal(rows.find((row) => row.id === "interest")?.label, "Revenue from allocations");
+  assert.ok(rows.some((row) => row.label === "Maple revenue"));
+  assert.ok(rows.some((row) => row.label === "Other reviewed income"));
+  assert.equal(rows.some((row) => row.label.startsWith("Reviewed ")), false);
+  assert.equal(doc.lines.filter((row) => row.id.startsWith("investment.venue.")).length, 27);
+  const fee = doc.lines.find((row) => row.id === "fees.curator.S10")!.values["2026-11"];
+  assert.equal(fee.recognition, "accrual");
+  assert.equal(fee.quality, "supported");
+  assert.equal(fee.period_end, "2026-11-01");
+  const net = doc.lines.find((row) => row.id === "gains.sparklend_nonstable")!.values["2026-11"];
+  assert.equal(net.quality, "estimate");
+  const source = doc.source_manifest[fee.source_ref!];
+  assert.equal(source.kind, "spark_onchain_components");
+  const bad = structuredClone(doc);
+  bad.source_manifest[fee.source_ref!].kind = "counterparty_monthly_archive";
+  assert.throws(() => validateStatement(bad, "spark", 2026));
 });
