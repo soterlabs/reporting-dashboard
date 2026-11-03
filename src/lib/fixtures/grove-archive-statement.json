@@ -5208,7 +5208,7 @@
           "source_paths": [
             "data/agora-monthly-cash.csv#2026-01.agora"
           ],
-          "quality": "estimate",
+          "quality": "supported",
           "period_start": "2026-01-01",
           "period_end": "2026-01-31",
           "source_currency": "AUSD",
@@ -5298,7 +5298,7 @@
           "source_paths": [
             "data/agora-monthly-cash.csv#2026-06.agora"
           ],
-          "quality": "estimate",
+          "quality": "supported",
           "period_start": "2026-06-01",
           "period_end": "2026-06-30",
           "source_currency": "AUSD",
@@ -5316,7 +5316,7 @@
           "source_paths": [
             "data/agora-monthly-cash.csv#2026-07.agora"
           ],
-          "quality": "estimate",
+          "quality": "supported",
           "period_start": "2026-07-01",
           "period_end": "2026-07-31",
           "source_currency": "AUSD",
@@ -7664,7 +7664,6 @@
           "source_refs": [
             "4f5e1a7d05354f5d991310f1e687f13707178021498df4d6327d7e1451151a8b"
           ],
-          "quality": "estimate",
           "component_ids": [
             "rewards.lending.aave.horizon_rlusd",
             "rewards.lending.aave.horizon_usdc",
@@ -7799,7 +7798,6 @@
           "source_refs": [
             "3e65ca678a92553635dfba35ec71bb6ed83d18fbca8e3aea226accaabf932e48"
           ],
-          "quality": "estimate",
           "component_ids": [
             "rewards.lending.aave.horizon_rlusd",
             "rewards.lending.aave.horizon_usdc",
@@ -8382,7 +8380,6 @@
             "3e65ca678a92553635dfba35ec71bb6ed83d18fbca8e3aea226accaabf932e48",
             "8914fb8550a197687465abd6ebcb298eb6bf939db48692cc167e62d5af0610b6"
           ],
-          "quality": "estimate",
           "component_ids": [
             "investment.maple_syrup_usdc",
             "investment.aave.horizon_rlusd",
@@ -10157,7 +10154,6 @@
             "3e65ca678a92553635dfba35ec71bb6ed83d18fbca8e3aea226accaabf932e48",
             "8914fb8550a197687465abd6ebcb298eb6bf939db48692cc167e62d5af0610b6"
           ],
-          "quality": "estimate",
           "component_ids": [
             "statement.interest",
             "statement.funding"
@@ -10700,7 +10696,6 @@
             "3e65ca678a92553635dfba35ec71bb6ed83d18fbca8e3aea226accaabf932e48",
             "8914fb8550a197687465abd6ebcb298eb6bf939db48692cc167e62d5af0610b6"
           ],
-          "quality": "estimate",
           "component_ids": [
             "statement.noninterest_income",
             "statement.net_interest"
@@ -11665,7 +11660,6 @@
             "3e65ca678a92553635dfba35ec71bb6ed83d18fbca8e3aea226accaabf932e48",
             "8914fb8550a197687465abd6ebcb298eb6bf939db48692cc167e62d5af0610b6"
           ],
-          "quality": "estimate",
           "component_ids": [
             "statement.net_revenue",
             "statement.noninterest_expense",
@@ -15356,7 +15350,7 @@
         "source_paths": [
           "data/agora-monthly-cash.csv#2026-01.agora"
         ],
-        "quality": "estimate",
+        "quality": "supported",
         "period_start": "2026-01-01",
         "period_end": "2026-01-31",
         "source_currency": "AUSD",
@@ -16128,7 +16122,7 @@
         "source_paths": [
           "data/agora-monthly-cash.csv#2026-06.agora"
         ],
-        "quality": "estimate",
+        "quality": "supported",
         "period_start": "2026-06-01",
         "period_end": "2026-06-30",
         "source_currency": "AUSD",
@@ -16228,7 +16222,7 @@
         "source_paths": [
           "data/agora-monthly-cash.csv#2026-07.agora"
         ],
-        "quality": "estimate",
+        "quality": "supported",
         "period_start": "2026-07-01",
         "period_end": "2026-07-31",
         "source_currency": "AUSD",
@@ -16387,6 +16381,6 @@
       }
     }
   ],
-  "report_hash": "54ac55e6318e862e902258add87502f9dd6ccece1056d5d6fb5c0a3ec44f2d3e",
+  "report_hash": "7dfa685c80ed9f5172799d9732fbda564e6e00a0822f15d406e5d7bb3cb56d53",
   "source_lag_periods": []
 }
