@@ -1412,6 +1412,231 @@
         ],
         "source_refs": []
       }
+    },
+    {
+      "id": "rewards.unattributed_sparklend_receipts",
+      "label": "Unclassified SparkLend receipts",
+      "family": "Unclassified receipts",
+      "aggregation": "leaf",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "received_sparklend_distributions_pending_fee_attribution",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "quality": "estimate"
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "received_sparklend_distributions_pending_fee_attribution",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "quality": "estimate"
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "received_sparklend_distributions_pending_fee_attribution",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "quality": "estimate"
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "received_sparklend_distributions_pending_fee_attribution",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "quality": "estimate"
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "received_sparklend_distributions_pending_fee_attribution",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "quality": "estimate"
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "received_sparklend_distributions_pending_fee_attribution",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "quality": "estimate"
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "received_sparklend_distributions_pending_fee_attribution",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "quality": "estimate"
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "received_sparklend_distributions_pending_fee_attribution",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "quality": "estimate"
+        },
+        "2026-09": {
+          "value": "0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "receipt_in_kind",
+          "basis": "all_sparklend_receipts_attributed_to_reserve_fees",
+          "reason": null,
+          "source_paths": [],
+          "source_ref": "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        },
+        "2026-10": {
+          "value": "0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "receipt_in_kind",
+          "basis": "all_sparklend_receipts_attributed_to_reserve_fees",
+          "reason": null,
+          "source_paths": [],
+          "source_ref": "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb"
+        },
+        "2026-11": {
+          "value": "0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "receipt_in_kind",
+          "basis": "all_sparklend_receipts_attributed_to_reserve_fees",
+          "reason": null,
+          "source_paths": [],
+          "source_ref": "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3"
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "0",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "receipt_in_kind",
+        "basis": "explicit_signed_management_components",
+        "reason": "missing_components",
+        "source_paths": [],
+        "missing_components": [
+          "rewards.lending.sparklend.dai",
+          "rewards.lending.sparklend.pyusd",
+          "rewards.lending.sparklend.usdc",
+          "rewards.lending.sparklend.usds",
+          "rewards.lending.sparklend.usdt"
+        ],
+        "source_refs": [
+          "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb",
+          "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3",
+          "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        ]
+      }
     }
   ],
   "total_label": "YTD",
@@ -1605,5 +1830,5 @@
   "offchain_positions": [],
   "archive_income": [],
   "source_lag_periods": [],
-  "report_hash": "358e939b098c56d4c42b16c0f700871f88072d7ec1f73f0e07f4618895cbb0e3"
+  "report_hash": "66532e6ef04b5e462acc9042f77cbe38a824839f5c872e508c08c5b53e87833a"
 }

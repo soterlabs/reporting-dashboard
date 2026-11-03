@@ -71,7 +71,7 @@ test("stale and lagging zero evidence stays visible", () => {
 });
 
 test("the real Spark v3.6 projection passes source and derived-subtotal validation", () => {
-  // Retained source metadata and seven fee-related lines from a read-only
+  // Retained source metadata and eight fee-related lines from a read-only
   // production projection. Unrelated lines are omitted from this fixture.
   const path = new URL("./fixtures/spark-fees-statement.json", import.meta.url);
   const doc = validateStatement(JSON.parse(readFileSync(path, "utf8")), "spark", 2026);
@@ -79,4 +79,9 @@ test("the real Spark v3.6 projection passes source and derived-subtotal validati
   const broken = structuredClone(doc);
   financialLine(broken, "protocol")!.values["2026-10"].source_refs = [];
   assert.throws(() => validateStatement(broken, "spark", 2026));
+  const missing = structuredClone(doc);
+  const residual = missing.lines.find((l) => l.id === "rewards.unattributed_sparklend_receipts")!;
+  // Unpublished months must omit optional references, rather than emit null.
+  Object.assign(residual.values["2026-01"], { source_ref: null });
+  assert.throws(() => validateStatement(missing, "spark", 2026));
 });
