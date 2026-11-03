@@ -1,0 +1,1609 @@
+{
+  "schema_version": "3.0",
+  "policy_version": "prime-management.spark-income.v3.6",
+  "scope": "individual",
+  "prime": "spark",
+  "year": 2026,
+  "as_of": "2026-11-02",
+  "periods": [
+    {
+      "key": "2026-01",
+      "state": "complete",
+      "expected_cutoff": "2026-01-31",
+      "actual_cutoff": "2026-01-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "50c7e5d1c6a7024529c72fd4f488fdfae882b479030dce3eae03e4272c2d7cf0",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-02",
+      "state": "complete",
+      "expected_cutoff": "2026-02-28",
+      "actual_cutoff": "2026-02-28",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "7ddbb79164037214fd9a8d680e1339c0f5fe50b18737a4100d1a0993dc5e854e",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-03",
+      "state": "complete",
+      "expected_cutoff": "2026-03-31",
+      "actual_cutoff": "2026-03-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "e717faedbe2fd446331a24590703aaf1f4858061c32705a80295222031929811",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-04",
+      "state": "complete",
+      "expected_cutoff": "2026-04-30",
+      "actual_cutoff": "2026-04-30",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "7410b41add8393f4994d27985593dacf9a5f01660de3a4f0a1441f45316bd561",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-05",
+      "state": "complete",
+      "expected_cutoff": "2026-05-31",
+      "actual_cutoff": "2026-05-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "e4003ce80aa78e6b2f0297a501aaeff1803a6b13fc13fede22b609b8d05be805",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-06",
+      "state": "complete",
+      "expected_cutoff": "2026-06-30",
+      "actual_cutoff": "2026-06-30",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "a17207309dc3414545a9d9652e1482483d626df0b78e318861ed9ff9753db9ef",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-07",
+      "state": "complete",
+      "expected_cutoff": "2026-07-31",
+      "actual_cutoff": "2026-07-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "30e2d8417a8b04ff5cc0629e4f1b2d37399a4a1b7609e84adc2c959e45ec3a56",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-08",
+      "state": "complete",
+      "expected_cutoff": "2026-08-31",
+      "actual_cutoff": "2026-08-31",
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": "02aa4029963ca041fa15516f48373d780f29721b309a4dcdb1d544aaefc2f842",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-09",
+      "state": "complete",
+      "expected_cutoff": "2026-09-30",
+      "actual_cutoff": "2026-09-30",
+      "financial_revision": "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3",
+      "stale": false,
+      "monthly_revision": "101a05dd42ee906cba3fcfca2c3ba686a15689947d84cc8e44c645875066f0d6",
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-10",
+      "state": "complete",
+      "expected_cutoff": "2026-10-31",
+      "actual_cutoff": "2026-10-31",
+      "financial_revision": "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb",
+      "stale": false,
+      "monthly_revision": null,
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-11",
+      "state": "partial",
+      "expected_cutoff": "2026-11-02",
+      "actual_cutoff": "2026-11-01",
+      "financial_revision": "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3",
+      "stale": true,
+      "monthly_revision": null,
+      "offchain_revision": null
+    },
+    {
+      "key": "2026-12",
+      "state": "future",
+      "expected_cutoff": null,
+      "actual_cutoff": null,
+      "financial_revision": null,
+      "stale": false,
+      "monthly_revision": null,
+      "offchain_revision": null
+    }
+  ],
+  "lines": [
+    {
+      "id": "rewards.lending.sparklend.usds",
+      "label": "SparkLend USDS reserve treasury receipts",
+      "family": "SparkLend fees",
+      "aggregation": "leaf",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "219616.849890887679914591",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S1.external_revenue"
+          ],
+          "source_ref": "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        },
+        "2026-10": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "331810.032368322669374736",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S1.external_revenue"
+          ],
+          "source_ref": "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb"
+        },
+        "2026-11": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "0",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S1.external_revenue"
+          ],
+          "source_ref": "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3"
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "551426.882259210349289327",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "receipt_in_kind",
+        "basis": "explicit_signed_management_components",
+        "reason": "missing_components",
+        "source_paths": [],
+        "missing_components": [
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ],
+        "source_refs": [
+          "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb",
+          "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3",
+          "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        ]
+      }
+    },
+    {
+      "id": "rewards.lending.sparklend.usdc",
+      "label": "SparkLend USDC reserve treasury receipts",
+      "family": "SparkLend fees",
+      "aggregation": "leaf",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "8798.582856",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S2.external_revenue"
+          ],
+          "source_ref": "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        },
+        "2026-10": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "15514.707462",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S2.external_revenue"
+          ],
+          "source_ref": "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb"
+        },
+        "2026-11": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "0",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S2.external_revenue"
+          ],
+          "source_ref": "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3"
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "24313.290318",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "receipt_in_kind",
+        "basis": "explicit_signed_management_components",
+        "reason": "missing_components",
+        "source_paths": [],
+        "missing_components": [
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ],
+        "source_refs": [
+          "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb",
+          "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3",
+          "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        ]
+      }
+    },
+    {
+      "id": "rewards.lending.sparklend.usdt",
+      "label": "SparkLend USDT reserve treasury receipts",
+      "family": "SparkLend fees",
+      "aggregation": "leaf",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "96042.868127",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S3.external_revenue"
+          ],
+          "source_ref": "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        },
+        "2026-10": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "110078.786148",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S3.external_revenue"
+          ],
+          "source_ref": "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb"
+        },
+        "2026-11": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "0",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S3.external_revenue"
+          ],
+          "source_ref": "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3"
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "206121.654275",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "receipt_in_kind",
+        "basis": "explicit_signed_management_components",
+        "reason": "missing_components",
+        "source_paths": [],
+        "missing_components": [
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ],
+        "source_refs": [
+          "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb",
+          "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3",
+          "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        ]
+      }
+    },
+    {
+      "id": "rewards.lending.sparklend.dai",
+      "label": "SparkLend DAI reserve treasury receipts",
+      "family": "SparkLend fees",
+      "aggregation": "leaf",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "65507.126349718059204165",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S4.external_revenue"
+          ],
+          "source_ref": "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        },
+        "2026-10": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "70417.419132363096899386",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S4.external_revenue"
+          ],
+          "source_ref": "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb"
+        },
+        "2026-11": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "0",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S4.external_revenue"
+          ],
+          "source_ref": "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3"
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "135924.545482081156103551",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "receipt_in_kind",
+        "basis": "explicit_signed_management_components",
+        "reason": "missing_components",
+        "source_paths": [],
+        "missing_components": [
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ],
+        "source_refs": [
+          "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb",
+          "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3",
+          "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        ]
+      }
+    },
+    {
+      "id": "rewards.lending.sparklend.pyusd",
+      "label": "SparkLend PYUSD reserve treasury receipts",
+      "family": "SparkLend fees",
+      "aggregation": "leaf",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "source_not_published",
+          "source_paths": []
+        },
+        "2026-09": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "9404.22338",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S5.external_revenue"
+          ],
+          "source_ref": "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        },
+        "2026-10": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "10253.830057",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S5.external_revenue"
+          ],
+          "source_ref": "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb"
+        },
+        "2026-11": {
+          "unit": "USD",
+          "basis": "sparklend_reserve_treasury_spToken_receipts",
+          "value": "0",
+          "reason": null,
+          "status": "available",
+          "known_value": null,
+          "recognition": "receipt_in_kind",
+          "source_paths": [
+            "result.venue_breakdown.S5.external_revenue"
+          ],
+          "source_ref": "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3"
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "19658.053437",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "receipt_in_kind",
+        "basis": "explicit_signed_management_components",
+        "reason": "missing_components",
+        "source_paths": [],
+        "missing_components": [
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ],
+        "source_refs": [
+          "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb",
+          "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3",
+          "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        ]
+      }
+    },
+    {
+      "id": "fees.sparklend",
+      "label": "SparkLend fees",
+      "aggregation": "subtotal",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdt"
+          ],
+          "source_refs": [],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-09": {
+          "value": "399369.650603605739118756",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "receipt_in_kind",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+          ],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-10": {
+          "value": "538074.775167685766274122",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "receipt_in_kind",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb"
+          ],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-11": {
+          "value": "0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "receipt_in_kind",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3"
+          ],
+          "component_ids": [
+            "rewards.lending.sparklend.usds",
+            "rewards.lending.sparklend.usdc",
+            "rewards.lending.sparklend.usdt",
+            "rewards.lending.sparklend.dai",
+            "rewards.lending.sparklend.pyusd"
+          ]
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": "937444.425771291505392878",
+        "unit": "USD",
+        "status": "partial",
+        "recognition": "receipt_in_kind",
+        "basis": "explicit_signed_management_components",
+        "reason": "missing_components",
+        "source_paths": [],
+        "missing_components": [
+          "rewards.lending.sparklend.dai",
+          "rewards.lending.sparklend.pyusd",
+          "rewards.lending.sparklend.usdc",
+          "rewards.lending.sparklend.usds",
+          "rewards.lending.sparklend.usdt"
+        ],
+        "source_refs": [
+          "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb",
+          "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3",
+          "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3"
+        ]
+      },
+      "components": [
+        {
+          "id": "rewards.lending.sparklend.usds",
+          "sign": 1
+        },
+        {
+          "id": "rewards.lending.sparklend.usdc",
+          "sign": 1
+        },
+        {
+          "id": "rewards.lending.sparklend.usdt",
+          "sign": 1
+        },
+        {
+          "id": "rewards.lending.sparklend.dai",
+          "sign": 1
+        },
+        {
+          "id": "rewards.lending.sparklend.pyusd",
+          "sign": 1
+        }
+      ]
+    },
+    {
+      "id": "fees.curator",
+      "label": "Morpho curator fees",
+      "aggregation": "leaf",
+      "values": {
+        "2026-01": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-02": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-03": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-04": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-05": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-06": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-07": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-08": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-09": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-10": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-11": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "valued_morpho_fee_share_ledger_required",
+          "source_paths": []
+        },
+        "2026-12": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "future",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "future_period",
+          "source_paths": []
+        }
+      },
+      "total": {
+        "value": null,
+        "known_value": null,
+        "unit": "USD",
+        "status": "unavailable",
+        "recognition": "unknown",
+        "basis": "explicit_signed_management_components",
+        "reason": "missing_components",
+        "source_paths": [],
+        "missing_components": [
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08",
+          "2026-09",
+          "2026-10",
+          "2026-11"
+        ],
+        "source_refs": []
+      }
+    }
+  ],
+  "total_label": "YTD",
+  "source_manifest": {
+    "def7923faa21336000816ce8f1b4c892814b500505f460cb462677ac4b7393f3": {
+      "cutoff": "2026-09-30",
+      "computed_at": "2026-10-01T20:23:03.962630+00:00",
+      "provisional": true,
+      "result_hash": "e044a657b236fce5c6b78e44b2d258e4d06e3525dbfcbde8aa53cd94afa0c5c8",
+      "revision_id": "38a9d31b57a8b364a86411f07d1b037439bef7c5327c6797d0f0a7f5a66f7c9d",
+      "code_version": "536f1492089ed82fbf6eaabb956f7a194b887d47",
+      "input_revision": "92b7a0ac4a3dbacc0ad134aee77c93ea143e22404a71b03ae035fb578aff93a3",
+      "excluded_inputs": [
+        "monthly_distribution_rewards"
+      ],
+      "configuration_version": "244e91c22e06b4cbf1a573239571363f057c4c8ce9d40dc2e2735fd07f594f43"
+    },
+    "2d8f79810acb11eb98053952c44c3d69a8c85cda42d23100dad0f16b985e16bb": {
+      "cutoff": "2026-10-31",
+      "computed_at": "2026-11-02T22:28:05.994577+00:00",
+      "provisional": true,
+      "result_hash": "88a1570a572b5c0a788df36f0915c26b4181c9fe6bca6cc5090fbcb4005e28aa",
+      "revision_id": "8464a50a7b2cd0572336b3a3e428ce828ac56b389a612e6126370c035b5e6667",
+      "code_version": "394d353e999633eceed68c3727f18b9e493b6f21",
+      "input_revision": "a867002a85b5d9dbc9f42ccadf3c7d374cd245e49fb9b5539405088a05e1f8b7",
+      "excluded_inputs": [
+        "monthly_distribution_rewards"
+      ],
+      "configuration_version": "1396a71440f5476ce8a9b9d87eb3bdfc587861cd139ad0481d76d4ed26314529"
+    },
+    "7978a01c5100016a024670eab9be3504b0f7c16a0e08ee8a2cb0b420540e30c3": {
+      "cutoff": "2026-11-01",
+      "computed_at": "2026-11-02T21:47:09.017410+00:00",
+      "provisional": true,
+      "result_hash": "589b30bc8e201686132ae522fb063a0c5c79fabfe19abdaea12144db211a14dd",
+      "revision_id": "789ace60139327c5bca4dbec3a3f3a035e6a7228b5cf6fb52a8b137c010ddcab",
+      "code_version": "394d353e999633eceed68c3727f18b9e493b6f21",
+      "input_revision": "8477e2413a61e97d78abfc5c03b99ed6aa1624427b034e243fd737fdb9dd202b",
+      "excluded_inputs": [
+        "monthly_distribution_rewards"
+      ],
+      "configuration_version": "1396a71440f5476ce8a9b9d87eb3bdfc587861cd139ad0481d76d4ed26314529"
+    },
+    "50c7e5d1c6a7024529c72fd4f488fdfae882b479030dce3eae03e4272c2d7cf0": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-01/summary.md",
+      "git_blob_sha": "a2c4beb2b2ec87440077499492c39419f423c881",
+      "result_hash": "2808d258ec703df39c0e45cf96ae12b96dc80ba1cb7613d227c95ff2be371213",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-01-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-01/summary.md",
+      "demand_rounding_delta": "0.00",
+      "sky_rounding_delta": "0.00",
+      "revision_id": "50c7e5d1c6a7024529c72fd4f488fdfae882b479030dce3eae03e4272c2d7cf0"
+    },
+    "7ddbb79164037214fd9a8d680e1339c0f5fe50b18737a4100d1a0993dc5e854e": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-02/summary.md",
+      "git_blob_sha": "9c107b4dc88528cf3ba81da178b3aa42c07396f1",
+      "result_hash": "4bd012b5913d8c31989d8ff903a765186d7463df9e8b9f8082e4e8f97a99be7c",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-02-28",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-02/summary.md",
+      "demand_rounding_delta": "0.00",
+      "sky_rounding_delta": "0.00",
+      "revision_id": "7ddbb79164037214fd9a8d680e1339c0f5fe50b18737a4100d1a0993dc5e854e"
+    },
+    "e717faedbe2fd446331a24590703aaf1f4858061c32705a80295222031929811": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-03/summary.md",
+      "git_blob_sha": "fdaabf7b3642013a0ff3f17d4375b476a3f29d0f",
+      "result_hash": "f48a55764ad23cbf214e5988b084425273157f6486b5a0431134c8bba02787bc",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-03-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-03/summary.md",
+      "demand_rounding_delta": "0.00",
+      "sky_rounding_delta": "0.00",
+      "revision_id": "e717faedbe2fd446331a24590703aaf1f4858061c32705a80295222031929811"
+    },
+    "7410b41add8393f4994d27985593dacf9a5f01660de3a4f0a1441f45316bd561": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-04/summary.md",
+      "git_blob_sha": "396d9d496f77d724c5cc000e93ec6beffd32bd82",
+      "result_hash": "c6c22003d0d1ffe53865ddffe77f76b5b072225b8bac6af1fd0d715b98e5aa3a",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-04-30",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-04/summary.md",
+      "demand_rounding_delta": "0.00",
+      "sky_rounding_delta": "0.01",
+      "revision_id": "7410b41add8393f4994d27985593dacf9a5f01660de3a4f0a1441f45316bd561"
+    },
+    "e4003ce80aa78e6b2f0297a501aaeff1803a6b13fc13fede22b609b8d05be805": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-05/summary.md",
+      "git_blob_sha": "7fd7e819b0075f1446a3978b1ba3e055f1886bd0",
+      "result_hash": "dd53ea8e889e6f24fa675606af0cc9970a89e91e1f5c88f4746202cd7b23c91d",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-05-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-05/summary.md",
+      "demand_rounding_delta": "0.00",
+      "sky_rounding_delta": "0.00",
+      "revision_id": "e4003ce80aa78e6b2f0297a501aaeff1803a6b13fc13fede22b609b8d05be805"
+    },
+    "a17207309dc3414545a9d9652e1482483d626df0b78e318861ed9ff9753db9ef": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-06/summary.md",
+      "git_blob_sha": "4a3c6e711826a25039f16167e73f5fca2a5f8368",
+      "result_hash": "87e2a6038f428d2d6e392dc1ef0a46d1d9e9a04b61a99cfb8518c5ac0fa7b390",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-06-30",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-06/summary.md",
+      "demand_rounding_delta": "0.00",
+      "sky_rounding_delta": "0.00",
+      "revision_id": "a17207309dc3414545a9d9652e1482483d626df0b78e318861ed9ff9753db9ef"
+    },
+    "30e2d8417a8b04ff5cc0629e4f1b2d37399a4a1b7609e84adc2c959e45ec3a56": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-07/summary.md",
+      "git_blob_sha": "61f0cac7a2e59443b5ec18169daa2d9c48a456bb",
+      "result_hash": "4c79731f17ab5e8c908ef1ae8f6542f2784093e499f25dbeeb7830db33c01ac5",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-07-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-07/summary.md",
+      "demand_rounding_delta": "0.00",
+      "sky_rounding_delta": "0.01",
+      "revision_id": "30e2d8417a8b04ff5cc0629e4f1b2d37399a4a1b7609e84adc2c959e45ec3a56"
+    },
+    "02aa4029963ca041fa15516f48373d780f29721b309a4dcdb1d544aaefc2f842": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-08/summary.md",
+      "git_blob_sha": "0ad7a54482716ee92664afc6d76e7583f1446772",
+      "result_hash": "b8a9aeb5b4290e9387bb980a4a1f6d06a96cf9896c0f21eb532544c16aad3e2c",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-08-31",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-08/summary.md",
+      "demand_rounding_delta": "0.00",
+      "sky_rounding_delta": "0.00",
+      "revision_id": "02aa4029963ca041fa15516f48373d780f29721b309a4dcdb1d544aaefc2f842"
+    },
+    "101a05dd42ee906cba3fcfca2c3ba686a15689947d84cc8e44c645875066f0d6": {
+      "kind": "published_monthly_summary",
+      "repository": "soterlabs/settlement-reports",
+      "commit": "66854e865be5d6972a975a5069de56a3c83c2704",
+      "path": "reports/spark/2026-09/summary.md",
+      "git_blob_sha": "dc152e33b644dde2fe89e08ded474c0c7a99a3dc",
+      "result_hash": "28221c7d2afcb2ac73da900ad4086de9403172aa865be64d6df2bce3453e07e4",
+      "currency": "USDS",
+      "display_precision": "0.01",
+      "conversion": "USDS at USD par",
+      "cutoff": "2026-09-30",
+      "url": "https://github.com/soterlabs/settlement-reports/blob/66854e865be5d6972a975a5069de56a3c83c2704/reports/spark/2026-09/summary.md",
+      "demand_rounding_delta": "0.01",
+      "sky_rounding_delta": "0.00",
+      "revision_id": "101a05dd42ee906cba3fcfca2c3ba686a15689947d84cc8e44c645875066f0d6"
+    }
+  },
+  "selection": "eyJhc19vZiI6IjIwMjYtMTEtMDIiLCJleGFjdCI6ZmFsc2UsIm1vbnRobHlfcmV2aXNpb25zIjpbIjUwYzdlNWQxYzZhNzAyNDUyOWM3MmZkNGY0ODhmZGZhZTg4MmI0NzkwMzBkY2UzZWFlMDNlNDI3MmMyZDdjZjAiLCI3ZGRiYjc5MTY0MDM3MjE0ZmQ5YThkNjgwZTEzMzljMGY1ZmU1MGIxODczN2E0MTAwZDFhMDk5M2RjNWU4NTRlIiwiZTcxN2ZhZWRiZTJmZDQ0NjMzMWEyNDU5MDcwM2FhZjFmNDg1ODA2MWMzMjcwNWE4MDI5NTIyMjAzMTkyOTgxMSIsIjc0MTBiNDFhZGQ4MzkzZjQ5OTRkMjc5ODU1OTNkYWNmOWE1ZjAxNjYwZGUzYTRmMGExNDQxZjQ1MzE2YmQ1NjEiLCJlNDAwM2NlODBhYTc4ZTZiMmYwMjk3YTUwMWFhZWZmMTgwM2E2YjEzZmMxM2ZlZGUyMmI2MDliOGQwNWJlODA1IiwiYTE3MjA3MzA5ZGMzNDE0NTQ1YTlkOTY1MmUxNDgyNDgzZDYyNmRmMGI3OGUzMTg4NjFlZDlmZjk3NTNkYjllZiIsIjMwZTJkODQxN2E4YjA0ZmY1Y2MwNjI5ZTRmMWIyZDM3Mzk5YTRhMWI3NjA5ZTg0YWRjMmM5NTllNDVlYzNhNTYiLCIwMmFhNDAyOTk2M2NhMDQxZmExNTUxNmY0ODM3M2Q3ODBmMjk3MjFiMzA5YTRkY2RiMWQ1NDRhYWVmYzJmODQyIiwiMTAxYTA1ZGQ0MmVlOTA2Y2JhM2ZjZmNhMmMzYmE2ODZhMTU2ODk5NDdkODRjYzhlNDRjNjQ1ODc1MDY2ZjBkNiIsbnVsbCxudWxsLG51bGxdLCJvZmZjaGFpbl9yZXZpc2lvbnMiOltudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbF0sInBvbGljeV92ZXJzaW9uIjoicHJpbWUtbWFuYWdlbWVudC5zcGFyay1pbmNvbWUudjMuNiIsInByaW1lIjoic3BhcmsiLCJyZXZpc2lvbnMiOltudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsImRlZjc5MjNmYWEyMTMzNjAwMDgxNmNlOGYxYjRjODkyODE0YjUwMDUwNWY0NjBjYjQ2MjY3N2FjNGI3MzkzZjMiLCIyZDhmNzk4MTBhY2IxMWViOTgwNTM5NTJjNDRjM2Q2OWE4Yzg1Y2RhNDJkMjMxMDBkYWQwZjE2Yjk4NWUxNmJiIiwiNzk3OGEwMWM1MTAwMDE2YTAyNDY3MGVhYjliZTM1MDRiMGY3YzE2YTBlMDhlZThhMmNiMGI0MjA1NDBlMzBjMyIsbnVsbF0sInllYXIiOjIwMjZ9",
+  "perimeter": "operational_prime_management_reporting",
+  "offchain_positions": [],
+  "archive_income": [],
+  "source_lag_periods": [],
+  "report_hash": "358e939b098c56d4c42b16c0f700871f88072d7ec1f73f0e07f4618895cbb0e3"
+}

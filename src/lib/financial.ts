@@ -3,7 +3,8 @@ import {
   rwaPolicies,
   offchainPolicy,
   offchainPolicies,
-  archivePolicy,
+  archivePolicies,
+  sparkIncomePolicy,
 } from "./financial-policies.ts";
 export {
   rollupPolicy,
@@ -366,7 +367,7 @@ function validateOffchain(v: FinancialStatement, prime: Prime) {
           p.state !== "future" &&
           source &&
           (source.kind === "counterparty_monthly_accrual" ||
-            (v.policy_version === archivePolicy &&
+            (archivePolicies.includes(v.policy_version) &&
               source.kind === "counterparty_monthly_archive")) &&
           source.revision_id === p.offchain_revision &&
           hash(source.result_hash) &&
@@ -491,7 +492,7 @@ export function validateStatement(
       source &&
       (ref === p.offchain_revision
         ? (source.kind === "counterparty_monthly_accrual" ||
-            (v.policy_version === archivePolicy &&
+            (archivePolicies.includes(v.policy_version) &&
               source.kind === "counterparty_monthly_archive")) &&
           date(source.cutoff) &&
           source.cutoff.startsWith(p.key) &&
@@ -560,6 +561,7 @@ export function validateStatement(
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
+        (v.policy_version === sparkIncomePolicy && l.id === "fees.sparklend") ||
         (rwaPolicies.includes(v.policy_version) &&
           l.id === "investment.reviewed_income" &&
           Array.isArray(l.components)));
@@ -608,7 +610,7 @@ export function validateStatement(
                 "investment.offchain.warehouse",
               ].includes(l.id)
                 ? cell.recognition === "accrual"
-                : v.policy_version === archivePolicy &&
+                : archivePolicies.includes(v.policy_version) &&
                   archiveLineIds.has(l.id)) &&
               ["supported", "estimate"].includes(cell.quality!) &&
               cell.period_start === `${p.key}-01` &&
@@ -700,7 +702,7 @@ export function validateStatement(
         );
       }
   if (offchain) validateOffchain(v, prime);
-  if (v.policy_version === archivePolicy) validateArchive(v, prime);
+  if (archivePolicies.includes(v.policy_version)) validateArchive(v, prime);
 
   return v;
 }
@@ -809,6 +811,8 @@ export function financialLine(
     "noninterest-expense": "statement.noninterest_expense",
     "net-income": "statement.net_income",
     gains: "statement.gains",
+    protocol: "fees.sparklend",
+    curator: "fees.curator",
     "allocation-0": "statement.family.sparklend",
     "allocation-1": "statement.family.aave_v3",
     "allocation-2": "statement.family.morpho_vaults",
