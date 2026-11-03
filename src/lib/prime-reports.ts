@@ -1,4 +1,7 @@
-import { allocationRewardsPolicies } from "./financial-policies.ts";
+import {
+  allocationRewardsPolicies,
+  sparkIncomePolicy,
+} from "./financial-policies.ts";
 import type { FinancialStatement } from "./financial.ts";
 import { rwaPolicies } from "./financial-policies.ts";
 import Decimal from "decimal.js";
@@ -126,6 +129,35 @@ export function statementLines(
   scope: Scope,
   financial?: FinancialStatement | null,
 ): StatementLine[] {
+  const rows = buildStatementLines(prime, scope, financial);
+  if (!financial || financial.source_lag_periods?.length) return rows;
+  const elapsed = financial.periods.filter((p) => p.state !== "future");
+  if (!elapsed.length || elapsed.some((p) => p.stale)) return rows;
+  const hidden = new Set(
+    rows.filter((row) => {
+      if (row.id !== "gains" && row.parent !== "gains") return false;
+      const source = financial.lines.find(
+        (l) => l.id === (row.id === "gains" ? "statement.gains" : row.id),
+      );
+      return source && elapsed.every((p) => {
+        const cell = source.values[p.key];
+        return cell?.status === "available" && cell.quality !== "estimate" &&
+          cell.recognition !== "unknown" && cell.basis !== "unclassified" &&
+          cell.value !== null && new Decimal(cell.value).isZero();
+      });
+    }).map((row) => row.id),
+  );
+  // Unknown children remain visible even if an inconsistent parent says zero.
+  if (rows.some((row) => row.parent === "gains" && !hidden.has(row.id)))
+    hidden.delete("gains");
+  return rows.filter((row) => !hidden.has(row.id));
+}
+
+function buildStatementLines(
+  prime: Prime | null,
+  scope: Scope,
+  financial?: FinancialStatement | null,
+): StatementLine[] {
   const rows: StatementLine[] = [
     line("revenue", "Revenue", 0, undefined, "section"),
     line("demand", "Demand-side revenue"),
@@ -134,16 +166,19 @@ export function statementLines(
     ...(prime === "skybase"
       ? [line("gar", "Governance accessibility rewards (GAR)", 2, "demand")]
       : []),
-    line("protocol", "Protocol fees"),
+    line("protocol", prime === "spark" ? "SparkLend fees" : "Protocol fees"),
     line("curator", "Curator fees"),
     line("rewards", "Incentives and rewards received"),
     line("gains", "Gains (losses) on non-stable assets, net"),
   ];
   if (prime === "spark")
     rows.push(
-      ...["MORPHO", "AVAX", "ETH / WETH", "SparkLend non-USD reserves"].map(
-        (s, i) => line(`gain-${i}`, s, 2, "gains"),
-      ),
+      ...[
+        ["gains.morpho", "MORPHO"],
+        ["gains.avax", "AVAX"],
+        ["gains.eth_weth", "ETH / WETH"],
+        ["gains.sparklend_nonstable", "SparkLend non-stable tokens"],
+      ].map(([id, label]) => line(id, label, 2, "gains")),
     );
   rows.push(
     line("noninterest-income", "Noninterest income", 0, undefined, "subtotal"),
@@ -274,7 +309,7 @@ export function statementLines(
       interest.label =
         prime === "grove"
           ? "Investment income from allocations"
-          : "Income from allocations";
+          : prime === "spark" ? "Revenue from allocations" : "Income from allocations";
       base.find((row) => row.id === "rewards")!.label =
         "Other incentives and rewards received";
     }
@@ -283,6 +318,19 @@ export function statementLines(
       inserts.set(parent, [...(inserts.get(parent) || []), row]);
     const groups = new Set<string>();
     for (const definition of financial.lines) {
+      if (financial.policy_version === sparkIncomePolicy && prime === "spark" &&
+          definition.id.startsWith("fees.curator.")) {
+        add("curator", line(definition.id, definition.label, 2, "curator"));
+        continue;
+      }
+      if (
+        financial.policy_version === sparkIncomePolicy && prime === "spark" &&
+        (definition.id.startsWith("rewards.lending.sparklend.") ||
+          definition.id.startsWith("fees.sparklend."))
+      ) {
+        add("protocol", line(definition.id, definition.label, 2, "protocol"));
+        continue;
+      }
       if (definition.id === "demand.chronicle_points") {
         add("demand", line(definition.id, definition.label, 2, "demand"));
         continue;
@@ -295,7 +343,9 @@ export function statementLines(
         definition.id.startsWith("gains.") &&
         definition.aggregation === "leaf"
       ) {
-        add("gains", line(definition.id, definition.label, 2, "gains"));
+        const existing = base.find((row) => row.id === definition.id);
+        if (existing) existing.label = definition.label;
+        else add("gains", line(definition.id, definition.label, 2, "gains"));
         continue;
       }
       const parent =
@@ -328,7 +378,9 @@ export function statementLines(
             linkedReward
               ? "Allocation-linked incentives and rewards"
               : parent === "interest"
-                ? `Reviewed ${family} income`
+                ? prime === "spark"
+                  ? family === "Other reviewed vaults" ? "Other reviewed income" : `${family} revenue`
+                  : `Reviewed ${family} income`
                 : family,
             2,
             parent,

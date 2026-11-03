@@ -3,7 +3,8 @@ import {
   rwaPolicies,
   offchainPolicy,
   offchainPolicies,
-  archivePolicy,
+  archivePolicies,
+  sparkIncomePolicy,
 } from "./financial-policies.ts";
 export {
   rollupPolicy,
@@ -82,7 +83,8 @@ export interface FinancialStatement {
       kind?:
         | "published_monthly_summary"
         | "counterparty_monthly_accrual"
-        | "counterparty_monthly_archive";
+        | "counterparty_monthly_archive"
+        | "spark_onchain_components";
       repository?: string;
       commit?: string;
       path?: string;
@@ -347,6 +349,12 @@ function validateArchive(v: FinancialStatement, prime: Prime) {
     }
 }
 
+function offchainSourceKind(policy: string, prime: Prime, kind?: string) {
+  if (prime === "spark" && policy === sparkIncomePolicy)
+    return kind === "spark_onchain_components";
+  return prime === "grove" && (kind === "counterparty_monthly_accrual" ||
+    (archivePolicies.includes(policy) && kind === "counterparty_monthly_archive"));
+}
 function validateOffchain(v: FinancialStatement, prime: Prime) {
   requireValue(Array.isArray(v.offchain_positions));
   const identities: Record<string, [string, string]> = {
@@ -362,12 +370,9 @@ function validateOffchain(v: FinancialStatement, prime: Prime) {
     if (p.offchain_revision) {
       const source = v.source_manifest[p.offchain_revision];
       requireValue(
-        prime === "grove" &&
-          p.state !== "future" &&
+        p.state !== "future" &&
           source &&
-          (source.kind === "counterparty_monthly_accrual" ||
-            (v.policy_version === archivePolicy &&
-              source.kind === "counterparty_monthly_archive")) &&
+          offchainSourceKind(v.policy_version, prime, source.kind) &&
           source.revision_id === p.offchain_revision &&
           hash(source.result_hash) &&
           source.currency === "USD" &&
@@ -490,9 +495,7 @@ export function validateStatement(
       refs(p).includes(ref) &&
       source &&
       (ref === p.offchain_revision
-        ? (source.kind === "counterparty_monthly_accrual" ||
-            (v.policy_version === archivePolicy &&
-              source.kind === "counterparty_monthly_archive")) &&
+        ? offchainSourceKind(v.policy_version, prime, source.kind) &&
           date(source.cutoff) &&
           source.cutoff.startsWith(p.key) &&
           source.cutoff <= p.expected_cutoff!
@@ -560,6 +563,8 @@ export function validateStatement(
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
+        (v.policy_version === sparkIncomePolicy && ["fees.sparklend", "fees.curator"].includes(l.id)) ||
+        (v.policy_version === sparkIncomePolicy && l.id.startsWith("investment.") && Array.isArray(l.components)) ||
         (rwaPolicies.includes(v.policy_version) &&
           l.id === "investment.reviewed_income" &&
           Array.isArray(l.components)));
@@ -602,14 +607,15 @@ export function validateStatement(
         if (cell.source_ref === p.offchain_revision)
           requireValue(
             offchain &&
-              prime === "grove" &&
-              ([
+              ((prime === "spark" && v.policy_version === sparkIncomePolicy &&
+                (l.id.startsWith("fees.") || l.id.startsWith("gains.") || l.id.startsWith("investment.venue.") || l.id.startsWith("rewards.lending.sparklend.") || l.id === "rewards.unattributed_sparklend_receipts")) ||
+              (prime === "grove" && ([
                 "investment.offchain.gaclo",
                 "investment.offchain.warehouse",
               ].includes(l.id)
                 ? cell.recognition === "accrual"
-                : v.policy_version === archivePolicy &&
-                  archiveLineIds.has(l.id)) &&
+                : archivePolicies.includes(v.policy_version) &&
+                  archiveLineIds.has(l.id)))) &&
               ["supported", "estimate"].includes(cell.quality!) &&
               cell.period_start === `${p.key}-01` &&
               date(cell.period_end) &&
@@ -700,7 +706,7 @@ export function validateStatement(
         );
       }
   if (offchain) validateOffchain(v, prime);
-  if (v.policy_version === archivePolicy) validateArchive(v, prime);
+  if (archivePolicies.includes(v.policy_version)) validateArchive(v, prime);
 
   return v;
 }
@@ -809,6 +815,8 @@ export function financialLine(
     "noninterest-expense": "statement.noninterest_expense",
     "net-income": "statement.net_income",
     gains: "statement.gains",
+    protocol: "fees.sparklend",
+    curator: "fees.curator",
     "allocation-0": "statement.family.sparklend",
     "allocation-1": "statement.family.aave_v3",
     "allocation-2": "statement.family.morpho_vaults",
