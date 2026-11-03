@@ -16,6 +16,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Controls } from "@/app/controls";
+import { ArchiveIncome } from "./archive-income";
 import { OffchainAccruals } from "./offchain-accruals";
 import { IncomeStatement } from "./income-statement";
 import { annualReports, portfolioReports } from "@/lib/report-data";
@@ -320,6 +321,7 @@ export async function PrimeDashboard({
                 financial={financial?.report}
               />
               <OffchainAccruals report={financial?.report} />
+              <ArchiveIncome report={financial?.report} />
               {scope === "individual" && (
                 <SourceIncome
                   monthly={annual}

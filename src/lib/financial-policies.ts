@@ -3,9 +3,11 @@ export const rwaPolicy = "prime-management.rwa-income.v3.2";
 export const allocationRewardsPolicy =
   "prime-management.allocation-rewards.v3.3";
 export const offchainPolicy = "prime-management.offchain-accruals.v3.4";
+export const archivePolicy = "prime-management.archive-income.v3.5";
+export const offchainPolicies = [offchainPolicy, archivePolicy];
 export const allocationRewardsPolicies = [
   allocationRewardsPolicy,
-  offchainPolicy,
+  ...offchainPolicies,
 ];
 export const rwaPolicies = [rwaPolicy, ...allocationRewardsPolicies];
 export const rollupPolicies = [rollupPolicy, ...rwaPolicies];

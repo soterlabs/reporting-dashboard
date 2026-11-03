@@ -291,6 +291,13 @@ export function statementLines(
         allocationRewardsPolicies.includes(financial.policy_version) &&
         (definition.id.startsWith("rewards.lending.") ||
           definition.id.startsWith("rewards.issuer."));
+      if (
+        definition.id.startsWith("gains.") &&
+        definition.aggregation === "leaf"
+      ) {
+        add("gains", line(definition.id, definition.label, 2, "gains"));
+        continue;
+      }
       const parent =
         definition.id.startsWith("investment.") || linkedReward
           ? "interest"

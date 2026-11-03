@@ -314,3 +314,42 @@ export function offchainCsvRows(report: FinancialStatement): unknown[][] {
     ),
   ];
 }
+
+export function archiveCsvRows(report: FinancialStatement): unknown[][] {
+  return [
+    [
+      "Prime",
+      "Allocation",
+      "Month",
+      "Amount USD",
+      "Recognition",
+      "Quality",
+      "Included in statement",
+      "Source currency",
+      "Conversion",
+      "Earning period end",
+      "Coverage",
+      "Balances (not extra income)",
+      "Source revision",
+      "Source manifest",
+      "Report selection",
+    ],
+    ...(report.archive_income || []).map((row) => [
+      report.prime,
+      row.label,
+      row.month,
+      metricAmount(row.metric) ?? "TBD",
+      row.metric.recognition,
+      row.metric.quality,
+      row.included_in_totals ? "yes" : "no",
+      row.metric.source_currency,
+      row.metric.conversion,
+      row.metric.period_end,
+      row.metric.status,
+      JSON.stringify(row.balances || {}),
+      row.metric.source_ref,
+      JSON.stringify(report.source_manifest),
+      report.selection,
+    ]),
+  ];
+}
