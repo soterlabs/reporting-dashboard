@@ -1280,3 +1280,12 @@ footer {
   white-space: nowrap;
   border: 0;
 }
+
+/* Keep hidden descriptions inside the clipped financial cell, not the page. */
+.financial-number {
+  position: relative;
+}
+.number-basis {
+  top: 0;
+  left: 0;
+}
