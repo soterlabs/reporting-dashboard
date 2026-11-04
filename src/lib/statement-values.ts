@@ -16,6 +16,7 @@ export function statementFinancialLine(
   row: StatementLine,
 ): FinancialStatement["lines"][number] | undefined {
   if (!report) return undefined;
+  if (row.metricId) return report.lines.find((l) => l.id === row.metricId);
   if (!row.sources) return financialLine(report, row.id);
   const sources = [...new Set(row.sources)];
   function combine(month?: string): Metric {
@@ -115,7 +116,7 @@ export function statementRowUncertainty(
   }
   return statementUncertainty(
     report,
-    financialLine(report, row.id)?.id || row.id,
+    row.metricId || financialLine(report, row.id)?.id || row.id,
     month,
     retained,
   );

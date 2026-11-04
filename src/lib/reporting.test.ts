@@ -50,9 +50,11 @@ const pub = (cutoff: string, row = venue()): Publication => ({
 
 test("missing, zero and negative values retain their financial meaning", () => {
   assert.equal(money(null), "TBD");
-  assert.equal(money("0E-20"), "$0.00");
-  assert.equal(money("-1234.565"), "($1,234.57)");
-  assert.equal(money("9007199254740993.12"), "$9,007,199,254,740,993.12");
+  assert.equal(money("-0.004"), "$0");
+  assert.equal(money("0.5"), "$1");
+  assert.equal(money("0E-20"), "$0");
+  assert.equal(money("-1234.565"), "($1,235)");
+  assert.equal(money("9007199254740993.12"), "$9,007,199,254,740,993");
 });
 test("existing methods never imply confirmed accrual, even when income is zero", () => {
   assert.equal(
