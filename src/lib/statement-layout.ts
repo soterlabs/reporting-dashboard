@@ -3,7 +3,7 @@ import type { StatementLine, Scope } from "./prime-reports.ts";
 import type { Prime } from "./reporting.ts";
 import {
   allocationRewardsPolicies,
-  sparkIncomePolicy,
+  sparkIncomePolicies,
 } from "./financial-policies.ts";
 
 type Member = [id: string, label: string];
@@ -60,6 +60,23 @@ const spark: Family[] = [
       investment("morpho.usds", "Spark USDS"),
       investment("morpho.base_usdc", "Spark USDC (Base)"),
       investment("morpho.sentora_rlusd", "Sentora RLUSD"),
+    ],
+  ],
+  [
+    "uniswap_v4",
+    "Uniswap v4",
+    [
+      investment("amm.uniswap_v4.pyusd_usds", "PYUSD / USDS"),
+      investment("amm.uniswap_v4.usdt_usds", "USDT / USDS"),
+      investment("amm.uniswap_v4.rlusd_usds", "RLUSD / USDS"),
+    ],
+  ],
+  [
+    "curve",
+    "Curve",
+    [
+      investment("amm.curve.susds_usdt", "sUSDS / USDT"),
+      investment("amm.curve.pyusd_usds", "PYUSD / USDS"),
     ],
   ],
   maple,
@@ -185,7 +202,8 @@ export function sheetStatementLines(
   add("protocol", prime === "spark" ? "SparkLend fees" : "Protocol fees");
   add("curator", "Curator fees");
   const feePolicy =
-    prime === "spark" && report?.policy_version === sparkIncomePolicy;
+    prime === "spark" &&
+    sparkIncomePolicies.includes(report?.policy_version || "");
   const curatorLabels: Record<string, string> = {
     S10: "Blue Chip USDC",
     S11: "Blue Chip USDT (previous vault)",

@@ -4,7 +4,8 @@ import {
   offchainPolicy,
   offchainPolicies,
   archivePolicies,
-  sparkIncomePolicy,
+  sparkIncomePolicies,
+  sparkAmmPolicy,
 } from "./financial-policies.ts";
 export {
   rollupPolicy,
@@ -16,6 +17,14 @@ export {
 import type { Prime, Venue } from "./reporting.ts";
 import { yearMonths, type Month, type PortfolioRow } from "./prime-reports.ts";
 import Decimal from "decimal.js";
+
+export const sparkAmmIds = [
+  "investment.amm.uniswap_v4.pyusd_usds",
+  "investment.amm.uniswap_v4.usdt_usds",
+  "investment.amm.uniswap_v4.rlusd_usds",
+  "investment.amm.curve.susds_usdt",
+  "investment.amm.curve.pyusd_usds",
+];
 
 export interface Metric {
   value: string | null;
@@ -42,6 +51,7 @@ export interface Metric {
     sky_share: string;
     sky_share_basis: "published_rounded_percentage" | "saved_source_share";
     rounding_delta_usd: string;
+    sky_share_excluded_income_usd?: string;
   };
 }
 export interface FinancialStatement {
@@ -243,6 +253,11 @@ function metric(v: Metric) {
         split.sky_share_basis,
       ),
     );
+    if (split.sky_share_excluded_income_usd !== undefined)
+      requireValue(
+        decimal(split.sky_share_excluded_income_usd) &&
+          new SplitDecimal(split.sky_share_excluded_income_usd).gte(0),
+      );
   }
 }
 export const archiveLineIds = new Set([
@@ -350,7 +365,7 @@ function validateArchive(v: FinancialStatement, prime: Prime) {
 }
 
 function offchainSourceKind(policy: string, prime: Prime, kind?: string) {
-  if (prime === "spark" && policy === sparkIncomePolicy)
+  if (prime === "spark" && sparkIncomePolicies.includes(policy))
     return kind === "spark_onchain_components";
   return (
     prime === "grove" &&
@@ -567,9 +582,9 @@ export function validateStatement(
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
-        (v.policy_version === sparkIncomePolicy &&
+        (sparkIncomePolicies.includes(v.policy_version) &&
           ["fees.sparklend", "fees.curator"].includes(l.id)) ||
-        (v.policy_version === sparkIncomePolicy &&
+        (sparkIncomePolicies.includes(v.policy_version) &&
           l.id.startsWith("investment.") &&
           Array.isArray(l.components)) ||
         (rwaPolicies.includes(v.policy_version) &&
@@ -615,7 +630,7 @@ export function validateStatement(
           requireValue(
             offchain &&
               ((prime === "spark" &&
-                v.policy_version === sparkIncomePolicy &&
+                sparkIncomePolicies.includes(v.policy_version) &&
                 (l.id.startsWith("fees.") ||
                   l.id.startsWith("gains.") ||
                   l.id.startsWith("investment.venue.") ||
@@ -636,7 +651,10 @@ export function validateStatement(
           );
         if (
           rwaPolicies.includes(v.policy_version) &&
-          ["investment.rwa.stac", "investment.rwa.jaaa"].includes(l.id)
+          (["investment.rwa.stac", "investment.rwa.jaaa"].includes(l.id) ||
+            (prime === "spark" &&
+              v.policy_version === sparkAmmPolicy &&
+              sparkAmmIds.includes(l.id)))
         ) {
           const split = cell.allocation_split;
           requireValue(split && cell.recognition === "investment_return");
@@ -661,6 +679,21 @@ export function validateStatement(
             delta.eq(split.rounding_delta_usd) &&
               delta.abs().lte(rounded ? "0.015" : "1e-12"),
           );
+          if (split.sky_share_excluded_income_usd !== undefined) {
+            requireValue(
+              prime === "spark" &&
+                v.policy_version === sparkAmmPolicy &&
+                l.id === "investment.amm.curve.susds_usdt",
+            );
+            requireValue(
+              new SplitDecimal(split.gross_income_usd)
+                .minus(split.sky_share_excluded_income_usd)
+                .times(split.sky_share)
+                .minus(split.sky_income_usd)
+                .abs()
+                .lte(rounded ? "0.03" : "1e-12"),
+            );
+          }
         }
         if (cell.source_ref === p.monthly_revision)
           requireValue(
@@ -671,6 +704,9 @@ export function validateStatement(
               "funding.sky.net",
               ...(prime === "skybase" ? ["demand.gar"] : []),
               ...(prime === "grove" ? ["demand.chronicle_points"] : []),
+              ...(prime === "spark" && v.policy_version === sparkAmmPolicy
+                ? sparkAmmIds
+                : []),
               ...(prime === "grove" && rwaPolicies.includes(v.policy_version)
                 ? ["investment.rwa.stac", "investment.rwa.jaaa"]
                 : []),

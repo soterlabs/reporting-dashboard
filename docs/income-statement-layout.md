@@ -32,3 +32,12 @@ the hierarchy. Subtotal derivation and source metric IDs distinguish dashboard
 sums from API metrics; the financial hash identifies the original API input.
 
 The approved sheet contains filler amounts only. None are used in the catalog.
+
+Spark also has Uniswap v4 (PYUSD/USDS, USDT/USDS, RLUSD/USDS) and Curve
+(sUSDS/USDT, PYUSD/USDS) families. The v3.7 API supplies capital-adjusted,
+Spark-retained LP returns; earlier policies show TBD. RLUSD issuer incentives
+stay in the separate RLUSD revenue row. Unreconciled v4 trading fees make the
+known position returns partial estimates, so those numbers retain estimate
+coloring. Confirmed 100% Sky allocations contribute zero Spark SDE-eligible
+return. The Curve sUSDS leg's embedded yield is outside that split and remains
+LP revenue; periods with capital movements retain the source's estimated basis.
