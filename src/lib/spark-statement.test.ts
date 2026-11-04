@@ -158,3 +158,12 @@ test("historical statement policy exposes published January revenue through the 
   assert.equal(line.values["2026-01"].value, "850905.46");
   assert.ok(parsed.statement_rows?.some((row) => row.metric_id === line.id));
 });
+
+test("history validates proved empty AMMs while rejecting a fabricated nonzero return", () => {
+  const payload = JSON.parse(readFileSync(new URL("./fixtures/spark-history-v3.9.json", import.meta.url), "utf8"));
+  validateStatement(payload, "spark", 2026);
+  const row = payload.lines.find((r: { id: string }) => r.id === "investment.amm.uniswap_v4.rlusd_usds");
+  assert.equal(row.values["2026-01"].allocation_split.sky_share_basis, "not_applicable_empty_position");
+  row.values["2026-01"].allocation_split.gross_income_usd = "1";
+  assert.throws(() => validateStatement(payload, "spark", 2026));
+});

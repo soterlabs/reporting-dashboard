@@ -263,7 +263,7 @@ function metric(v: Metric) {
       ),
     );
     requireValue(
-      ["published_rounded_percentage", "saved_source_share"].includes(
+      ["published_rounded_percentage", "saved_source_share", "not_applicable_empty_position"].includes(
         split.sky_share_basis,
       ),
     );
