@@ -6,7 +6,8 @@ import {
   archivePolicies,
   sparkIncomePolicies,
   sparkAmmPolicies,
-  sparkStatementPolicy,
+  sparkStatementPolicies,
+  sparkHistoryPolicy,
 } from "./financial-policies.ts";
 export {
   rollupPolicy,
@@ -50,7 +51,10 @@ export interface Metric {
     sky_income_usd: string;
     prime_income_usd: string;
     sky_share: string;
-    sky_share_basis: "published_rounded_percentage" | "saved_source_share";
+    sky_share_basis:
+      | "published_rounded_percentage"
+      | "saved_source_share"
+      | "not_applicable_empty_position";
     rounding_delta_usd: string;
     sky_share_excluded_income_usd?: string;
   };
@@ -259,7 +263,7 @@ function metric(v: Metric) {
       ),
     );
     requireValue(
-      ["published_rounded_percentage", "saved_source_share"].includes(
+      ["published_rounded_percentage", "saved_source_share", "not_applicable_empty_position"].includes(
         split.sky_share_basis,
       ),
     );
@@ -590,7 +594,7 @@ export function validateStatement(
     );
     metric(l.total);
     const completeSpark =
-      prime === "spark" && v.policy_version === sparkStatementPolicy;
+      prime === "spark" && sparkStatementPolicies.includes(v.policy_version);
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
@@ -662,7 +666,11 @@ export function validateStatement(
                         "investment.morpho.sentora_rlusd",
                       ].includes(l.id))) ||
                   l.id.startsWith("rewards.lending.sparklend.") ||
-                  l.id === "rewards.unattributed_sparklend_receipts")) ||
+                  l.id === "rewards.unattributed_sparklend_receipts" ||
+                  (v.policy_version === sparkHistoryPolicy &&
+                    (l.id === "investment.anchorage" ||
+                      l.id.startsWith("rewards.issuer.") ||
+                      sparkAmmIds.includes(l.id))))) ||
                 (prime === "grove" &&
                   ([
                     "investment.offchain.gaclo",
@@ -686,9 +694,22 @@ export function validateStatement(
           const split = cell.allocation_split;
           requireValue(split && cell.recognition === "investment_return");
           const rounded = source.kind === "published_monthly_summary";
+          const emptyPosition =
+            v.policy_version === sparkHistoryPolicy &&
+            source.kind === "spark_onchain_components" &&
+            split.sky_share_basis === "not_applicable_empty_position" &&
+            [
+              split.gross_income_usd,
+              split.prime_income_usd,
+              split.sky_income_usd,
+              cell.value,
+            ].every((n) => n !== null && new SplitDecimal(n!).eq(0));
           requireValue(
-            split.sky_share_basis ===
-              (rounded ? "published_rounded_percentage" : "saved_source_share"),
+            emptyPosition ||
+              split.sky_share_basis ===
+                (rounded
+                  ? "published_rounded_percentage"
+                  : "saved_source_share"),
           );
           requireValue(
             new SplitDecimal(split.prime_income_usd).eq(
@@ -725,6 +746,14 @@ export function validateStatement(
         if (cell.source_ref === p.monthly_revision)
           requireValue(
             [
+              ...(v.policy_version === sparkHistoryPolicy &&
+              prime === "spark" &&
+              (l.id.startsWith("investment.venue.") ||
+                l.id.startsWith("investment.rwa.") ||
+                l.id.startsWith("investment.susds.") ||
+                l.id.startsWith("rewards.lending.aave."))
+                ? [l.id]
+                : []),
               "demand.agent_rate",
               "demand.distribution_rewards",
               "demand.total",
@@ -749,7 +778,7 @@ export function validateStatement(
           .every((p) => l.values[p.key].status === "available"),
     );
   }
-  if (prime === "spark" && v.policy_version === sparkStatementPolicy) {
+  if (prime === "spark" && sparkStatementPolicies.includes(v.policy_version)) {
     requireValue(
       v.display_decimals === 0 &&
         Array.isArray(v.statement_rows) &&

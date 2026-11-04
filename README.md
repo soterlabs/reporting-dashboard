@@ -179,3 +179,9 @@ The CSV uses the same exact API amounts and source references as the screen.
 Old reporting policies and saved selections remain supported. This consumer
 must deploy before the backend changes its default policy. Neither PR alone
 publishes these values before its normal reviewed deployment.
+
+Live reporting pages refresh every 30 seconds while visible, and when the tab
+regains focus or connectivity. Live API reads bypass the pinned-export cache;
+a failed refresh retains the last validated response. Filters and expanded rows
+stay in place as newly published amounts replace TBD cells. Saved export
+revision selections remain immutable.

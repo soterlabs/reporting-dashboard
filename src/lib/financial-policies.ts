@@ -7,7 +7,12 @@ export const archivePolicy = "prime-management.archive-income.v3.5";
 export const sparkIncomePolicy = "prime-management.spark-income.v3.6";
 export const sparkAmmPolicy = "prime-management.spark-amms.v3.7";
 export const sparkStatementPolicy = "prime-management.spark-statement.v3.8";
-export const sparkAmmPolicies = [sparkAmmPolicy, sparkStatementPolicy];
+export const sparkHistoryPolicy = "prime-management.spark-history.v3.9";
+export const sparkStatementPolicies = [
+  sparkStatementPolicy,
+  sparkHistoryPolicy,
+];
+export const sparkAmmPolicies = [sparkAmmPolicy, ...sparkStatementPolicies];
 export const sparkIncomePolicies = [sparkIncomePolicy, ...sparkAmmPolicies];
 export const archivePolicies = [archivePolicy, ...sparkIncomePolicies];
 export const offchainPolicies = [offchainPolicy, ...archivePolicies];

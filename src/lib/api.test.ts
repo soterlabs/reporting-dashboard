@@ -95,3 +95,58 @@ test("venue exports request the retained raw revision and reject a substituted p
     null,
   );
 });
+
+test("live statements replace a cached TBD and retain the last good response only on failure", async (t) => {
+  const missing = structuredClone(statement);
+  const row = missing.lines.find(
+    (r: { id: string }) => r.id === "demand.agent_rate",
+  );
+  row.values["2026-10"] = {
+    value: null,
+    known_value: null,
+    unit: "USD",
+    status: "unavailable",
+    recognition: "unknown",
+    basis: "unclassified",
+    reason: "source_not_published",
+    source_paths: [],
+  };
+  row.total = { ...row.values["2026-10"] };
+  let calls = 0;
+  t.mock.method(globalThis, "fetch", async () => {
+    calls++;
+    if (calls === 3) return new Response("unavailable", { status: 503 });
+    return Response.json(calls === 1 ? missing : statement);
+  });
+  const before = await financialStatements("obex", 2026);
+  assert.equal(
+    before.report?.lines.find((r) => r.id === "demand.agent_rate")?.values[
+      "2026-10"
+    ].value,
+    null,
+  );
+  const after = await financialStatements("obex", 2026);
+  assert.equal(
+    after.report?.lines.find((r) => r.id === "demand.agent_rate")?.values[
+      "2026-10"
+    ].value,
+    "12.000000000000000001",
+  );
+  assert.equal(after.retained, false);
+  const failed = await financialStatements("obex", 2026);
+  assert.equal(failed.retained, true);
+  assert.equal(failed.report?.selection, after.report?.selection);
+  assert.equal(calls, 3);
+});
+
+test("pinned statements remain immutable and cached", async (t) => {
+  let calls = 0;
+  t.mock.method(globalThis, "fetch", async () => {
+    calls++;
+    return Response.json(statement);
+  });
+  const a = await financialStatements("obex", 2026, statement.selection);
+  const b = await financialStatements("obex", 2026, statement.selection);
+  assert.equal(a.report?.selection, b.report?.selection);
+  assert.ok(calls <= 1);
+});

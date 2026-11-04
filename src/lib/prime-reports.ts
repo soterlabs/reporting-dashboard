@@ -1,4 +1,4 @@
-import { sparkStatementPolicy } from "./financial-policies.ts";
+import { sparkStatementPolicies } from "./financial-policies.ts";
 import { sheetStatementLines } from "./statement-layout.ts";
 import type { FinancialStatement } from "./financial.ts";
 import Decimal from "decimal.js";
@@ -123,7 +123,8 @@ export function statementLines(
 ): StatementLine[] {
   const apiLayout =
     prime === "spark" &&
-    financial?.policy_version === sparkStatementPolicy &&
+    financial &&
+    sparkStatementPolicies.includes(financial.policy_version) &&
     financial.statement_rows;
   const rows: StatementLine[] = apiLayout
     ? apiLayout.map((r) => ({
