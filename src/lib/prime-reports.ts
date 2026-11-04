@@ -1,3 +1,4 @@
+import { sparkStatementPolicy } from "./financial-policies.ts";
 import { sheetStatementLines } from "./statement-layout.ts";
 import type { FinancialStatement } from "./financial.ts";
 import Decimal from "decimal.js";
@@ -110,6 +111,7 @@ export interface StatementLine {
   parent?: string;
   structural?: boolean;
   sources?: string[];
+  metricId?: string;
 }
 export function collapsedStatementGroups(rows: StatementLine[]) {
   return new Set(rows.flatMap((row) => (row.parent ? [row.parent] : [])));
@@ -119,7 +121,46 @@ export function statementLines(
   scope: Scope,
   financial?: FinancialStatement | null,
 ): StatementLine[] {
-  const rows = sheetStatementLines(prime, scope, financial);
+  const apiLayout =
+    prime === "spark" &&
+    financial?.policy_version === sparkStatementPolicy &&
+    financial.statement_rows;
+  const rows: StatementLine[] = apiLayout
+    ? apiLayout.map((r) => ({
+        id: r.id,
+        label: r.label,
+        parent: r.parent || undefined,
+        level: r.depth,
+        kind: r.kind || undefined,
+        metricId: r.metric_id || undefined,
+      }))
+    : sheetStatementLines(prime, scope, financial);
+  if (apiLayout && financial) {
+    if (
+      financial.source_lag_periods.length ||
+      financial.periods.some((p) => p.state !== "future" && p.stale)
+    )
+      return rows;
+    const elapsed = financial.periods.filter((p) => p.state !== "future");
+    const hidden = new Set<string>();
+    for (const row of [...rows].reverse()) {
+      if (row.kind === "section" || !row.metricId || !elapsed.length) continue;
+      const source = financial.lines.find((l) => l.id === row.metricId);
+      const children = rows.filter((r) => r.parent === row.id);
+      if (
+        source &&
+        elapsed.every(
+          (p) =>
+            source.values[p.key]?.status === "available" &&
+            source.values[p.key].value !== null &&
+            new Decimal(source.values[p.key].value!).isZero(),
+        ) &&
+        children.every((c) => hidden.has(c.id))
+      )
+        hidden.add(row.id);
+    }
+    return rows.filter((r) => !hidden.has(r.id));
+  }
   if (!financial || financial.source_lag_periods?.length) return rows;
   const elapsed = financial.periods.filter((p) => p.state !== "future");
   if (!elapsed.length || elapsed.some((p) => p.stale)) return rows;

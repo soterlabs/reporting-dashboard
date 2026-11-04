@@ -134,9 +134,11 @@ export function validateReport(value: unknown, prime: Prime): Report {
 }
 export function money(value: string | null | undefined): string {
   if (value == null) return "TBD";
-  const amount = new Decimal(value);
-  const parts = amount.abs().toFixed(2).split(".");
-  const formatted = `$${parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${parts[1]}`;
+  const amount = new Decimal(value).toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
+  const formatted = `$${amount
+    .abs()
+    .toFixed(0)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
   return amount.isNegative() && !amount.isZero() ? `(${formatted})` : formatted;
 }
 export function amount(row: Venue, field: MoneyField): string | null {

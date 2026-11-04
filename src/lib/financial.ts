@@ -5,7 +5,8 @@ import {
   offchainPolicies,
   archivePolicies,
   sparkIncomePolicies,
-  sparkAmmPolicy,
+  sparkAmmPolicies,
+  sparkStatementPolicy,
 } from "./financial-policies.ts";
 export {
   rollupPolicy,
@@ -106,6 +107,15 @@ export interface FinancialStatement {
   offchain_positions?: OffchainPosition[];
   archive_income?: ArchiveIncome[];
   source_lag_periods: string[];
+  display_decimals?: number;
+  statement_rows?: {
+    id: string;
+    label: string;
+    parent: string | null;
+    depth: number;
+    kind: "section" | "subtotal" | "total" | null;
+    metric_id: string | null;
+  }[];
 }
 export interface ArchiveIncome {
   id: string;
@@ -579,9 +589,18 @@ export function validateStatement(
           ["leaf", "subtotal"].includes(l.aggregation)),
     );
     metric(l.total);
+    const completeSpark =
+      prime === "spark" && v.policy_version === sparkStatementPolicy;
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
+        (completeSpark &&
+          ((l.id.startsWith("funding.savings") &&
+            l.aggregation === "subtotal") ||
+            (sparkAmmIds.includes(l.id) &&
+              Object.values(l.values).some((c) =>
+                Array.isArray(c.source_refs),
+              )))) ||
         (sparkIncomePolicies.includes(v.policy_version) &&
           ["fees.sparklend", "fees.curator"].includes(l.id)) ||
         (sparkIncomePolicies.includes(v.policy_version) &&
@@ -590,7 +609,7 @@ export function validateStatement(
         (rwaPolicies.includes(v.policy_version) &&
           l.id === "investment.reviewed_income" &&
           Array.isArray(l.components)));
-    if (derived)
+    if (derived && !(completeSpark && sparkAmmIds.includes(l.id)))
       requireValue(
         Array.isArray(l.components) &&
           l.components.length > 0 &&
@@ -612,6 +631,7 @@ export function validateStatement(
       if (
         monthly &&
         derived &&
+        !(completeSpark && sparkAmmIds.includes(l.id) && !cell.source_refs) &&
         (cell.value !== null || cell.known_value !== null)
       ) {
         requireValue(
@@ -634,6 +654,13 @@ export function validateStatement(
                 (l.id.startsWith("fees.") ||
                   l.id.startsWith("gains.") ||
                   l.id.startsWith("investment.venue.") ||
+                  (completeSpark &&
+                    (l.id.startsWith("funding.savings.venue.") ||
+                      l.id.startsWith("investment.susds.") ||
+                      [
+                        "investment.sparklend.weth",
+                        "investment.morpho.sentora_rlusd",
+                      ].includes(l.id))) ||
                   l.id.startsWith("rewards.lending.sparklend.") ||
                   l.id === "rewards.unattributed_sparklend_receipts")) ||
                 (prime === "grove" &&
@@ -653,7 +680,7 @@ export function validateStatement(
           rwaPolicies.includes(v.policy_version) &&
           (["investment.rwa.stac", "investment.rwa.jaaa"].includes(l.id) ||
             (prime === "spark" &&
-              v.policy_version === sparkAmmPolicy &&
+              sparkAmmPolicies.includes(v.policy_version) &&
               sparkAmmIds.includes(l.id)))
         ) {
           const split = cell.allocation_split;
@@ -682,7 +709,7 @@ export function validateStatement(
           if (split.sky_share_excluded_income_usd !== undefined) {
             requireValue(
               prime === "spark" &&
-                v.policy_version === sparkAmmPolicy &&
+                sparkAmmPolicies.includes(v.policy_version) &&
                 l.id === "investment.amm.curve.susds_usdt",
             );
             requireValue(
@@ -704,7 +731,8 @@ export function validateStatement(
               "funding.sky.net",
               ...(prime === "skybase" ? ["demand.gar"] : []),
               ...(prime === "grove" ? ["demand.chronicle_points"] : []),
-              ...(prime === "spark" && v.policy_version === sparkAmmPolicy
+              ...(prime === "spark" &&
+              sparkAmmPolicies.includes(v.policy_version)
                 ? sparkAmmIds
                 : []),
               ...(prime === "grove" && rwaPolicies.includes(v.policy_version)
@@ -720,6 +748,76 @@ export function validateStatement(
           .filter((p) => p.state !== "future")
           .every((p) => l.values[p.key].status === "available"),
     );
+  }
+  if (prime === "spark" && v.policy_version === sparkStatementPolicy) {
+    requireValue(
+      v.display_decimals === 0 &&
+        Array.isArray(v.statement_rows) &&
+        v.statement_rows.length > 0,
+    );
+    const layout = v.statement_rows!;
+    const ids = new Set<string>();
+    for (const row of layout) {
+      requireValue(
+        row &&
+          typeof row.id === "string" &&
+          !ids.has(row.id) &&
+          typeof row.label === "string" &&
+          Number.isInteger(row.depth) &&
+          row.depth >= 0 &&
+          [null, "section", "subtotal", "total"].includes(row.kind),
+      );
+      if (row.parent !== null) {
+        const parent = layout.find((r) => r.id === row.parent);
+        requireValue(
+          ids.has(row.parent) && parent && row.depth === parent.depth + 1,
+        );
+      }
+      requireValue(
+        row.kind === "section"
+          ? row.metric_id === null
+          : typeof row.metric_id === "string" &&
+              v.lines.some((l) => l.id === row.metric_id),
+      );
+      ids.add(row.id);
+    }
+    for (const id of sparkAmmIds) {
+      const line = v.lines.find((l) => l.id === id);
+      requireValue(line);
+      for (const period of v.periods) {
+        const cell = line.values[period.key];
+        if (
+          !cell.source_refs ||
+          (cell.value === null && cell.known_value === null)
+        )
+          continue;
+        requireValue(
+          cell.source_refs.length === 2 &&
+            cell.source_refs.some(
+              (ref) =>
+                ref === period.financial_revision ||
+                ref === period.monthly_revision,
+            ) &&
+            cell.source_refs.includes(period.offchain_revision!),
+        );
+        const split = cell.allocation_split;
+        requireValue(
+          split &&
+            new SplitDecimal(split.prime_income_usd).eq(
+              cell.value ?? cell.known_value!,
+            ),
+        );
+        requireValue(
+          new SplitDecimal(split.gross_income_usd)
+            .minus(split.sky_income_usd)
+            .eq(split.prime_income_usd),
+        );
+        requireValue(
+          new SplitDecimal(split.sky_share).gte(0) &&
+            new SplitDecimal(split.sky_share).lte(1),
+        );
+      }
+    }
   }
   requireValue(v.source_manifest && Array.isArray(v.source_lag_periods));
   for (const p of v.periods)

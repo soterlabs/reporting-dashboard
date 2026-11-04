@@ -41,3 +41,14 @@ known position returns partial estimates, so those numbers retain estimate
 coloring. Confirmed 100% Sky allocations contribute zero Spark SDE-eligible
 return. The Curve sUSDS leg's embedded yield is outside that split and remains
 LP revenue; periods with capital movements retain the source's estimated basis.
+
+For Spark policy v3.8, `statement_rows` from the reporting API replaces the local
+catalog and dashboard subtotals. Every numeric row resolves `metric_id` directly
+to an API line; labels, nesting and values have one owner. Older policies and
+other primes retain the local layout. Spark's verified aggregate Anchorage
+interest receipts replace the three unconfirmed illustrative loans.
+
+Zero-row filtering uses unrounded, fully available values over elapsed months.
+TBD or partial cells keep the row, and parents remain if a child is visible.
+Dollar amounts display with no decimals and rounded negative zero displays as
+$0. API and CSV amounts retain full calculation precision.
