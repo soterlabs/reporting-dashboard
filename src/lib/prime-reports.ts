@@ -1,3 +1,4 @@
+import { sparkStatementPolicy } from "./financial-policies.ts";
 import { sheetStatementLines } from "./statement-layout.ts";
 import type { FinancialStatement } from "./financial.ts";
 import Decimal from "decimal.js";
@@ -120,7 +121,10 @@ export function statementLines(
   scope: Scope,
   financial?: FinancialStatement | null,
 ): StatementLine[] {
-  const apiLayout = prime === "spark" && financial?.statement_rows;
+  const apiLayout =
+    prime === "spark" &&
+    financial?.policy_version === sparkStatementPolicy &&
+    financial.statement_rows;
   const rows: StatementLine[] = apiLayout
     ? apiLayout.map((r) => ({
         id: r.id,
@@ -132,6 +136,11 @@ export function statementLines(
       }))
     : sheetStatementLines(prime, scope, financial);
   if (apiLayout && financial) {
+    if (
+      financial.source_lag_periods.length ||
+      financial.periods.some((p) => p.state !== "future" && p.stale)
+    )
+      return rows;
     const elapsed = financial.periods.filter((p) => p.state !== "future");
     const hidden = new Set<string>();
     for (const row of [...rows].reverse()) {

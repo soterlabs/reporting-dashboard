@@ -106,3 +106,38 @@ test("zero filtering uses exact amounts across elapsed months and keeps TBD, par
     statementLines("spark", "individual", report).some((r) => r.id === key),
   );
 });
+
+test("stale source zeroes stay visible and older policy layouts cannot be replaced by optional metadata", () => {
+  const r = structuredClone(fixture);
+  const id = "investment.sparklend.usdg";
+  const line = r.lines.find((l: { id: string }) => l.id === id);
+  for (const period of r.periods.filter(
+    (p: { state: string }) => p.state !== "future",
+  ))
+    line.values[period.key] = {
+      ...line.values[period.key],
+      status: "available",
+      value: "0",
+      known_value: null,
+    };
+  r.periods[9].stale = true;
+  assert.ok(
+    statementLines("spark", "individual", r).some((row) => row.id === id),
+  );
+  r.policy_version = "prime-management.spark-amms.v3.7";
+  r.statement_rows = [
+    {
+      id: "unexpected",
+      label: "unexpected",
+      metric_id: id,
+      parent: null,
+      depth: 1,
+      kind: null,
+    },
+  ];
+  assert.ok(
+    !statementLines("spark", "individual", r).some(
+      (row) => row.id === "unexpected",
+    ),
+  );
+});
