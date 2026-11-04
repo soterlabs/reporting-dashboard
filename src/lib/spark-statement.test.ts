@@ -141,3 +141,20 @@ test("stale source zeroes stay visible and older policy layouts cannot be replac
     ),
   );
 });
+
+test("historical statement policy exposes published January revenue through the API layout", () => {
+  const report = JSON.parse(
+    readFileSync(
+      new URL("./fixtures/spark-history-v3.9.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const parsed = validateStatement(report, "spark", 2026);
+  const line = parsed.lines.find(
+    (r) => r.id === "investment.maple_syrup_usdc",
+  )!;
+  assert.equal(line.values["2026-01"].status, "available");
+  assert.equal(line.values["2026-01"].quality, "estimate");
+  assert.equal(line.values["2026-01"].value, "850905.46");
+  assert.ok(parsed.statement_rows?.some((row) => row.metric_id === line.id));
+});

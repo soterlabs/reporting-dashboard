@@ -29,7 +29,10 @@ function errorMessage(status: number) {
 }
 async function read(path: string, validate: (v: unknown) => unknown) {
   const previous = cache.get(path);
-  if (previous && previous.until > Date.now())
+  const pinned = new URL(path, "https://reporting.invalid").searchParams.has(
+    "revision",
+  );
+  if (pinned && previous && previous.until > Date.now())
     return {
       value: previous.value,
       retained: false,

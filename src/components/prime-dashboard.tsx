@@ -21,6 +21,7 @@ import { venueEvidence, readUncertainty } from "@/lib/number-confidence";
 import { ArchiveIncome } from "./archive-income";
 import { OffchainAccruals } from "./offchain-accruals";
 import { IncomeStatement } from "./income-statement";
+import { ReportingRefresh } from "./reporting-refresh";
 import { annualReports, portfolioReports } from "@/lib/report-data";
 import {
   API_DOC_URL,
@@ -146,6 +147,7 @@ export async function PrimeDashboard({
   );
   return (
     <div className="app-shell">
+      <ReportingRefresh />
       <aside className="sidebar">
         <Link href="/" className="brand">
           <img
@@ -302,7 +304,7 @@ export async function PrimeDashboard({
           {view === "income" ? (
             <>
               <IncomeStatement
-                key={`${prime}:${year}:${financial?.report?.policy_version || "unavailable"}`}
+                key={`${prime}:${year}`}
                 rows={statementLines(
                   combined ? null : prime,
                   scope,
