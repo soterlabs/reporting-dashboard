@@ -5,7 +5,9 @@ export const allocationRewardsPolicy =
 export const offchainPolicy = "prime-management.offchain-accruals.v3.4";
 export const archivePolicy = "prime-management.archive-income.v3.5";
 export const sparkIncomePolicy = "prime-management.spark-income.v3.6";
-export const archivePolicies = [archivePolicy, sparkIncomePolicy];
+export const sparkAmmPolicy = "prime-management.spark-amms.v3.7";
+export const sparkIncomePolicies = [sparkIncomePolicy, sparkAmmPolicy];
+export const archivePolicies = [archivePolicy, ...sparkIncomePolicies];
 export const offchainPolicies = [offchainPolicy, ...archivePolicies];
 export const allocationRewardsPolicies = [
   allocationRewardsPolicy,
