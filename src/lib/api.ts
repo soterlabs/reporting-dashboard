@@ -1,3 +1,4 @@
+import { validateCashFlow, type CashFlowReport } from "./cash-flow-api.ts";
 import {
   validateStatement,
   validatePortfolio,
@@ -173,4 +174,12 @@ async function financialRead<T>(
         e instanceof Error ? e.message : "Financial reporting unavailable",
     };
   }
+}
+
+
+export async function cashFlowReport(prime: Prime, year: number, revision?: string) {
+  return financialRead<CashFlowReport>(
+    `/v3/reporting/cash-flow?${new URLSearchParams({prime,year:String(year),...(revision ? {revision} : {})})}`,
+    value => validateCashFlow(value,prime,year,revision),
+  );
 }

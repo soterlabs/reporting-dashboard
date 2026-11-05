@@ -1,7 +1,8 @@
+import { cashFlowApiCsv } from "@/lib/cash-flow-api";
 import { financialPortfolioRows } from "@/lib/financial";
 import { cashFlowCsvRows, cashFlowSnapshot, cashFlowCalendar } from "@/lib/cash-flow";
 import { withSparkExpenses } from "@/lib/spark-expenses";
-import { financialStatements, financialPortfolio, report } from "@/lib/api";
+import { financialStatements, financialPortfolio, report, cashFlowReport } from "@/lib/api";
 import {
   FINANCIAL_EXPORT_HEADERS,
   financialExportMetadata,
@@ -56,8 +57,16 @@ export async function GET(request: Request) {
   const rows: unknown[][] = [];
   const cashFlow = q.get("view") === "cash-flow";
   if (cashFlow) {
+    if (q.has("cash_flow_selection") && (q.has("cash_flow_revision") || q.has("cash_flow_as_of"))) return Response.json({error:"Select API revisions or a workbook snapshot, not both"},{status:400});
     if (prime !== "spark" || year !== cashFlowSnapshot.year || (q.has("prime") && q.get("prime") !== "spark") || (q.has("year") && q.get("year") !== String(cashFlowSnapshot.year)) || q.has("dataset"))
       return Response.json({ error: "Cash flow workbook data is only available for Spark 2026" }, { status: 404 });
+    if (!q.has("cash_flow_revision")) {
+      const selected=q.get("cash_flow_selection");
+      if(selected==="none") return Response.json({error:"No cash-flow API publication was selected"},{status:503});
+      const read=await cashFlowReport(prime,year,selected || undefined);
+      if(!read.report) return Response.json({error:read.message || "Cash-flow API unavailable"},{status:503});
+      rows.push(...cashFlowApiCsv(read.report));
+    } else {
     if (q.has("cash_flow_revision") && q.get("cash_flow_revision") !== cashFlowSnapshot.id)
       return Response.json({ error: "Cash flow snapshot unavailable; refresh the dashboard" }, { status: 409 });
     if (q.has("cash_flow_revision") && !q.get("cash_flow_as_of"))
@@ -66,6 +75,7 @@ export async function GET(request: Request) {
       rows.push(...cashFlowCsvRows(year, cashFlowCalendar(q.get("cash_flow_as_of") || undefined)));
     } catch (error) {
       return Response.json({ error: error instanceof Error ? error.message : "Invalid cash flow cutoff" }, { status: 400 });
+    }
     }
   } else if (positions) {
     const sourceRevision = q.get("source_revision");

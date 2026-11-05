@@ -5,9 +5,9 @@ import {
   metricAmount,
   statementMonthNote,
 } from "@/lib/financial";
-import { financialStatements, financialPortfolio } from "@/lib/api";
+import { financialStatements, financialPortfolio, cashFlowReport } from "@/lib/api";
 import { CashFlowStatement } from "./cash-flow-statement";
-import { cashFlowSnapshot, cashFlowAsOf } from "@/lib/cash-flow";
+
 import { withSparkExpenses } from "@/lib/spark-expenses";
 import Link from "next/link";
 import {
@@ -96,6 +96,7 @@ export async function PrimeDashboard({
   const months = yearMonths(year);
   const month = chooseMonth(months, param(search, "month"));
   const title = scopeTitle(prime, scope);
+  const cashFlow = view === "cash-flow" && year === 2026 ? await cashFlowReport(prime,year) : null;
   // Financial components are independent of the unclassified source schedule.
   const annual =
     view === "income" && scope === "individual"
@@ -136,8 +137,7 @@ export async function PrimeDashboard({
     month: month.key,
   });
   if (view === "cash-flow") {
-    query.set("cash_flow_revision", cashFlowSnapshot.id);
-    query.set("cash_flow_as_of", cashFlowAsOf(months));
+    query.set("cash_flow_selection",cashFlow?.report?.selection || "none");
   }
   if (financial?.report)
     query.set("financial_revision", financial.report.selection);
@@ -164,7 +164,7 @@ export async function PrimeDashboard({
   );
   return (
     <div className="app-shell">
-      {view !== "cash-flow" && <ReportingRefresh />}
+      <ReportingRefresh />
       <aside className="sidebar">
         <Link href="/" className="brand">
           <img
@@ -228,7 +228,7 @@ export async function PrimeDashboard({
                     : "Prime agents combined · Inter-prime eliminations TBD."}
               </p>
             </div>
-            {(view !== "cash-flow" || year === cashFlowSnapshot.year) && <a className="button export" href={`/api/export?${query}`}>
+            {(view !== "cash-flow" || year === 2026) && <a className="button export" href={`/api/export?${query}`}>
               <ArrowDownToLine size={15} />
               {view === "cash-flow" ? "Cash flow CSV" : view === "income" ? "Statement CSV" : "Positions CSV"}
             </a>}
@@ -304,7 +304,7 @@ export async function PrimeDashboard({
           <div className="report-status">
             <span className="badge">Draft · Unaudited</span>
             <span>
-              {view === "cash-flow" ? `${year} · Provisional workbook data` : view === "income"
+              {view === "cash-flow" ? `${year} · Reporting API` : view === "income"
                 ? `${year} · Monthly columns · ${statementTotalLabel(financial?.report, totalLabel(months))}`
                 : `${month.label} ${year} · Closing positions`}
             </span>
@@ -325,7 +325,7 @@ export async function PrimeDashboard({
             </p>
           )}
           <FinancialLegend />
-          {view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${year}`} year={year} months={months} /> : view === "income" ? (
+          {view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${year}`} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
             <>
               <IncomeStatement
                 key={`${prime}:${year}`}
@@ -673,7 +673,7 @@ export async function PrimeDashboard({
           <footer>
             <span>Draft · Unaudited</span>
             <span>All monetary amounts are denominated in US dollars (USD).</span>
-            <span>{view === "cash-flow" ? "Provisional workbook snapshot" : financial?.report?.dashboard_composition ? "Reporting API + provisional expense snapshot" : "Reporting API only"}</span>
+            <span>{view === "cash-flow" ? "Cash-flow reporting API" : financial?.report?.dashboard_composition ? "Reporting API + provisional expense snapshot" : "Reporting API only"}</span>
           </footer>
         </main>
       </div>
