@@ -249,3 +249,4 @@ and `cash_flow_as_of` remain reproducible for workbook comparison. Legacy and AP
 selectors cannot be mixed. Other primes/years do not inherit Spark figures.
 
 Numbers use minus signs for negatives and neutral text colors. The sidebar defaults to the logo and prime names; its button expands the branding. Annual tables fit typical desktop widths with the compact sidebar; smaller screens retain accessible internal scrolling.
+The sidebar toggle has reserved space below expanded sidebar details. On smaller displays, full-year financial tables scroll within their own region rather than expanding the page.

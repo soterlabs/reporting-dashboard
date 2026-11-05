@@ -1296,3 +1296,7 @@ footer {
   .sidebar-toggle { position: absolute; top: 18px; right: 18px; }
   .sidebar-compact .brand > span { display: none; }
 }
+@media (min-width: 801px) {
+  .sidebar-expanded .sidebar-bottom { padding-bottom: 60px; }
+}
+.sidebar-compact nav a .dot, .sidebar-compact nav a > svg { display: none; }
