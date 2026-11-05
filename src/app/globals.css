@@ -1241,47 +1241,8 @@ footer {
   margin-top: 6px;
 }
 
-/* Color expresses evidence and recognition, never profit/loss direction. */
-.amount-accrual {
-  color: var(--amount-accrual);
-}
-.amount-cash {
-  color: var(--amount-cash);
-}
-.amount-uncertain {
-  color: var(--amount-uncertain);
-}
-.amount-missing {
-  color: var(--amount-missing);
-}
-.amount-future {
-  color: var(--muted);
-}
-.number-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-  font-size: 11px;
-  margin: 0 0 14px;
-}
-.financial-table .total {
-  --amount-accrual: #86efac;
-  --amount-cash: #93c5fd;
-  --amount-uncertain: #fdba74;
-  --amount-missing: #fca5a5;
-}
-.financial-table .total .amount-future {
-  color: #b9b5af;
-}
-:root[data-theme="dark"] .financial-table .total {
-  --amount-accrual: #166534;
-  --amount-cash: #1d4ed8;
-  --amount-uncertain: #a64b00;
-  --amount-missing: #b91c1c;
-}
-:root[data-theme="dark"] .financial-table .total .amount-future {
-  color: #64605b;
-}
+.amount-accrual, .amount-cash, .amount-uncertain, .amount-missing, .amount-future, .tbd, .negative { color: inherit; }
+.number-legend { color: var(--muted); font-size: 11px; margin: 0 0 14px; }
 
 /* Preserve total-row contrast when the generic table hover style applies. */
 .financial-table tbody tr.total:hover th,
@@ -1310,3 +1271,32 @@ footer {
   top: 0;
   left: 0;
 }
+
+/* Compact by default; labels remain visible without the expanded branding. */
+@media (min-width: 801px) {
+  .app-shell { --sidebar-width: 112px; }
+  .app-shell.sidebar-expanded { --sidebar-width: 244px; }
+  .app-shell .sidebar { width: var(--sidebar-width); }
+  .app-shell .workspace { margin-left: var(--sidebar-width); }
+  .sidebar-compact .sidebar { padding: 23px 8px; }
+  .sidebar-compact .brand { justify-content: center; padding: 0 0 27px; }
+  .sidebar-compact .brand > span, .sidebar-compact .nav-label,
+  .sidebar-compact .sidebar-bottom, .sidebar-compact nav a .dot,
+  .sidebar-compact nav a > svg { display: none; }
+  .sidebar-compact nav a { padding: 0 10px; }
+  .sidebar-toggle { position: fixed; z-index: 5; bottom: 24px; left: calc(var(--sidebar-width) / 2 - 17px); }
+  .app-shell .financial-table { width: 100%; min-width: 1160px; }
+  .app-shell .financial-table th:first-child { width: 245px; }
+  .app-shell .financial-table th, .app-shell .financial-table td { padding: 11px 4px; font-size: 10px; }
+  .app-shell .financial-table tbody th { padding-inline-start: calc(8px + var(--statement-depth, 0) * 14px); font-size: 11px; }
+  .app-shell .financial-table .year-total { width: 94px; }
+}
+.sidebar-toggle { border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--fg); padding: 7px; display: grid; place-items: center; }
+@media (max-width: 800px) {
+  .sidebar-toggle { position: absolute; top: 18px; right: 18px; }
+  .sidebar-compact .brand > span { display: none; }
+}
+@media (min-width: 801px) {
+  .sidebar-expanded .sidebar-bottom { padding-bottom: 60px; }
+}
+.sidebar-compact nav a .dot, .sidebar-compact nav a > svg { display: none; }

@@ -6,6 +6,7 @@ import {
   statementMonthNote,
 } from "@/lib/financial";
 import { financialStatements, financialPortfolio, cashFlowReport } from "@/lib/api";
+import { ReportingShell } from "./reporting-shell";
 import { CashFlowStatement } from "./cash-flow-statement";
 
 import { withSparkExpenses } from "@/lib/spark-expenses";
@@ -163,10 +164,10 @@ export async function PrimeDashboard({
     (p) => p.read.retained || p.read.report?.freshness.stale,
   );
   return (
-    <div className="app-shell">
+    <ReportingShell>
       <ReportingRefresh />
-      <aside className="sidebar">
-        <Link href="/" className="brand">
+      <aside className="sidebar" id="reporting-sidebar">
+        <Link href="/" className="brand" aria-label="Soter Labs home">
           <img
             className="brand-mark"
             src="/soter-labs.png"
@@ -677,7 +678,7 @@ export async function PrimeDashboard({
           </footer>
         </main>
       </div>
-    </div>
+    </ReportingShell>
   );
 }
 function ScopePerimeter({ prime, scope }: { prime: Prime; scope: Scope }) {
