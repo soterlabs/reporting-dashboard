@@ -1,4 +1,5 @@
 "use client";
+import { statementDisplayLabel } from "@/lib/statement-labels";
 import { useState, type CSSProperties } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cashFlowLayout } from "@/lib/cash-flow";
@@ -14,7 +15,7 @@ import { FinancialNumber } from "./financial-number";
 export function CashFlowStatement({ prime, year, month, months, report, financial, retained = false, message }: {
   prime: Prime; year: number; month: string; financial?: FinancialStatement | null; months: Month[]; report?: CashFlowReport | null; retained?: boolean; message?: string | null;
 }) {
-  const layout: StatementLine[] = report ? report.lines.map(r=>({id:r.id,label:r.label,parent:r.parent || undefined,level:r.depth,kind:r.kind || undefined})) : [...cashFlowLayout(),...cashFlowLayout(true)];
+  const layout: StatementLine[] = report ? report.lines.map(r=>({id:r.id,label:statementDisplayLabel(r.id,r.label),parent:r.parent || undefined,level:r.depth,kind:r.kind || undefined})) : [...cashFlowLayout(),...cashFlowLayout(true)].map(row=>({...row,label:statementDisplayLabel(row.id,row.label)}));
   const checkIds = new Set(report ? report.lines.filter(r=>r.check).map(r=>r.id) : cashFlowLayout(true).map(r=>r.id));
   const rows=layout.filter(r=>!checkIds.has(r.id)), groups=collapsedStatementGroups(rows);
   const [expanded,setExpanded]=useState<Set<string>>(()=>new Set());
@@ -38,9 +39,9 @@ export function CashFlowStatement({ prime, year, month, months, report, financia
   const coverage=Object.entries(report?.monthly_coverage || {}).filter(([,v])=>v);
   const missing=[...new Set(coverage.flatMap(([,v])=>v!.missing_chains))];
   return <>
-    <section className="panel"><div className="panel-heading"><div><h2>{title} cash flow statement</h2><p>USD · Month-end unless MTD · Event-backed reporting</p></div><button className="button" onClick={()=>setExpanded(collapsed.size ? new Set(groups) : new Set())}>{collapsed.size ? "Expand all" : "Collapse all"}</button></div>{(report || (prime === "spark" && year === 2026)) && table()}<p className="panel-note">{message || (report ? "Cash movements use actual transaction dates. Net income retains the reporting income and expense basis." : "Event-backed cash-flow data is not yet available for this prime and year; workbook amounts are not substituted.")}</p></section>
+    <section className="panel"><div className="panel-heading"><div><h2>{title} cash flow statement</h2></div><button className="button" onClick={()=>setExpanded(collapsed.size ? new Set(groups) : new Set())}>{collapsed.size ? "Expand all" : "Collapse all"}</button></div>{(report || (prime === "spark" && year === 2026)) && table()}<p className="panel-note">{message || (report ? "Cash movements use actual transaction dates. Net income retains the reporting income and expense basis." : "Event-backed cash-flow data is not yet available for this prime and year; workbook amounts are not substituted.")}</p></section>
     <CashFlowReconciliation key={`${prime}:${year}:${month}`} prime={prime} year={year} month={month} months={calendar} report={report} financial={financial} retained={retained} />
-    {report && <details className="panel source-coverage"><summary className="panel-heading"><h2>Cash reconciliation</h2></summary>{table(true)}<p className="panel-note">Balances are independently measured. Unclassified movements and incomplete bridge or principal/interest attribution remain explicit.</p></details>}
-    <details className="source-details"><summary>Sources & transaction evidence</summary><div className="source-body"><p>{report?.source_note || "No API publication selected."}</p>{missing.length>0 && <p>Missing chain coverage: {missing.join(", ")}.</p>}{report && <><p>As of: {report.as_of} · Report hash: {report.report_hash}</p>{report.periods.filter(p=>p.revision).map(p=><div className="source-row" key={p.key}><strong>{p.key} · {p.actual_cutoff}</strong><span>Revision: {p.revision}</span><a href={`/api/cash-flow/events?${new URLSearchParams({prime,month:p.key,revision:p.revision!})}`} target="_blank" rel="noreferrer">Transaction evidence</a><a href={`/api/cash-flow/balances?${new URLSearchParams({prime,month:p.key,revision:p.revision!})}`} target="_blank" rel="noreferrer">Balance evidence</a></div>)}</>}</div></details>
+    {report && <details open className="panel source-coverage"><summary className="panel-heading"><h2>Cash reconciliation</h2></summary>{table(true)}<p className="panel-note">Balances are independently measured. Unclassified movements and incomplete bridge or principal/interest attribution remain explicit.</p></details>}
+    <details hidden className="source-details"><summary>Sources & transaction evidence</summary><div className="source-body"><p>{report?.source_note || "No API publication selected."}</p>{missing.length>0 && <p>Missing chain coverage: {missing.join(", ")}.</p>}{report && <><p>As of: {report.as_of} · Report hash: {report.report_hash}</p>{report.periods.filter(p=>p.revision).map(p=><div className="source-row" key={p.key}><strong>{p.key} · {p.actual_cutoff}</strong><span>Revision: {p.revision}</span><a href={`/api/cash-flow/events?${new URLSearchParams({prime,month:p.key,revision:p.revision!})}`} target="_blank" rel="noreferrer">Transaction evidence</a><a href={`/api/cash-flow/balances?${new URLSearchParams({prime,month:p.key,revision:p.revision!})}`} target="_blank" rel="noreferrer">Balance evidence</a></div>)}</>}</div></details>
   </>;
 }

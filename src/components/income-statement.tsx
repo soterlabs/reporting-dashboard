@@ -59,11 +59,6 @@ export function IncomeStatement({
       <div className="panel-heading">
         <div>
           <h2>{title} income statement</h2>
-          <p>USD · Month-end unless MTD · Unaudited</p>
-          <p className="statement-help">
-            TBD = missing data. Totals sum available amounts. * Includes
-            estimates.
-          </p>
         </div>
         <button
           className="button"

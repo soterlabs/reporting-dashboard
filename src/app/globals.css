@@ -999,7 +999,6 @@ footer {
   margin-left: auto;
 }
 .financial-wrap {
-  max-height: 740px;
   overflow: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -1197,9 +1196,6 @@ footer {
     padding-top: 12px;
     padding-bottom: 12px;
   }
-  .financial-wrap {
-    max-height: 630px;
-  }
   .financial-table tbody th {
     padding-inline-start: calc(10px + var(--statement-depth, 0) * 14px);
   }
@@ -1320,3 +1316,6 @@ footer {
 .reconciliation-month { display: flex; align-items: center; gap: .5rem; font-size: .85rem; }
 
 .reconciliation-card > .panel-heading { flex-wrap: wrap; }
+
+/* Retain source panels for future use without showing them in the dashboard. */
+.source-details[hidden] { display: none; }

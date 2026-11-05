@@ -17,7 +17,8 @@ test("Spark consumes the API row hierarchy and exact metrics without a second fi
   const rows = statementLines("spark", "individual", report);
   for (const row of rows) {
     const api = report.statement_rows!.find((r) => r.id === row.id)!;
-    assert.equal(row.label, api.label);
+    assert.equal(row.label, row.id === "gains" ? "Net gains on non-stable assets" : api.label);
+    if (row.id === "gains") assert.equal(api.label, "Gains (losses) on non-stable assets, net");
     assert.equal(row.level, api.depth);
     if (row.kind !== "section")
       assert.strictEqual(

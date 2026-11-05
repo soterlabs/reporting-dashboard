@@ -235,7 +235,7 @@ export function sheetStatementLines(
       !(linked && /rewards\.(lending|issuer)\./.test(d.id)),
   );
   for (const d of general) add(d.id, d.label, "rewards");
-  add("gains", "Gains (losses) on non-stable assets, net");
+  add("gains", "Net gains on non-stable assets");
   if (prime === "spark")
     for (const [id, label] of [
       ["morpho", "MORPHO"],

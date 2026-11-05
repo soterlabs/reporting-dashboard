@@ -303,3 +303,14 @@ have the same six checks without substituting Spark/Grove figures. Unsupported
 cash-flow exports are hidden. Debt, independent receivable, payables timing and
 Data Hub buyback comparisons remain unverifiable until those sources are published;
 this card does not fabricate those missing endpoints or certify a full statement.
+
+## Concise 2026 dashboard
+
+The dashboard is fixed to 2026 and has no Year or Apply controls. Position months
+update immediately; the reconciliation card keeps its own month selector. Statement
+tables expand to their full height, with horizontal scrolling on narrow screens.
+Cash reconciliation details start open. Supporting allocation income and publication
+coverage cards are removed. Accounting/transaction source panels remain in the code
+but are hidden. Draft labels and repeated explanatory header lines are removed;
+the footer retains the USD denomination note. “Net gains on non-stable assets” is
+a display/CSV label; retained API documents and their hashes are unchanged.
