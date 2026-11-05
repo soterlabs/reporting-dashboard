@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { cashFlowSnapshot, cashFlowLayout, cashFlowMetric, cashFlowCsvRows } from "./cash-flow.ts";
+import { cashFlowSnapshot, cashFlowLayout, cashFlowMetric, cashFlowCsvRows, cashFlowCalendar, cashFlowAsOf, validateCashFlowSnapshot } from "./cash-flow.ts";
 import { yearMonths, collapsedStatementGroups } from "./prime-reports.ts";
 import { visibleStatementLines } from "./statement-layout.ts";
 import { numberConfidence } from "./number-confidence.ts";
@@ -52,4 +52,23 @@ test("cash flow CSV shares visible metrics, preserves source precision and does 
   const earlier=yearMonths(2026,new Date("2026-10-05T00:00:00Z"));
   assert.equal(cashFlowMetric(row("net-cash-change"),earlier,"2026-10").value,null);
   assert.notEqual(cashFlowMetric(row("net-cash-change"),earlier).value,"-133416396");
+});
+
+
+test("pinned cash flow dates survive calendar rollover and reject invalid or future cutoffs", () => {
+  const asOf = cashFlowAsOf(months);
+  const later = cashFlowCalendar(asOf,new Date("2027-02-01T00:00:00Z"));
+  assert.deepEqual(cashFlowCsvRows(2026,later),cashFlowCsvRows(2026,months));
+  for(const invalid of ["2026-02-30","2027-01-01","2026-11-05","2025-12-30"])
+    assert.throws(() => cashFlowCalendar(invalid,new Date("2026-11-05T00:00:00Z")),/Invalid cash flow cutoff/);
+  assert.equal(cashFlowAsOf(cashFlowCalendar("2025-12-31",new Date("2026-01-01T00:00:00Z"))),"2025-12-31");
+});
+test("manual snapshot errors fail before publishing wrong workbook figures", () => {
+  assert.equal(validateCashFlowSnapshot(cashFlowSnapshot),cashFlowSnapshot);
+  const mutate = (fn:(r:typeof cashFlowSnapshot)=>void) => {const clone=structuredClone(cashFlowSnapshot);fn(clone);assert.throws(()=>validateCashFlowSnapshot(clone),/Cash flow snapshot:/);};
+  mutate(s=>{s.rows[1].values["2026-01"]="9000000";});
+  mutate(s=>{s.rows[1].values["2026-01"]="NaN";});
+  mutate(s=>{s.rows[1].id=s.rows[0].id;});
+  mutate(s=>{s.rows[1].parent="missing";});
+  mutate(s=>{s.prime="grove";});
 });

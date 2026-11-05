@@ -7,7 +7,7 @@ import {
 } from "@/lib/financial";
 import { financialStatements, financialPortfolio } from "@/lib/api";
 import { CashFlowStatement } from "./cash-flow-statement";
-import { cashFlowSnapshot } from "@/lib/cash-flow";
+import { cashFlowSnapshot, cashFlowAsOf } from "@/lib/cash-flow";
 import { withSparkExpenses } from "@/lib/spark-expenses";
 import Link from "next/link";
 import {
@@ -135,7 +135,10 @@ export async function PrimeDashboard({
     year: String(year),
     month: month.key,
   });
-  if (view === "cash-flow") query.set("cash_flow_revision", cashFlowSnapshot.id);
+  if (view === "cash-flow") {
+    query.set("cash_flow_revision", cashFlowSnapshot.id);
+    query.set("cash_flow_as_of", cashFlowAsOf(months));
+  }
   if (financial?.report)
     query.set("financial_revision", financial.report.selection);
   if (financial?.report?.dashboard_composition) {

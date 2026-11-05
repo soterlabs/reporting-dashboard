@@ -1,5 +1,5 @@
 import { financialPortfolioRows } from "@/lib/financial";
-import { cashFlowCsvRows, cashFlowSnapshot } from "@/lib/cash-flow";
+import { cashFlowCsvRows, cashFlowSnapshot, cashFlowCalendar } from "@/lib/cash-flow";
 import { withSparkExpenses } from "@/lib/spark-expenses";
 import { financialStatements, financialPortfolio, report } from "@/lib/api";
 import {
@@ -60,7 +60,13 @@ export async function GET(request: Request) {
       return Response.json({ error: "Cash flow workbook data is only available for Spark 2026" }, { status: 404 });
     if (q.has("cash_flow_revision") && q.get("cash_flow_revision") !== cashFlowSnapshot.id)
       return Response.json({ error: "Cash flow snapshot unavailable; refresh the dashboard" }, { status: 409 });
-    rows.push(...cashFlowCsvRows(year, months));
+    if (q.has("cash_flow_revision") && !q.get("cash_flow_as_of"))
+      return Response.json({ error: "Pinned cash flow exports require a cutoff" }, { status: 400 });
+    try {
+      rows.push(...cashFlowCsvRows(year, cashFlowCalendar(q.get("cash_flow_as_of") || undefined)));
+    } catch (error) {
+      return Response.json({ error: error instanceof Error ? error.message : "Invalid cash flow cutoff" }, { status: 400 });
+    }
   } else if (positions) {
     const sourceRevision = q.get("source_revision");
     const sourceCutoff = q.get("source_cutoff");
