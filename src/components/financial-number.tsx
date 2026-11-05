@@ -23,7 +23,7 @@ export function FinancialNumber({
   const text = tone === "future" ? "—" : money(value);
   return (
     <span
-      className={`financial-number amount-${tone}`}
+      className="financial-number"
       data-tone={tone}
       title={[reason, detail].filter(Boolean).join(" · ")}
     >
@@ -31,18 +31,15 @@ export function FinancialNumber({
       <span className="number-basis"> — {reason}</span>
       {value != null &&
         tone !== "future" &&
-        evidence?.quality === "estimate" && <sup aria-hidden="true">*</sup>}
+        evidence?.quality === "estimate" && <sup aria-label="Estimated or provisional">*</sup>}
     </span>
   );
 }
 
 export function FinancialLegend() {
   return (
-    <div className="number-legend" aria-label="Financial number colors">
-      <span className="amount-accrual">Green: accrual / earned return</span>
-      <span className="amount-cash">Blue: receipts / realized</span>
-      <span className="amount-uncertain">Orange: uncertain / mixed</span>
-      <span className="amount-missing">Red: TBD</span>
+    <div className="number-legend" aria-label="Financial number notes">
+      <span>* Estimated or provisional · TBD unavailable · Hover for source and coverage</span>
     </div>
   );
 }

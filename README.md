@@ -195,7 +195,7 @@ workbook is not committed or required at runtime. Workbook SHA256, source rows
 and snapshot revision identify the data. Staff-function and external-service
 breakdowns are retained in the expandable hierarchy.
 
-Every imported amount remains provisional/orange, including reported but
+Every imported amount remains provisional (marked *), including reported but
 unverified actuals. Operating-expense basis is recorded by month: January–March
 estimates, April–June reported actuals, July–September budgets, and October's
 30% reduction scenario. November–December are blank, never extrapolated.
@@ -233,8 +233,7 @@ flows, expandable adjustments and independent balance reconciliation. Missing
 API data remains TBD; workbook values are never substituted into the live view.
 
 Cash amounts use actual transaction dates and retain quality, coverage and
-monthly revisions. Orange means provisional classification or incomplete scope;
-blue means supported cash evidence. Unknown counterparties and unresolved
+monthly revisions. An asterisk marks estimates or provisional classifications; source/coverage details remain available on hover. Unknown counterparties and unresolved
 bridge, reward-balance and principal attribution remain explicit. The income and
 expense bridge retains its own accrual/provisional basis.
 
@@ -248,3 +247,5 @@ publication.
 Explicit legacy CSV links using `cash_flow_revision=spark-cash-flow-2026.v1`
 and `cash_flow_as_of` remain reproducible for workbook comparison. Legacy and API
 selectors cannot be mixed. Other primes/years do not inherit Spark figures.
+
+Numbers use minus signs for negatives and neutral text colors. The sidebar defaults to the logo and prime names; its button expands the branding. Annual tables fit typical desktop widths with the compact sidebar; smaller screens retain accessible internal scrolling.

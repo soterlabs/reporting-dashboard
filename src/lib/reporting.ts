@@ -139,7 +139,7 @@ export function money(value: string | null | undefined): string {
     .abs()
     .toFixed(0)
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
-  return amount.isNegative() && !amount.isZero() ? `(${formatted})` : formatted;
+  return amount.isNegative() && !amount.isZero() ? `-${formatted}` : formatted;
 }
 export function amount(row: Venue, field: MoneyField): string | null {
   // A known cash receipt remains useful even when the loan's accrual is unavailable.
