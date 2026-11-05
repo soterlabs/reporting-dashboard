@@ -142,6 +142,10 @@ export function withSparkExpenses(prime: Prime, year: number, input: FinancialSt
     // Missing expenses are never treated as zero, and annual net income is a
     // sum of matching monthly pairs, not unmatched annual revenue/expense sums.
     if (metricAmount(earned) === null || spent.status !== "available") return [p.key, { ...emptyMetric(false, "revenue_or_expenses_missing"), missing_components: [...(metricAmount(earned) === null ? ["statement.net_revenue"] : []), ...(spent.status !== "available" ? ["expenses.total"] : [])] }];
+    const expenseEnd = new Date(Date.UTC(year, Number(p.key.slice(5)), 0)).toISOString().slice(0, 10);
+    const revenueEnd = earned?.period_end || p.actual_cutoff || p.expected_cutoff;
+    if (!revenueEnd || revenueEnd < expenseEnd)
+      return [p.key, { ...emptyMetric(false, "revenue_and_expense_cutoffs_differ"), missing_components: ["statement.net_revenue"] }];
     return [p.key, combine([{ id: "statement.net_revenue", sign: 1, cell: earned }, { id: "expenses.total", sign: -1, cell: spent }], "provisional_operational_net_revenue_less_workbook_expenses")];
   }));
   local.set("dashboard.net_income", { id: "dashboard.net_income", label: "Net income", aggregation: "subtotal",

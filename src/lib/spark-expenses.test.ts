@@ -181,3 +181,17 @@ test("the operating expense tooltip distinguishes estimates, unverified actuals 
   assert.equal(operating.values["2026-04"].reason,"provisional_reported_actual_unverified");
   assert.equal(operating.values["2026-10"].reason,"provisional_budget_30_percent_reduction_scenario");
 });
+
+
+test("full-month expenses never produce net income against a stale mid-month revenue cutoff", () => {
+  const source = input();
+  source.periods[9] = { ...source.periods[9], actual_cutoff: "2026-10-27", expected_cutoff: "2026-10-31", stale: true };
+  const report = withSparkExpenses("spark", 2026, source, calendar)!;
+  assert.equal(metricAmount(line(report, "expenses.total").values["2026-10"]), "928282");
+  assert.equal(metricAmount(line(report, "dashboard.net_income").values["2026-10"]), null);
+  assert.equal(line(report, "dashboard.net_income").values["2026-10"].reason, "revenue_and_expense_cutoffs_differ");
+  const october = line(source, "statement.net_revenue").values["2026-10"];
+  october.period_end = "2026-10-25";
+  source.periods[9].actual_cutoff = "2026-10-31";
+  assert.equal(metricAmount(line(withSparkExpenses("spark", 2026, source, calendar)!, "dashboard.net_income").values["2026-10"]), null);
+});

@@ -221,3 +221,5 @@ remain API-only. Retain immutable snapshot files and their registry entries when
 adding a newer revision, so earlier exports remain reproducible. Unknown expense
 revisions or mismatched display hashes fail instead of silently exporting changed figures. Other primes,
 years, portfolio views and API publications are unaffected.
+
+Full-month expense rows remain available when a revenue publication is delayed; net income stays TBD if that revenue cutoff stops before month end.
