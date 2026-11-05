@@ -122,9 +122,9 @@ export function statementLines(
   financial?: FinancialStatement | null,
 ): StatementLine[] {
   const apiLayout =
-    prime === "spark" &&
     financial &&
-    (sparkStatementPolicies.includes(financial.policy_version) || financial.dashboard_composition) &&
+    ((prime === "spark" && sparkStatementPolicies.includes(financial.policy_version)) ||
+      (financial.prime === prime && financial.dashboard_composition)) &&
     financial.statement_rows;
   const rows: StatementLine[] = apiLayout
     ? apiLayout.map((r) => ({

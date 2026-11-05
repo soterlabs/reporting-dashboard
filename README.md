@@ -42,7 +42,7 @@ Only reporting data is consumed, server-side:
 - `/v2/reporting/{prime}/at/{cutoff}` for exact historical month ends.
 - `/v3/reporting/statements` and `/v3/reporting/portfolio` for approved financial components and tracked allocation aggregates.
 
-`REPORTING_API_URL` defaults to `https://settle-api-production.up.railway.app`. No API key is currently required. Requests read stored publications and cannot start calculations. There are no settlement, blockchain or database dependencies. Spark’s approved provisional 2026 expenses additionally use a versioned local JSON snapshot; the application does not read spreadsheets at runtime.
+`REPORTING_API_URL` defaults to `https://settle-api-production.up.railway.app`. No API key is currently required. Requests read stored publications and cannot start calculations. There are no settlement, blockchain or database dependencies. Spark’s and Grove’s approved provisional 2026 expenses additionally use a versioned local JSON snapshot; the application does not read spreadsheets at runtime.
 
 Successful responses are validated and cached for five minutes. Failed refreshes may retain the last checked response for that exact request with a visible warning. The bounded process-local cache clears on restart. Annual source reads have at most four upstream requests in flight per prime. Combined positions read each prime independently; their dates and revisions remain separate.
 
@@ -250,3 +250,24 @@ selectors cannot be mixed. Other primes/years do not inherit Spark figures.
 
 Numbers use minus signs for negatives and neutral text colors. The sidebar defaults to the logo and prime names; its button expands the branding. Annual tables fit typical desktop widths with the compact sidebar; smaller screens retain accessible internal scrolling.
 The sidebar toggle has reserved space below expanded sidebar details. On smaller displays, full-year financial tables scroll within their own region rather than expanding the page.
+
+## Grove 2026 provisional expenses
+
+`src/lib/data/grove-expenses-2026.v1.json` imports only the Grove sheet’s rows
+6–27 and January–December 2026 columns from `prime_expenses.xlsx`. January–March
+are estimates from the Sky reimbursement and staff/service mix; April–June are
+unverified reported actuals; July–September are budgets; October is the supplied
+50% reduction scenario. November and December remain missing. All imported
+figures and calculated net income are provisional, marked `*`. Staff functions
+remain expandable. Capital, buffer and DevCo funding memos are excluded.
+
+The shared expense composer uses a separate immutable Grove revision, verifies
+subtotal controls within one cent, and keeps Spark exports unchanged. Grove’s
+monthly net income subtracts complete monthly expenses from the same month’s
+API net revenue; missing or stale revenue stays TBD. CSV links pin both sources.
+October expense control: 576,729.45667 USD before display rounding.
+
+This import does not change the Reporting API or MSC settlement calculations.
+Grove’s event-backed cash-flow statement is a separate onboarding step: its
+penalties and capital setoffs require net settlement classification and an
+approved opening receivable; Spark’s opening balance cannot be reused.

@@ -52,7 +52,7 @@ test("API revenue, funding, original expense placeholders, source manifest and h
   assert.match(r.dashboard_composition!.display_hash,/^[a-f0-9]{64}$/);
   assert.notEqual(r.dashboard_composition!.display_hash,r.report_hash);
   assert.throws(()=>withSparkExpenses("spark",2026,r,calendar),/original API input/);
-  assert.equal(withSparkExpenses("grove",2026,original,calendar),original);
+  assert.equal(withSparkExpenses("osero",2026,original,calendar),original);
   assert.equal(withSparkExpenses("spark",2027,undefined),undefined);
 });
 
@@ -194,4 +194,43 @@ test("full-month expenses never produce net income against a stale mid-month rev
   october.period_end = "2026-10-25";
   source.periods[9].actual_cutoff = "2026-10-31";
   assert.equal(metricAmount(line(withSparkExpenses("spark", 2026, source, calendar)!, "dashboard.net_income").values["2026-10"]), null);
+});
+
+test("Grove imports its own provisional 2026 expenses and preserves scope and missing months",()=>{
+ const original=input();original.prime="grove";const before=structuredClone(original);
+ const r=withSparkExpenses("grove",2026,original,calendar)!;
+ assert.deepEqual(original,before);
+ assert.equal(r.prime,"grove");
+ const rows=statementLines("grove","individual",r);
+ assert.equal(rows.find(row=>row.id==="expenses.compensation.engineering")?.level,3);
+ assert.equal(rows.find(row=>row.id==="net-income")?.metricId,"dashboard.net_income");
+ assert.match(line(r,"expenses.compensation.engineering").values["2026-10"].source_paths[0],/#Grove!S8$/);
+ const csv=statementCsvRows("grove","individual",2026,"2026-10",calendar,r);
+ assert.ok(JSON.stringify(csv).includes("576729.45667"));
+ assert.ok(JSON.stringify(csv).includes("#Grove!"));
+ assert.equal(r.dashboard_composition!.expense_source.sheet,"Grove");
+ assert.equal(metricAmount(r.lines.find(l=>l.id==="expenses.total")!.values["2026-10"]),"576729.45667");
+ assert.equal(metricAmount(r.lines.find(l=>l.id==="expenses.compensation.engineering")!.values["2026-10"]),"117306.3194");
+ assert.equal(metricAmount(r.lines.find(l=>l.id==="dashboard.net_income")!.values["2026-10"]),"1423270.54333");
+ assert.equal(metricAmount(r.lines.find(l=>l.id==="dashboard.net_income")!.values["2026-11"]),null);
+ assert.throws(()=>withSparkExpenses("grove",2026,original,calendar,expenseSnapshotRevision),/perimeter/);
+ const fallback=withSparkExpenses("grove",2026,null,calendar)!;
+ assert.equal(fallback.prime,"grove");assert.equal(metricAmount(fallback.lines.find(l=>l.id==="dashboard.net_income")!.values["2026-10"]),null);
+});
+
+test("Grove fallback and source-native layout keep provisional staff rows and matching-month totals", () => {
+ const source=input();source.prime="grove";source.policy_version="prime-management.allocations.v2.1";delete source.statement_rows;
+ const report=withSparkExpenses("grove",2026,source,calendar)!;
+ const rows=statementLines("grove","individual",report);
+ assert.equal(rows.find(row=>row.id==="expenses.compensation.engineering")?.parent,"expenses.compensation");
+ assert.ok(rows.some(row=>row.id==="net-revenue"));
+ for(let m=1;m<=10;m++){
+  const month=`2026-${String(m).padStart(2,"0")}`;
+  const cost=line(report,"expenses.total").values[month];
+  assert.equal(cost.quality,"estimate");
+  assert.equal(metricAmount(line(report,"dashboard.net_income").values[month]),new D(2000000).minus(metricAmount(cost)!).toString());
+ }
+ const fallback=withSparkExpenses("grove",2026,null,calendar)!;
+ assert.equal(statementLines("grove","individual",fallback).find(row=>row.id==="net-income")?.metricId,"dashboard.net_income");
+ assert.equal(line(fallback,"expenses.total").values["2026-10"].quality,"estimate");
 });
