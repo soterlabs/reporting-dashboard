@@ -1316,3 +1316,7 @@ footer {
   .reconciliation-check summary { align-items: flex-start; padding: .85rem; }
   .reconciliation-detail { padding: 0 .85rem .85rem; }
 }
+
+.reconciliation-month { display: flex; align-items: center; gap: .5rem; font-size: .85rem; }
+
+.reconciliation-card > .panel-heading { flex-wrap: wrap; }

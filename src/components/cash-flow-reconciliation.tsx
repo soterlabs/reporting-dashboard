@@ -1,16 +1,20 @@
+"use client";
+import { useState } from "react";
+import type { Month } from "@/lib/prime-reports";
 import type { CashFlowReport } from "@/lib/cash-flow-api";
 import type { FinancialStatement } from "@/lib/financial";
 import { reconciliationChecks } from "@/lib/cash-flow-reconciliation";
 import { money, type Prime } from "@/lib/reporting";
 
-export function CashFlowReconciliation({prime,year,month,report,financial,retained}:{
-  prime:Prime;year:number;month:string;report?:CashFlowReport|null;financial?:FinancialStatement|null;retained?:boolean;
+export function CashFlowReconciliation({prime,year,month,months,report,financial,retained}:{
+  prime:Prime;year:number;month:string;months:Month[];report?:CashFlowReport|null;financial?:FinancialStatement|null;retained?:boolean;
 }) {
-  const checks=reconciliationChecks({prime,year,month,report,financial,retained});
+  const [selectedMonth,setSelectedMonth]=useState(month);
+  const checks=reconciliationChecks({prime,year,month:selectedMonth,report,financial,retained});
   const status={reconciled:"Reconciled",difference:"Difference remains",unverifiable:"Not yet verifiable"};
   const icon={reconciled:"✓",difference:"!",unverifiable:"…"};
   return <section className="panel reconciliation-card" aria-labelledby="reconciliation-heading">
-    <div className="panel-heading"><div><h2 id="reconciliation-heading">Reconciliation checks</h2><p>{new Date(month+"-01T00:00:00Z").toLocaleDateString("en-US",{month:"long",year:"numeric",timeZone:"UTC"})} · USD</p></div></div>
+    <div className="panel-heading"><div><h2 id="reconciliation-heading">Reconciliation checks</h2><p>{new Date(selectedMonth+"-01T00:00:00Z").toLocaleDateString("en-US",{month:"long",year:"numeric",timeZone:"UTC"})} · USD</p></div><label className="reconciliation-month">Month <select aria-label="Reconciliation month" value={selectedMonth} onChange={event=>setSelectedMonth(event.target.value)}>{months.map(m=><option key={m.key} value={m.key} disabled={m.state==="future"}>{m.label} {year}</option>)}</select></label></div>
     <div className="reconciliation-checks">{checks.map(check=><details key={check.id} className="reconciliation-check" data-check-id={check.id} data-status={check.status}>
       <summary><span className="reconciliation-label">{check.label}</span><span className="reconciliation-result"><span aria-hidden="true">{icon[check.status]}</span> {status[check.status]}{check.difference!==null && <small>{check.status==="unverifiable" ? "Known difference" : "Difference"}: {money(check.difference)}</small>}</span></summary>
       <div className="reconciliation-detail"><p>{check.message}</p><p>{check.formula}</p>

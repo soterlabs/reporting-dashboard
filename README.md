@@ -276,7 +276,8 @@ approved opening receivable; Spark’s opening balance cannot be reused.
 
 Every individual prime has a Cash Flow Statement tab and six expandable checks:
 cash balance, Sky debt, MSC receivable, Sky settlement receipts, expense payments,
-and token buybacks. The card follows the selected month. Each check shows its
+and token buybacks. The card starts on the page’s selected month; its own Month selector switches
+checks without changing the annual table. Future months are disabled. Each check shows its
 formula, available inputs, tolerance and source links. No aggregate pass badge
 is inferred. Amounts remain neutral, rounded for display, with `*` on estimates.
 
