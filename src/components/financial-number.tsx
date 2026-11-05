@@ -39,7 +39,7 @@ export function FinancialNumber({
 export function FinancialLegend() {
   return (
     <div className="number-legend" aria-label="Financial number notes">
-      <span>* Estimated or provisional · TBD unavailable · Hover for source and coverage</span>
+      <span>* Estimated or provisional · TBD unavailable</span>
     </div>
   );
 }
