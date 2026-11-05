@@ -637,7 +637,8 @@ export async function PrimeDashboard({
             </div>
           </details>
           <footer>
-            <span>Draft · Unaudited · USD</span>
+            <span>Draft · Unaudited</span>
+            <span>All monetary amounts are denominated in US dollars (USD).</span>
             <span>Reporting API only</span>
           </footer>
         </main>

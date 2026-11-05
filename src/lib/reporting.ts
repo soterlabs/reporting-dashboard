@@ -135,7 +135,7 @@ export function validateReport(value: unknown, prime: Prime): Report {
 export function money(value: string | null | undefined): string {
   if (value == null) return "TBD";
   const amount = new Decimal(value).toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
-  const formatted = `$${amount
+  const formatted = `${amount
     .abs()
     .toFixed(0)
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
