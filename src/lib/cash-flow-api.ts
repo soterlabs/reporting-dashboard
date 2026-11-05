@@ -86,6 +86,7 @@ export function validateCashFlow(value: unknown, prime: Prime, year: number, rev
     requireValue(Object.keys(row.values).length===12,"monthly values");
     for(const p of doc.periods){
       const cell=row.values[p.key];checkMetric(cell,p.state==="future");
+      if(p.stale && metricAmount(cell)!==null && !["cumulative-gap","msc-receivable"].includes(row.id))requireValue(cell.status==="partial","stale coverage");
       if(metricAmount(cell)!==null && !["cumulative-gap","msc-receivable"].includes(row.id))requireValue(p.revision && cell.source_ref===p.revision,"amount source");
     }
     checkMetric(row.total);

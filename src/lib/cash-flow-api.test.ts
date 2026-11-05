@@ -44,3 +44,11 @@ test("cash-flow CSV uses API values, source selection, exact precision and futur
  assert.equal(row[11],"TBD");assert.equal(row[12],"—");assert.equal(row[h.indexOf("Selection")],doc.selection);
  assert.ok(!h.includes("Workbook total (control)"));assert.ok(h.includes("Monthly quality"));
 });
+test("cumulative reconciliation and MSC balances cannot bypass arithmetic validation",()=>{
+ for(const id of ["cumulative-gap","msc-receivable"]){
+  const doc=raw(),row=doc.lines.find((r:{id:string})=>r.id===id);row.values["2026-10"].known_value="123";
+  assert.throws(()=>validateCashFlow(rehash(doc),"spark",2026),/subtotal/);
+ }
+ const doc=raw();doc.methodology.opening_msc_receivable="0";
+ assert.throws(()=>validateCashFlow(rehash(doc),"spark",2026),/opening MSC/);
+});
