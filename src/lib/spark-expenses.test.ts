@@ -207,7 +207,8 @@ test("Grove imports its own provisional 2026 expenses and preserves scope and mi
  assert.match(line(r,"expenses.compensation.engineering").values["2026-10"].source_paths[0],/#Grove!S8$/);
  const csv=statementCsvRows("grove","individual",2026,"2026-10",calendar,r);
  assert.ok(JSON.stringify(csv).includes("576729.45667"));
- assert.ok(JSON.stringify(csv).includes("#Grove!"));
+ const sourceColumn=csv[0].indexOf("Expense source");
+ assert.equal(JSON.parse(String(csv.find(row=>row.includes("Engineering"))![sourceColumn])).sheet,"Grove");
  assert.equal(r.dashboard_composition!.expense_source.sheet,"Grove");
  assert.equal(metricAmount(r.lines.find(l=>l.id==="expenses.total")!.values["2026-10"]),"576729.45667");
  assert.equal(metricAmount(r.lines.find(l=>l.id==="expenses.compensation.engineering")!.values["2026-10"]),"117306.3194");
