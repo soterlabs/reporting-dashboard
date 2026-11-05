@@ -503,6 +503,7 @@ export function validateStatement(
   requireValue(
     v &&
       v.schema_version === "3.0" &&
+      v.dashboard_composition === undefined &&
       (policies.has(v.policy_version) ||
         [monthlyPolicy, ...rollupPolicies].includes(v.policy_version)) &&
       v.prime === prime &&

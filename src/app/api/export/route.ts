@@ -279,8 +279,10 @@ export async function GET(request: Request) {
     const selected = q.get("financial_revision");
     const expenseRevision = q.get("expense_revision");
     const expenseAsOf = q.get("expense_as_of");
+    const displayHash = q.get("display_hash");
     if ((expenseRevision && (prime !== "spark" || year !== 2026 || !/^[a-f0-9]{64}$/.test(expenseRevision))) ||
-        (selected === "none" && !expenseRevision))
+        (selected === "none" && (!expenseRevision || !expenseAsOf)) ||
+        (displayHash && (!expenseRevision || !/^[a-f0-9]{64}$/.test(displayHash))))
       return Response.json({ error: "Invalid expense selection" }, { status: 400 });
     const financial = selected === "none" ? null : await financialStatements(prime, year, selected || undefined);
     if (selected && selected !== "none" && !financial?.report)
@@ -294,6 +296,8 @@ export async function GET(request: Request) {
         if (expenseAsOf && statement && expenseAsOf !== statement.as_of)
           throw new Error("Financial and expense cutoffs differ");
         statement = withSparkExpenses(prime, year, statement, months, expenseRevision || undefined, expenseAsOf || undefined) || null;
+        if (displayHash && statement?.dashboard_composition?.display_hash !== displayHash)
+          throw new Error("Dashboard composition changed; refresh the dashboard before exporting");
       } catch (error) {
         return Response.json({ error: error instanceof Error ? error.message : "Expense selection unavailable" }, { status: 409 });
       }

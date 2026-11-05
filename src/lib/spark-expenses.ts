@@ -66,7 +66,7 @@ function combine(terms: { id: string; sign: 1 | -1; cell?: Metric }[], basis: st
   const known = terms.filter(t => metricAmount(t.cell) !== null);
   const complete = terms.length > 0 && terms.every(t => t.cell?.status === "available");
   const sum = known.reduce((v, t) => v.plus(new D(metricAmount(t.cell)!).times(t.sign)), new D(0)).toString();
-  return { ...emptyMetric(false, complete ? "provisional_unverified_expense" : "missing_expense_or_revenue_components"),
+  return { ...emptyMetric(false, complete ? "provisional_dashboard_calculation" : "missing_expense_or_revenue_components"),
     value: complete ? sum : null, known_value: !complete && known.length ? sum : null,
     status: complete ? "available" : known.length ? "partial" : "unavailable", basis,
     source_paths: [...new Set(known.flatMap(t => t.cell!.source_paths))],
@@ -78,9 +78,10 @@ function total(values: Record<string, Metric>, periods: FinancialStatement["peri
   return combine(periods.filter(p => p.state !== "future").map(p => ({ id: p.key, sign: 1, cell: values[p.key] })), "dashboard_sum_of_matching_months");
 }
 function fallback(year: number, calendar: Month[], asOf?: string): FinancialStatement {
-  const end = asOf || [...calendar].reverse().find(m => m.cutoff)?.cutoff!;
-  check(/^2026-\d\d-\d\d$/.test(end) && Number.isFinite(Date.parse(end)) && new Date(end).toISOString().slice(0, 10) === end, "invalid expense report cutoff");
-  const max = [...calendar].reverse().find(m => m.cutoff)?.cutoff;
+  const beforeYear = `${year - 1}-12-31`;
+  const end = asOf || [...calendar].reverse().find(m => m.cutoff)?.cutoff || beforeYear;
+  check((end.startsWith(`${year}-`) || end === beforeYear) && /^\d{4}-\d\d-\d\d$/.test(end) && Number.isFinite(Date.parse(end)) && new Date(end).toISOString().slice(0, 10) === end, "invalid expense report cutoff");
+  const max = [...calendar].reverse().find(m => m.cutoff)?.cutoff || beforeYear;
   check(!!max && end <= max, "expense cutoff must be a completed day");
   const selected = yearMonths(year, new Date(Date.parse(end) + 86400000));
   return { schema_version: "3.0", policy_version: POLICY, prime: "spark", scope: "individual", year, as_of: end,
@@ -114,13 +115,18 @@ export function withSparkExpenses(prime: Prime, year: number, input: FinancialSt
     const members = children.map(build);
     const values = Object.fromEntries(report.periods.map(p => {
       if (p.state === "future") return [p.key, emptyMetric(true, "future_period")];
-      if (members.length) return [p.key, combine(members.map(l => ({ id: l.id, sign: 1, cell: l.values[p.key] })), "provisional_expense_subtotal_from_disjoint_lines")];
+      if (members.length) {
+        const subtotal = combine(members.map(l => ({ id: l.id, sign: 1, cell: l.values[p.key] })), "provisional_expense_subtotal_from_disjoint_lines");
+        if (source.source_row <= 18 && metricAmount(subtotal) !== null)
+          subtotal.reason = `provisional_${data.operating_basis[p.key]}`;
+        return [p.key, subtotal];
+      }
       const end = new Date(Date.UTC(2026, Number(p.key.slice(5)), 0)).toISOString().slice(0, 10);
       const value = source.values[p.key];
       if (value == null || !p.expected_cutoff || p.expected_cutoff < end) return [p.key, emptyMetric(false, value == null ? "expense_not_provided" : "monthly_expense_after_selected_cutoff")];
       const basis = source.source_row <= 18 ? data.operating_basis[p.key] : "workbook_nonoperating_expense";
       const column = String.fromCharCode(74 + Number(p.key.slice(5)) - 1);
-      return [p.key, { ...emptyMetric(), value, status: "available", basis: `provisional_${basis}`, reason: "provisional_workbook_expense_unverified",
+      return [p.key, { ...emptyMetric(), value, status: "available", basis: `provisional_${basis}`, reason: `provisional_${basis}`,
         source_ref: revision, source_paths: [`src/lib/data/${data.id}.json#Spark!${column}${source.source_row}`], period_start: p.key + "-01", period_end: end } satisfies Metric];
     }));
     const line = { id: source.id, label: source.label, aggregation: members.length ? "subtotal" as const : "leaf" as const,
@@ -135,7 +141,7 @@ export function withSparkExpenses(prime: Prime, year: number, input: FinancialSt
     const earned = revenue?.values[p.key], spent = expenses.values[p.key];
     // Missing expenses are never treated as zero, and annual net income is a
     // sum of matching monthly pairs, not unmatched annual revenue/expense sums.
-    if (metricAmount(earned) === null || spent.status !== "available") return [p.key, { ...emptyMetric(false, "revenue_or_expenses_missing"), missing_components: [metricAmount(earned) === null ? "statement.net_revenue" : "expenses.total"] }];
+    if (metricAmount(earned) === null || spent.status !== "available") return [p.key, { ...emptyMetric(false, "revenue_or_expenses_missing"), missing_components: [...(metricAmount(earned) === null ? ["statement.net_revenue"] : []), ...(spent.status !== "available" ? ["expenses.total"] : [])] }];
     return [p.key, combine([{ id: "statement.net_revenue", sign: 1, cell: earned }, { id: "expenses.total", sign: -1, cell: spent }], "provisional_operational_net_revenue_less_workbook_expenses")];
   }));
   local.set("dashboard.net_income", { id: "dashboard.net_income", label: "Net income", aggregation: "subtotal",

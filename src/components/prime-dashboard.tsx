@@ -138,6 +138,7 @@ export async function PrimeDashboard({
     query.set("expense_revision", financial.report.dashboard_composition.expense_revision);
     query.set("financial_revision", financial.report.dashboard_composition.api_selection || "none");
     query.set("expense_as_of", financial.report.as_of);
+    query.set("display_hash", financial.report.dashboard_composition.display_hash);
   }
   if (view === "positions" && scope === "individual") {
     query.set(

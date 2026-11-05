@@ -147,3 +147,37 @@ test("invalid or unbalanced manual snapshots fail instead of silently showing in
     const bad=structuredClone(raw);mutate(bad);assert.throws(()=>validateExpenseSnapshot(bad));
   }
 });
+
+test("dashboard composition metadata cannot be ingested as an API publication", () => {
+  const rawApi=input();
+  (rawApi as FinancialStatement).dashboard_composition={ policy_version:"forged", expense_revision:expenseSnapshotRevision, expense_source:{file:"x",sheet:"Spark",sha256:"f".repeat(64),data_file:"x"},api_report_hash:rawApi.report_hash,api_selection:rawApi.selection,display_hash:"f".repeat(64),local_metric_ids:[] };
+  assert.throws(()=>validateStatement(rawApi,"spark",2026),/contract mismatch/);
+});
+
+test("no completed days at year start produce future cells, with no invented expense zero or API hash", () => {
+  const early=yearMonths(2026,new Date("2026-01-01T00:00:00Z"));
+  const r=withSparkExpenses("spark",2026,null,early)!;
+  assert.equal(r.as_of,"2025-12-31");
+  assert.ok(Object.values(line(r,"expenses.total").values).every(c=>c.status==="future" && metricAmount(c)===null));
+  assert.equal(metricAmount(line(r,"expenses.total").total),null);
+  assert.equal(r.dashboard_composition!.api_report_hash,null);
+});
+
+test("partial revenue remains a known provisional net result, and completely missing data identifies both inputs", () => {
+  const report=validateStatement(JSON.parse(readFileSync(new URL("./fixtures/spark-history-v3.9.json",import.meta.url),"utf8")),"spark",2026);
+  const r=withSparkExpenses("spark",2026,report,calendar)!;
+  const rawRevenue=line(report,"statement.net_revenue").values["2026-10"];
+  const net=line(r,"dashboard.net_income").values["2026-10"];
+  assert.equal(net.status,"partial");assert.equal(net.value,null);
+  assert.equal(net.known_value,new D(metricAmount(rawRevenue)!).minus("928282").toString());
+  const missing=withSparkExpenses("spark",2026,null,calendar)!;
+  assert.deepEqual(line(missing,"dashboard.net_income").values["2026-11"].missing_components,["statement.net_revenue","expenses.total"]);
+});
+
+test("the operating expense tooltip distinguishes estimates, unverified actuals and the October reduction scenario", () => {
+  const r=withSparkExpenses("spark",2026,input(),calendar)!;
+  const operating=line(r,"expenses.operating");
+  assert.equal(operating.values["2026-01"].reason,"provisional_estimated_grant_run_rate");
+  assert.equal(operating.values["2026-04"].reason,"provisional_reported_actual_unverified");
+  assert.equal(operating.values["2026-10"].reason,"provisional_budget_30_percent_reduction_scenario");
+});
