@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "note": "Reviewed expected cash by execution date, not earned month. Absence is unknown, never zero. Grove amounts include penalties and setoffs without a fabricated revenue split.",
+  "records": [
+    {
+      "prime": "spark",
+      "execution_date": "2026-02-02",
+      "amount": "7071339",
+      "source_url": "https://forum.skyeco.com/t/27617/1",
+      "source_post_sha256": "c38d203f1da82b233d4c85faa2fd6851effd5064f8b3ac44af71089375fbe213"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-03-02",
+      "amount": "1387824",
+      "source_url": "https://forum.skyeco.com/t/27709/1",
+      "source_post_sha256": "645c5a9caf8a9d67c45db0b400c73c5922b6af7a553999b7ba4b66aa76a19ff9"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-03-02",
+      "amount": "6090",
+      "source_url": "https://forum.skyeco.com/t/27709/1",
+      "source_post_sha256": "645c5a9caf8a9d67c45db0b400c73c5922b6af7a553999b7ba4b66aa76a19ff9"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-03-30",
+      "amount": "1265132",
+      "source_url": "https://forum.skyeco.com/t/27778/1",
+      "source_post_sha256": "65840b50a6c17b7658251530d84b0be9219421d6d8b4066423a7acb66d2c6096"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-03-30",
+      "amount": "5630",
+      "source_url": "https://forum.skyeco.com/t/27778/1",
+      "source_post_sha256": "65840b50a6c17b7658251530d84b0be9219421d6d8b4066423a7acb66d2c6096"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-04-27",
+      "amount": "1725726",
+      "source_url": "https://forum.skyeco.com/t/27844/1",
+      "source_post_sha256": "cd653e8c445d7097a5b8f9048dac9ae9aae85956e6de225319e8bdbc05e2427a"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-04-27",
+      "amount": "138412",
+      "source_url": "https://forum.skyeco.com/t/27844/1",
+      "source_post_sha256": "cd653e8c445d7097a5b8f9048dac9ae9aae85956e6de225319e8bdbc05e2427a"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-05-11",
+      "amount": "1512762",
+      "source_url": "https://forum.skyeco.com/t/27888/2",
+      "source_post_sha256": "3bd6300e9bdac1b9b032b83272e4d4d771ae3e02a2ae5fc32eb22914738447e0"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-05-11",
+      "amount": "241690",
+      "source_url": "https://forum.skyeco.com/t/27888/2",
+      "source_post_sha256": "3bd6300e9bdac1b9b032b83272e4d4d771ae3e02a2ae5fc32eb22914738447e0"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-06-22",
+      "amount": "4204857",
+      "source_url": "https://forum.skyeco.com/t/27962/1",
+      "source_post_sha256": "41d04ee0e10e58ed8cba85ac3aab4da134bad575b12ff27c2658b9213a9863e3"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-06-22",
+      "amount": "271843",
+      "source_url": "https://forum.skyeco.com/t/27962/3",
+      "source_post_sha256": "f0576d1d75f2498137b441ddab12fc8c8eb4f41fd864b505df96c6511de1cec1"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-07-20",
+      "amount": "9746443",
+      "source_url": "https://forum.skyeco.com/t/28038/1",
+      "source_post_sha256": "41cf6bff2063701ce1688b6442fa68fe3ce04bde5ca11455f9ea8c46226b9897"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-07-20",
+      "amount": "2328332",
+      "source_url": "https://forum.skyeco.com/t/28038/1",
+      "source_post_sha256": "41cf6bff2063701ce1688b6442fa68fe3ce04bde5ca11455f9ea8c46226b9897"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-08-17",
+      "amount": "4442924",
+      "source_url": "https://forum.skyeco.com/t/28151/1",
+      "source_post_sha256": "19cdfb05d94ec48c18c388bd2be9c7a08ab08d36244360a5304b7b3d5afafcb4"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-08-17",
+      "amount": "1808084",
+      "source_url": "https://forum.skyeco.com/t/28151/1",
+      "source_post_sha256": "19cdfb05d94ec48c18c388bd2be9c7a08ab08d36244360a5304b7b3d5afafcb4"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-09-13",
+      "amount": "937436",
+      "source_url": "https://forum.skyeco.com/t/28217/1",
+      "source_post_sha256": "295d8d68857bac8a68d36d2049f2927b63064d40e901f15ccb7992ed571bc0f5"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-09-13",
+      "amount": "1342064",
+      "source_url": "https://forum.skyeco.com/t/28217/1",
+      "source_post_sha256": "295d8d68857bac8a68d36d2049f2927b63064d40e901f15ccb7992ed571bc0f5"
+    },
+    {
+      "prime": "spark",
+      "execution_date": "2026-10-12",
+      "amount": "4218121",
+      "source_url": "https://forum.skyeco.com/t/28274/1",
+      "source_post_sha256": "2c21f79a3e4cee92d2847ac0f41b70d2db7887c1cd0447c1b32eb89eebcab69e"
+    },
+    {
+      "prime": "grove",
+      "execution_date": "2026-10-12",
+      "amount": "1148408",
+      "source_url": "https://forum.skyeco.com/t/28274/1",
+      "source_post_sha256": "2c21f79a3e4cee92d2847ac0f41b70d2db7887c1cd0447c1b32eb89eebcab69e"
+    }
+  ]
+}
