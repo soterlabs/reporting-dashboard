@@ -3,6 +3,7 @@
 import { createHash } from "node:crypto";
 import Decimal from "decimal.js";
 import raw from "./data/spark-expenses-2026.v1.json" with { type: "json" };
+import groveRaw from "./data/grove-expenses-2026.v1.json" with { type: "json" };
 import { metricAmount, type FinancialStatement, type Metric } from "./financial.ts";
 import { statementLines, yearMonths, type Month } from "./prime-reports.ts";
 import { statementFinancialLine } from "./statement-values.ts";
@@ -24,11 +25,11 @@ const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(valu
 const check = (ok: unknown, message: string) => { if (!ok) throw new Error(`Expense snapshot: ${message}`); };
 export function validateExpenseSnapshot(input: unknown): ExpenseSnapshot {
   const s = input as ExpenseSnapshot;
-  check(s?.schema_version === 1 && s.prime === "spark" && s.year === 2026 && s.currency === "USD", "invalid perimeter");
+  check(s?.schema_version === 1 && ["spark","grove"].includes(s.prime) && s.year === 2026 && s.currency === "USD", "invalid perimeter");
   check(s.quality === "estimate" && s.status === "provisional_unverified", "must remain provisional");
-  check(typeof s.id === "string" && /^spark-expenses-2026\.v\d+$/.test(s.id), "invalid snapshot version");
+  check(typeof s.id === "string" && new RegExp(`^${s.prime}-expenses-2026\\.v\\d+$`).test(s.id), "invalid snapshot version");
   check(s.operating_basis && Object.keys(s.operating_basis).length === 12 && months.every(m => m in s.operating_basis), "missing operating basis");
-  check(s.source?.sheet === "Spark" && /^[a-f0-9]{64}$/.test(s.source.sha256), "missing workbook provenance");
+  check(s.source?.sheet === (s.prime==="spark" ? "Spark" : "Grove") && /^[a-f0-9]{64}$/.test(s.source.sha256), "missing workbook provenance");
   check(Array.isArray(s.lines) && s.lines.length === 22 && new Set(s.lines.map(l => l.id)).size === s.lines.length, "invalid line identities");
   const byId = new Map(s.lines.map(l => [l.id, l]));
   check([...ROOTS, "expenses.total", "expenses.compensation", "expenses.external_services"].every(id => byId.has(id)), "missing expense categories");
@@ -57,7 +58,10 @@ const snapshot = validateExpenseSnapshot(raw);
 export const expenseSnapshotRevision = hash(snapshot);
 // Keep older immutable snapshots here when adding a later version, so exports
 // continue to reproduce the exact expense data selected by an earlier screen.
-const snapshots = new Map([[expenseSnapshotRevision, snapshot]]);
+const groveSnapshot=validateExpenseSnapshot(groveRaw);
+export const groveExpenseSnapshotRevision=hash(groveSnapshot);
+const snapshots = new Map([[expenseSnapshotRevision, snapshot],[groveExpenseSnapshotRevision,groveSnapshot]]);
+export const expenseRevisionFor=(prime:Prime)=>prime==="spark" ? expenseSnapshotRevision : prime==="grove" ? groveExpenseSnapshotRevision : undefined;
 
 function emptyMetric(future = false, reason = "expense_not_provided"): Metric {
   return { value: null, known_value: null, status: future ? "future" : "unavailable", unit: "USD", recognition: "accrual", basis: "provisional_workbook_expense", reason, source_paths: [], quality: "estimate" };
@@ -77,32 +81,36 @@ function combine(terms: { id: string; sign: 1 | -1; cell?: Metric }[], basis: st
 function total(values: Record<string, Metric>, periods: FinancialStatement["periods"]): Metric {
   return combine(periods.filter(p => p.state !== "future").map(p => ({ id: p.key, sign: 1, cell: values[p.key] })), "dashboard_sum_of_matching_months");
 }
-function fallback(year: number, calendar: Month[], asOf?: string): FinancialStatement {
+function fallback(year: number, calendar: Month[], asOf?: string,prime:Prime="spark",policy=POLICY): FinancialStatement {
   const beforeYear = `${year - 1}-12-31`;
   const end = asOf || [...calendar].reverse().find(m => m.cutoff)?.cutoff || beforeYear;
   check((end.startsWith(`${year}-`) || end === beforeYear) && /^\d{4}-\d\d-\d\d$/.test(end) && Number.isFinite(Date.parse(end)) && new Date(end).toISOString().slice(0, 10) === end, "invalid expense report cutoff");
   const max = [...calendar].reverse().find(m => m.cutoff)?.cutoff || beforeYear;
   check(!!max && end <= max, "expense cutoff must be a completed day");
   const selected = yearMonths(year, new Date(Date.parse(end) + 86400000));
-  return { schema_version: "3.0", policy_version: POLICY, prime: "spark", scope: "individual", year, as_of: end,
+  return { schema_version: "3.0", policy_version: policy, prime, scope: "individual", year, as_of: end,
     report_hash: "", selection: "", total_label: selected.every(m => m.state === "complete") ? "FY" : "YTD",
     periods: selected.map(m => ({ key: m.key, state: m.state, actual_cutoff: null, expected_cutoff: m.cutoff, stale: false, financial_revision: null })),
     lines: [], source_manifest: {}, source_lag_periods: [],
   };
 }
 
-export function withSparkExpenses(prime: Prime, year: number, input: FinancialStatement | null | undefined,
-  calendar: Month[] = yearMonths(year), revision = expenseSnapshotRevision, asOf?: string): FinancialStatement | null | undefined {
-  if (prime !== "spark" || year !== 2026) {
-    if (revision !== expenseSnapshotRevision) throw new Error("Expense snapshot is unavailable for this prime/year");
+export function withPrimeExpenses(prime: Prime, year: number, input: FinancialStatement | null | undefined,
+  calendar: Month[] = yearMonths(year), revision?:string, asOf?: string): FinancialStatement | null | undefined {
+  if (!["spark","grove"].includes(prime) || year !== 2026) {
+    if (revision !== undefined) throw new Error("Expense snapshot is unavailable for this prime/year");
     return input;
   }
+  revision=revision ?? expenseRevisionFor(prime);
+  if(!revision) throw new Error("Expense snapshot selection is unavailable");
+  const policy=prime==="spark" ? POLICY : "dashboard.grove-expenses.v1";
   const selectedData = snapshots.get(revision);
   if (!selectedData) throw new Error("Expense snapshot is unavailable; refresh the dashboard");
   const data: ExpenseSnapshot = selectedData;
+  check(data.prime===prime,"expense snapshot perimeter differs");
   check(!input?.dashboard_composition, "composition requires the original API input");
   check(!input || (input.prime === prime && input.year === year), "API input perimeter differs");
-  const report = structuredClone(input || fallback(year, calendar, asOf));
+  const report = structuredClone(input || fallback(year, calendar, asOf,prime,policy));
   const originalRows = report.statement_rows || statementLines(prime, "individual", input).map(r => {
     const line = statementFinancialLine(input, r);
     if (line && !report.lines.some(l => l.id === line.id)) report.lines.push(structuredClone(line));
@@ -127,7 +135,7 @@ export function withSparkExpenses(prime: Prime, year: number, input: FinancialSt
       const basis = source.source_row <= 18 ? data.operating_basis[p.key] : "workbook_nonoperating_expense";
       const column = String.fromCharCode(74 + Number(p.key.slice(5)) - 1);
       return [p.key, { ...emptyMetric(), value, status: "available", basis: `provisional_${basis}`, reason: `provisional_${basis}`,
-        source_ref: revision, source_paths: [`src/lib/data/${data.id}.json#Spark!${column}${source.source_row}`], period_start: p.key + "-01", period_end: end } satisfies Metric];
+        source_ref: revision, source_paths: [`src/lib/data/${data.id}.json#${data.source.sheet}!${column}${source.source_row}`], period_start: p.key + "-01", period_end: end } satisfies Metric];
     }));
     const line = { id: source.id, label: source.label, aggregation: members.length ? "subtotal" as const : "leaf" as const,
       ...(members.length ? { components: members.map(l => ({ id: l.id, sign: 1 as const })) } : {}), values, total: total(values, report.periods) };
@@ -165,9 +173,12 @@ export function withSparkExpenses(prime: Prime, year: number, input: FinancialSt
   layout.push({ id: "noninterest-expense", label: "Total noninterest expense", parent: null, depth: 0, kind: "subtotal", metric_id: "expenses.total" },
     { id: "net-income", label: "Net income", parent: null, depth: 0, kind: "total", metric_id: "dashboard.net_income" });
   report.statement_rows = layout;
-  report.dashboard_composition = { policy_version: POLICY, expense_revision: revision,
+  report.dashboard_composition = { policy_version: policy, expense_revision: revision,
     expense_source: { ...data.source, data_file: `src/lib/data/${data.id}.json` },
     api_report_hash: input?.report_hash || null, api_selection: input?.selection || null,
-    local_metric_ids: [...local.keys()], display_hash: hash({ policy: POLICY, revision, api: input?.report_hash || null, as_of: report.as_of, lines: [...local.values()], layout }) };
+    local_metric_ids: [...local.keys()], display_hash: hash({ policy, revision, api: input?.report_hash || null, as_of: report.as_of, lines: [...local.values()], layout }) };
   return report;
 }
+
+// Preserve callers and pinned Spark exports from the original expense import.
+export const withSparkExpenses=withPrimeExpenses;
