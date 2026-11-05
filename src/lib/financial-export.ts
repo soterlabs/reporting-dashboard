@@ -27,6 +27,7 @@ export function statementCsvRows(
   calendarMonths: Month[],
   report?: FinancialStatement | null,
 ): unknown[][] {
+  const composition = report?.dashboard_composition;
   const months = statementMonths(report, calendarMonths);
   const layout = statementLines(
     scope === "combined" ? null : prime,
@@ -61,9 +62,11 @@ export function statementCsvRows(
       "Depth",
       "Subtotal derivation",
       "Subtotal source metric IDs",
+      ...(composition ? ["Dashboard composition policy", "Dashboard display hash", "Expense snapshot revision", "Expense source", "Dashboard signed components"] : []),
     ],
     ...layout.map((row) => {
       const line = statementFinancialLine(report, row);
+      const local = !!line && !!composition?.local_metric_ids.includes(line.id);
       return [
         scope,
         scope === "combined" ? "All prime agents" : prime,
@@ -150,10 +153,16 @@ export function statementCsvRows(
         row.id,
         row.parent || "",
         row.level,
-        row.sources
-          ? "Dashboard sum of published metrics; report hash identifies the API input"
-          : "Published API metric or unavailable",
-        JSON.stringify(row.sources || []),
+        local
+          ? line!.id === "dashboard.net_income"
+            ? "Dashboard net revenue less provisional expenses, summed over matching months"
+            : "Provisional workbook expense; subtotals use disjoint leaf amounts"
+          : row.sources
+            ? "Dashboard sum of published metrics; report hash identifies the API input"
+            : "Published API metric or unavailable",
+        JSON.stringify(local ? (line?.components || []).map(c => c.id) : row.sources || []),
+        ...(composition ? [composition.policy_version, composition.display_hash, composition.expense_revision,
+          JSON.stringify(composition.expense_source), JSON.stringify(local ? line?.components || [] : [])] : []),
       ];
     }),
   ];

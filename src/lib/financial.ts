@@ -112,6 +112,16 @@ export interface FinancialStatement {
   archive_income?: ArchiveIncome[];
   source_lag_periods: string[];
   display_decimals?: number;
+  // Local dashboard presentation only; never part of an API publication/hash.
+  dashboard_composition?: {
+    policy_version: string;
+    expense_revision: string;
+    expense_source: { file: string; sheet: string; sha256: string; data_file: string };
+    api_report_hash: string | null;
+    api_selection: string | null;
+    display_hash: string;
+    local_metric_ids: string[];
+  };
   statement_rows?: {
     id: string;
     label: string;

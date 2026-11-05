@@ -194,6 +194,7 @@ export function IncomeStatement({
         </table>
       </div>
       <div className="panel-note">
+        {financial?.dashboard_composition && "Expenses: provisional workbook figures through Oct 2026. "}
         Hover over amounts for sources and coverage.
       </div>
     </section>

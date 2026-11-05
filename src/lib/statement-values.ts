@@ -96,6 +96,8 @@ export function statementRowUncertainty(
   month?: string,
   retained = false,
 ) {
+  if (row.metricId?.startsWith("expenses.") && report?.dashboard_composition)
+    return "Provisional workbook expense figure; unverified";
   if (row.sources) {
     for (const id of row.sources) {
       const reason = statementUncertainty(

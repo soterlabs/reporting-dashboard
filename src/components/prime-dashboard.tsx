@@ -6,6 +6,7 @@ import {
   statementMonthNote,
 } from "@/lib/financial";
 import { financialStatements, financialPortfolio } from "@/lib/api";
+import { withSparkExpenses } from "@/lib/spark-expenses";
 import Link from "next/link";
 import {
   ArrowDownToLine,
@@ -101,10 +102,13 @@ export async function PrimeDashboard({
   const portfolios = fromAnnual
     ? [{ prime, ...fromAnnual }]
     : await portfolioReports(prime, scope, month);
-  const financial =
+  const apiFinancial =
     scope === "individual" && view === "income"
       ? await financialStatements(prime, year)
       : null;
+  const financial = apiFinancial
+    ? { ...apiFinancial, report: withSparkExpenses(prime, year, apiFinancial.report, months) || null }
+    : null;
   const sourcePortfolio = portfolios[0];
   const positionFinancial =
     scope === "individual" && view === "positions" && month.cutoff
@@ -130,6 +134,11 @@ export async function PrimeDashboard({
   });
   if (financial?.report)
     query.set("financial_revision", financial.report.selection);
+  if (financial?.report?.dashboard_composition) {
+    query.set("expense_revision", financial.report.dashboard_composition.expense_revision);
+    query.set("financial_revision", financial.report.dashboard_composition.api_selection || "none");
+    query.set("expense_as_of", financial.report.as_of);
+  }
   if (view === "positions" && scope === "individual") {
     query.set(
       "source_revision",
@@ -606,6 +615,16 @@ export async function PrimeDashboard({
                 publication. Source revisions and accounting methods are
                 retained below and in exports.
               </p>
+              {financial?.report?.dashboard_composition && (
+                <div className="source-row">
+                  <strong>Spark expenses · Provisional workbook snapshot · 2026</strong>
+                  <span>Source: prime_expenses.xlsx · Spark · Jan–Oct 2026</span>
+                  <span>Expense revision: {financial.report.dashboard_composition.expense_revision}</span>
+                  <span>Workbook SHA256: {financial.report.dashboard_composition.expense_source.sha256}</span>
+                  <span>Dashboard display hash: {financial.report.dashboard_composition.display_hash}</span>
+                  <span>API revenue input hash: {financial.report.dashboard_composition.api_report_hash || "Unavailable"}</span>
+                </div>
+              )}
               {(annual.length
                 ? annual.map((r) => ({ prime, ...r }))
                 : portfolios
@@ -639,7 +658,7 @@ export async function PrimeDashboard({
           <footer>
             <span>Draft · Unaudited</span>
             <span>All monetary amounts are denominated in US dollars (USD).</span>
-            <span>Reporting API only</span>
+            <span>{financial?.report?.dashboard_composition ? "Reporting API + provisional expense snapshot" : "Reporting API only"}</span>
           </footer>
         </main>
       </div>
