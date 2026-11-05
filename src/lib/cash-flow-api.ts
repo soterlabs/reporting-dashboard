@@ -17,7 +17,7 @@ export interface CashFlowReport {
   periods: { key: string; state: "complete" | "partial" | "future"; expected_cutoff: string | null; actual_cutoff: string | null; revision: string | null; stale: boolean }[];
   lines: { id: string; label: string; parent: string | null; depth: number; kind: StatementLine["kind"] | null; check: boolean; aggregation: "sum" | "first" | "last"; values: Record<string, Metric>; total: Metric }[];
   source_manifest: Record<string, { cutoff: string; computed_at: string; document_hash: string; evidence_hash: string; code_version: string; configuration_revision: string }>;
-  monthly_coverage: Record<string, { missing_chains: string[]; unclassified_events: number; savings_failures: Record<string, unknown> } | null>;
+  monthly_coverage: Record<string, { missing_chains: string[]; partial_chains?: string[]; token_registry_gaps?: string[]; classification_complete?: boolean; unclassified_events: number; savings_failures: Record<string, unknown> } | null>;
   methodology: Record<string, unknown>;
   source_note: string;
 }

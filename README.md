@@ -271,3 +271,34 @@ This import does not change the Reporting API or MSC settlement calculations.
 Grove’s event-backed cash-flow statement is a separate onboarding step: its
 penalties and capital setoffs require net settlement classification and an
 approved opening receivable; Spark’s opening balance cannot be reused.
+
+## Cash-flow reconciliation card
+
+Every individual prime has a Cash Flow Statement tab and six expandable checks:
+cash balance, Sky debt, MSC receivable, Sky settlement receipts, expense payments,
+and token buybacks. The card follows the selected month. Each check shows its
+formula, available inputs, tolerance and source links. No aggregate pass badge
+is inferred. Amounts remain neutral, rounded for display, with `*` on estimates.
+
+A check passes only with complete, supported, current inputs. Partial, estimated,
+missing or retained-after-refresh-failure inputs stay **Not yet verifiable**,
+even when their known difference is zero. Complete comparisons outside tolerance
+show **Difference remains**. Cash reconciliation also requires complete scope and
+classification metadata, uses the workbook's 5m tolerance, and shares the sign of
+the existing measured-change-minus-statement gap. Settlement cash tolerance is
+one USD, applied to unrounded decimal amounts.
+
+Spark's observed settlement receipts are compared with the reviewed public MSC
+payment references in `settlement-cash-checks-2026.v1.json`, by **execution date**,
+not earned month. Multiple payments within a month are summed; absent references
+are unknown, never zero. References retain public forum links and post hashes.
+New MSC executions require a reviewed reference update. They are expected payments,
+not independently fetched transaction receipts.
+
+Grove currently has published expected MSC cash and provisional workbook expenses,
+but no event-backed cash-flow API publication. Its card displays these available
+inputs and explicitly identifies missing observed cash/debt evidence. Other primes
+have the same six checks without substituting Spark/Grove figures. Unsupported
+cash-flow exports are hidden. Debt, independent receivable, payables timing and
+Data Hub buyback comparisons remain unverifiable until those sources are published;
+this card does not fabricate those missing endpoints or certify a full statement.
