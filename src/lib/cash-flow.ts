@@ -1,15 +1,28 @@
 import Decimal from "decimal.js";
 import snapshot from "./data/spark-cash-flow-2026.v1.json" with { type: "json" };
 import { yearMonths, type StatementLine, type Month } from "./prime-reports.ts";
-import type { Metric } from "./financial.ts";
+import { metricAmount, type Metric } from "./financial.ts";
 
 const D = Decimal.clone({ precision: 100 });
+// Cached workbook totals can include blank inputs. Preserve their supplied
+// amounts as known partial values instead of claiming complete coverage.
+const dependencies: Record<string, string[]> = {
+  "non-cash": ["token-incentives", "non-stable-gains", "non-stable-transfers", "other-non-cash"],
+  receivables: ["earned-not-received", "sky-allocation-receipts", "sky-demand-receipts", "external-receipts"],
+  payables: ["expenses-booked", "expenses-paid"],
+  "net-operating": ["net-income", "non-cash", "receivables", "payables"],
+  "net-investing": ["allocation-changes", "investments"],
+  "net-financing": ["usds-drawn", "deposits", "sky-contributions", "buybacks"],
+  "net-cash-change": ["net-operating", "net-investing", "net-financing"],
+};
+
 export function validateCashFlowSnapshot(input: unknown): typeof snapshot {
   const s = input as typeof snapshot;
   const check = (ok: unknown, message: string) => { if (!ok) throw new Error(`Cash flow snapshot: ${message}`); };
   check(s?.id === "spark-cash-flow-2026.v1" && s.prime === "spark" && s.year === 2026 && s.currency === "USD" && s.quality === "estimate", "invalid scope or quality");
   check(s.source?.sheet === "Cash Flow Statement - Spark" && /^[a-f0-9]{64}$/.test(s.source.sha256) && s.coverage_end === "2026-10-31", "invalid source or coverage");
   check(Array.isArray(s.rows) && s.rows.length === 33 && new Set(s.rows.map(r => r.id)).size === 33 && new Set(s.rows.map(r => r.source_row)).size === 33, "duplicate or missing rows");
+  check([...Object.keys(dependencies), ...Object.values(dependencies).flat()].every(id => s.rows.some(r => r.id === id)), "missing formula component");
   const keys = Array.from({length:12},(_,i) => `2026-${String(i+1).padStart(2,"0")}`);
   const amount = (v: unknown) => v === null || (typeof v === "string" && /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(v) && new D(v).isFinite());
   for (const row of s.rows) {
@@ -44,24 +57,33 @@ export function cashFlowLayout(checks = false): StatementLine[] {
     kind: (r.kind || undefined) as StatementLine["kind"],
   }));
 }
+function missingInputs(row: CashFlowRow, key: string): string[] {
+  if (row.values[key as keyof typeof row.values] == null) return [`${key}:${row.id}`];
+  return (dependencies[row.id] || []).flatMap(id => missingInputs(cashFlowSnapshot.rows.find(r => r.id === id)!,key));
+}
 export function cashFlowMetric(row: CashFlowRow, months: Month[], month?: string): Metric {
   const eligible = months.filter(m => m.key.startsWith(`${snapshot.year}-`) && m.state === "complete" && m.cutoff && m.cutoff <= snapshot.coverage_end);
-  const values = eligible.map(m => row.values[m.key as keyof typeof row.values]).filter((v): v is string => v !== null);
-  let value: string | null = null;
-  if (month) value = eligible.some(m => m.key === month) ? row.values[month as keyof typeof row.values] ?? null : null;
-  else if (values.length) value = row.aggregation === "first" ? values[0] : row.aggregation === "last" ? values.at(-1)! : values.reduce((s,v) => s.plus(v), new D(0)).toString();
-  const knownPeriods = eligible.filter(m => row.values[m.key as keyof typeof row.values] !== null);
-  const sourcePeriods = month ? [month] : row.aggregation === "first" ? knownPeriods.slice(0,1).map(m => m.key) : row.aggregation === "last" ? knownPeriods.slice(-1).map(m => m.key) : knownPeriods.map(m => m.key);
+  // Stock metrics must use the required boundary, never an earlier/later known balance.
+  const periods = month ? eligible.filter(m => m.key === month) : row.aggregation === "first" ? eligible.slice(0,1) : row.aggregation === "last" ? eligible.slice(-1) : eligible;
+  const known = periods.filter(m => row.values[m.key as keyof typeof row.values] != null);
+  const values = known.map(m => row.values[m.key as keyof typeof row.values]!);
+  const value = values.length ? row.aggregation === "sum" && !month ? values.reduce((s,v) => s.plus(v), new D(0)).toString() : values[0] : null;
+  const missing = periods.flatMap(m => missingInputs(row,m.key));
+  const partial = value !== null && missing.length > 0;
   const future = !!month && months.find(m => m.key === month)?.state === "future";
-  return { value, known_value: null, status: future ? "future" : value !== null ? "available" : "unavailable",
+  return { value: partial ? null : value, known_value: partial ? value : null,
+    status: future ? "future" : partial ? "partial" : value !== null ? "available" : "unavailable",
     unit: "USD", quality: "estimate", recognition: "unknown", basis: "provisional_cash_flow_workbook_snapshot",
-    reason: "Workbook figure; independent of live API income; reconciliation gaps unresolved",
-    source_paths: sourcePeriods.map(key => `${snapshot.source.file}#${snapshot.source.sheet}!${String.fromCharCode(66 + Number(key.slice(5)))}${row.source_row}`) };
+    reason: `Workbook figure; independent of live API income; reconciliation gaps unresolved${missing.length ? "; missing inputs: " + missing.join(", ") : ""}`,
+    missing_components: missing,
+    source_paths: known.map(m => `${snapshot.source.file}#${snapshot.source.sheet}!${String.fromCharCode(66 + Number(m.key.slice(5)))}${row.source_row}`) };
 }
 export function cashFlowCsvRows(year: number, months = yearMonths(year)): unknown[][] {
   if (year !== snapshot.year) return [];
-  return [["Line item", ...months.map(m => `${m.label} ${year}`), "YTD", "Row ID", "Parent row ID", "Depth", "Section", "Quality", "Source", "Workbook total (control)", "Note"],
-    ...snapshot.rows.map(row => [row.label, ...months.map(m => row.kind === "section" ? "" : m.state === "future" ? "—" : cashFlowMetric(row,months,m.key).value ?? "TBD"),
-      row.kind === "section" ? "" : cashFlowMetric(row,months).value ?? "TBD", row.id, row.parent || "",row.depth,row.check ? "Reconciliation" : "Statement","provisional",
-      JSON.stringify({ ...snapshot.source, revision:snapshot.id, source_row:row.source_row }),row.source_total ?? "",snapshot.reconciliation_note])];
+  return [["Line item", ...months.map(m => `${m.label} ${year}`), "YTD", "Row ID", "Parent row ID", "Depth", "Section", "Quality", "Source", "Workbook total (control)", "Note", "Monthly coverage", "YTD coverage", "Missing inputs"],
+    ...snapshot.rows.map(row => [row.label, ...months.map(m => row.kind === "section" ? "" : m.state === "future" ? "—" : metricAmount(cashFlowMetric(row,months,m.key)) ?? "TBD"),
+      row.kind === "section" ? "" : metricAmount(cashFlowMetric(row,months)) ?? "TBD", row.id, row.parent || "",row.depth,row.check ? "Reconciliation" : "Statement","provisional",
+      JSON.stringify({ ...snapshot.source, revision:snapshot.id, source_row:row.source_row, coverage_end:snapshot.coverage_end, as_of:cashFlowAsOf(months) }),row.source_total ?? "",snapshot.reconciliation_note,
+      JSON.stringify(Object.fromEntries(months.map(m => [m.key,cashFlowMetric(row,months,m.key).status]))),cashFlowMetric(row,months).status,
+      JSON.stringify({months:Object.fromEntries(months.map(m => [m.key,cashFlowMetric(row,months,m.key).missing_components])),total:cashFlowMetric(row,months).missing_components})])];
 }

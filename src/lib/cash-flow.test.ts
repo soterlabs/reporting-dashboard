@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { cashFlowSnapshot, cashFlowLayout, cashFlowMetric, cashFlowCsvRows, cashFlowCalendar, cashFlowAsOf, validateCashFlowSnapshot } from "./cash-flow.ts";
 import { yearMonths, collapsedStatementGroups } from "./prime-reports.ts";
 import { visibleStatementLines } from "./statement-layout.ts";
+import { metricAmount } from "./financial.ts";
 import { numberConfidence } from "./number-confidence.ts";
 const months = yearMonths(2026,new Date("2026-11-05T00:00:00Z"));
 const row = (id:string) => cashFlowSnapshot.rows.find(r => r.id === id)!;
@@ -10,12 +11,12 @@ const row = (id:string) => cashFlowSnapshot.rows.find(r => r.id === id)!;
 test("cash flow preserves workbook operating, investing and financing figures and shows all amounts as provisional", () => {
   assert.equal(cashFlowSnapshot.source.sheet,"Cash Flow Statement - Spark");
   assert.match(cashFlowSnapshot.source.sha256,/^[a-f0-9]{64}$/);
-  assert.equal(cashFlowMetric(row("net-operating"),months,"2026-10").value,"5009457");
-  assert.equal(cashFlowMetric(row("net-financing"),months,"2026-10").value,"97083679");
-  assert.equal(cashFlowMetric(row("net-cash-change"),months,"2026-10").value,"102093136");
-  assert.equal(cashFlowMetric(row("net-cash-change"),months).value,"-133416396");
+  assert.equal(cashFlowMetric(row("net-operating"),months,"2026-10").known_value,"5009457");
+  assert.equal(cashFlowMetric(row("net-financing"),months,"2026-10").known_value,"97083679");
+  assert.equal(cashFlowMetric(row("net-cash-change"),months,"2026-10").known_value,"102093136");
+  assert.equal(cashFlowMetric(row("net-cash-change"),months).known_value,"-133416396");
   for(const r of cashFlowSnapshot.rows.filter(r=>r.kind!=="section"))for(const m of [...months.map(m=>m.key),undefined]){
-    const cell=cashFlowMetric(r,months,m);if(cell.value!==null)assert.equal(numberConfidence(cell.value,cell).tone,"uncertain");
+    const cell=cashFlowMetric(r,months,m);if(metricAmount(cell)!==null)assert.equal(numberConfidence(metricAmount(cell),cell).tone,"uncertain");
   }
 });
 test("blank inputs and formula zeroes beyond source coverage never become observed cash flows", () => {
@@ -46,7 +47,7 @@ test("cash flow CSV shares visible metrics, preserves source precision and does 
   const csv=cashFlowCsvRows(2026,months),header=csv[0];
   const flow=csv.find(r=>r[header.indexOf("Row ID")]==="net-cash-change")!;
   assert.equal(flow[10],"102093136");assert.equal(flow[11],"TBD");assert.equal(flow[12],"—");
-  assert.equal(flow[13],cashFlowMetric(row("net-cash-change"),months).value);
+  assert.equal(flow[13],metricAmount(cashFlowMetric(row("net-cash-change"),months)));
   assert.equal(cashFlowCsvRows(2025).length,0);
   assert.equal(cashFlowMetric(row("net-cash-change"),yearMonths(2025)).value,null);
   const earlier=yearMonths(2026,new Date("2026-10-05T00:00:00Z"));
@@ -69,6 +70,25 @@ test("manual snapshot errors fail before publishing wrong workbook figures", () 
   mutate(s=>{s.rows[1].values["2026-01"]="9000000";});
   mutate(s=>{s.rows[1].values["2026-01"]="NaN";});
   mutate(s=>{s.rows[1].id=s.rows[0].id;});
+  mutate(s=>{s.rows[1].id="renamed-formula-input";});
   mutate(s=>{s.rows[1].parent="missing";});
   mutate(s=>{s.prime="grove";});
+});
+
+
+test("workbook subtotal coverage and annual missing months remain explicit in metrics and CSV", () => {
+  const subtotal = cashFlowMetric(row("net-investing"),months,"2026-10");
+  assert.equal(subtotal.status,"partial");assert.equal(metricAmount(subtotal),"0");
+  assert.ok(subtotal.missing_components!.includes("2026-10:allocation-changes"));
+  const annual = cashFlowMetric(row("earned-not-received"),months);
+  assert.equal(annual.status,"partial");assert.equal(annual.known_value,"-29441225");
+  assert.ok(annual.missing_components!.includes("2026-10:earned-not-received"));
+  const csv = cashFlowCsvRows(2026,months),header=csv[0],record=csv.find(r=>r[header.indexOf("Row ID")]==="net-investing")!;
+  assert.equal(JSON.parse(record[header.indexOf("Monthly coverage")] as string)["2026-10"],"partial");
+});
+test("balance totals require their opening/closing boundary rather than falling back to another month", () => {
+  const closing = structuredClone(row("closing-cash"));closing.values["2026-10"]=null;
+  assert.equal(metricAmount(cashFlowMetric(closing,months)),null);
+  const opening = structuredClone(row("opening-cash"));opening.values["2026-01"]=null;
+  assert.equal(metricAmount(cashFlowMetric(opening,months)),null);
 });

@@ -240,12 +240,17 @@ values, source total controls, cash definition and workbook SHA256. Blank inputs
 remain TBD. Formula zeroes and carried balances beyond October are outside source
 coverage and are not displayed as observations. Future periods remain dashes.
 YTD flow values sum known covered months; opening cash takes the first balance,
-and closing/measured/cumulative balances take the last covered observation.
+and closing/measured/cumulative balances require the closing covered month.
+Missing boundary balances stay TBD instead of falling back to another month.
 Cached workbook subtotals are displayed as supplied, even when their underlying
-inputs are incomplete; the UI/source note explicitly discloses this limitation.
+inputs are incomplete; metrics and CSV preserve partial coverage and missing
+inputs, and tooltips disclose this limitation. Snapshot validation checks scope,
+identities, hierarchy, month values and workbook total controls.
 
 Page and Cash flow CSV use the same local metrics. CSV selects the immutable
-`cash_flow_revision`; unknown revisions fail, and unsupported prime/year exports
+`cash_flow_revision` and completed-day `cash_flow_as_of`, preserving period
+labels when the calendar advances. Invalid/future cutoffs or missing dates for
+pinned exports fail explicitly. Unknown revisions fail, and unsupported prime/year exports
 return 404. This view performs no reporting API reads. Other prime tabs and
 historical years do not inherit Spark's workbook figures. Replacing these
 snapshot values with independently observed chain data is a later step.
