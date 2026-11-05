@@ -124,7 +124,7 @@ export function statementLines(
   const apiLayout =
     prime === "spark" &&
     financial &&
-    sparkStatementPolicies.includes(financial.policy_version) &&
+    (sparkStatementPolicies.includes(financial.policy_version) || financial.dashboard_composition) &&
     financial.statement_rows;
   const rows: StatementLine[] = apiLayout
     ? apiLayout.map((r) => ({

@@ -42,7 +42,7 @@ Only reporting data is consumed, server-side:
 - `/v2/reporting/{prime}/at/{cutoff}` for exact historical month ends.
 - `/v3/reporting/statements` and `/v3/reporting/portfolio` for approved financial components and tracked allocation aggregates.
 
-`REPORTING_API_URL` defaults to `https://settle-api-production.up.railway.app`. No API key is currently required. Requests read stored publications and cannot start calculations. There are no settlement, blockchain, database, spreadsheet-import or alternate financial-data dependencies.
+`REPORTING_API_URL` defaults to `https://settle-api-production.up.railway.app`. No API key is currently required. Requests read stored publications and cannot start calculations. There are no settlement, blockchain or database dependencies. Spark’s approved provisional 2026 expenses additionally use a versioned local JSON snapshot; the application does not read spreadsheets at runtime.
 
 Successful responses are validated and cached for five minutes. Failed refreshes may retain the last checked response for that exact request with a visible warning. The bounded process-local cache clears on restart. Annual source reads have at most four upstream requests in flight per prime. Combined positions read each prime independently; their dates and revisions remain separate.
 
@@ -57,7 +57,7 @@ Successful responses are validated and cached for five minutes. Failed refreshes
 - Reported position values are API valuations, not accounting carrying amounts under an approved measurement policy. Interest receivable and income received in advance are disclosed separately for supported loan methods. Receivables must not be added to a closing position that already includes them.
 - Available `loan_accrual` income and the explicitly approved Obex V1 net vault income from v3 are presented as accrual-basis income. Other source income is explicitly labelled reported income with an unconfirmed basis. These two views are not additive.
 - Portfolios, savings holdings and incentive claims can overlap. No cross-allocation or cross-prime sum is presented as consolidated portfolio value or revenue. Group and combined screens show source positions explicitly before consolidation.
-- CSV exports follow the selected scope and view. Source exports preserve decimal precision, actual cutoff, revision IDs, hashes and publication timestamps. UI amounts are rounded to cents using decimal arithmetic.
+- CSV exports follow the selected scope and view. Source exports preserve decimal precision, actual cutoff, revision IDs, hashes and publication timestamps. UI amounts are rounded to whole dollars using decimal arithmetic.
 
 ## First financial slice
 
@@ -185,3 +185,41 @@ regains focus or connectivity. Live API reads bypass the pinned-export cache;
 a failed refresh retains the last validated response. Filters and expanded rows
 stay in place as newly published amounts replace TBD cells. Saved export
 revision selections remain immutable.
+
+
+## Spark 2026 provisional expenses
+
+`src/lib/data/spark-expenses-2026.v1.json` contains only the Spark sheet's expense
+rows 6–27 and 2026 columns from the supplied `prime_expenses.xlsx`. The original
+workbook is not committed or required at runtime. Workbook SHA256, source rows
+and snapshot revision identify the data. Staff-function and external-service
+breakdowns are retained in the expandable hierarchy.
+
+Every imported amount remains provisional/orange, including reported but
+unverified actuals. Operating-expense basis is recorded by month: January–March
+estimates, April–June reported actuals, July–September budgets, and October's
+30% reduction scenario. November–December are blank, never extrapolated.
+Memo, cash-check and estimation-input rows, grants/investments and the Savings
+interest already included in funding costs are excluded.
+
+Expense parents are calculated from disjoint children and checked against
+workbook subtotal controls (rounding tolerance: one cent). Calendar-month
+expenses are shown only after that month's end; an older MTD selection never
+receives the subsequent full-month amount. Operational dashboard net income is
+API net revenue less the scoped workbook expenses, requiring complete expense
+data for the month. Annual net income sums matching monthly pairs rather than
+subtracting annual totals with different coverage. Missing costs never become
+zero. The API's tax/entity-adjustment placeholders are not replaced or claimed
+as confirmed zeroes.
+
+The validated API input and its hash/selection remain unchanged. Local display
+lines and their composition have separate expense revisions and display hashes;
+source details and CSV identify both inputs. New statement-download URLs pin
+`financial_revision`, `expense_revision`, `expense_as_of` and the display hash; `financial_revision=none`
+explicitly freezes unavailable API revenue. Legacy saved API-only export URLs
+remain API-only. Retain immutable snapshot files and their registry entries when
+adding a newer revision, so earlier exports remain reproducible. Unknown expense
+revisions or mismatched display hashes fail instead of silently exporting changed figures. Other primes,
+years, portfolio views and API publications are unaffected.
+
+Full-month expense rows remain available when a revenue publication is delayed; net income stays TBD if that revenue cutoff stops before month end.
