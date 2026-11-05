@@ -88,7 +88,7 @@ test("zero filtering uses exact amounts across elapsed months and keeps TBD, par
   assert.ok(
     statementLines("spark", "individual", report).some((r) => r.id === key),
   );
-  assert.equal(money("0.001"), "$0");
+  assert.equal(money("0.001"), "0");
   line.values["2026-10"] = {
     ...line.values["2026-10"],
     status: "unavailable",
