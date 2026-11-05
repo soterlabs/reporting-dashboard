@@ -22,6 +22,7 @@ import { FinancialNumber, FinancialLegend } from "./financial-number";
 import { venueEvidence, readUncertainty } from "@/lib/number-confidence";
 import { ArchiveIncome } from "./archive-income";
 import { OffchainAccruals } from "./offchain-accruals";
+import { SparkMscBridge } from "./spark-msc-bridge";
 import { IncomeStatement } from "./income-statement";
 import { ReportingRefresh } from "./reporting-refresh";
 import { annualReports, portfolioReports } from "@/lib/report-data";
@@ -280,6 +281,7 @@ export async function PrimeDashboard({
                 financial={financial?.report}
                 retained={financial?.retained}
               />
+              {prime === "spark" && <SparkMscBridge key={`msc:${year}:${financial?.report?.selection}`} report={financial?.report} />}
               <OffchainAccruals
                 report={financial?.report}
                 retained={financial?.retained}

@@ -1319,3 +1319,7 @@ footer {
 
 /* Retain source panels for future use without showing them in the dashboard. */
 .source-details[hidden] { display: none; }
+
+.spark-msc-bridge > .panel-heading { flex-wrap: wrap; }
+.msc-adjustments { border-top: 1px solid var(--border); }
+.msc-adjustments > summary { padding: 1rem 1.25rem; cursor: pointer; font-size: .85rem; }
