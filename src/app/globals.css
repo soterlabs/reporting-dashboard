@@ -952,6 +952,7 @@ footer {
 }
 .view-tabs {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   gap: 19px;
   align-self: stretch;

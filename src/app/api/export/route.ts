@@ -1,4 +1,5 @@
 import { financialPortfolioRows } from "@/lib/financial";
+import { cashFlowCsvRows, cashFlowSnapshot, cashFlowCalendar } from "@/lib/cash-flow";
 import { withSparkExpenses } from "@/lib/spark-expenses";
 import { financialStatements, financialPortfolio, report } from "@/lib/api";
 import {
@@ -53,7 +54,20 @@ export async function GET(request: Request) {
   const offchain = q.get("dataset") === "offchain";
   const archive = q.get("dataset") === "archive";
   const rows: unknown[][] = [];
-  if (positions) {
+  const cashFlow = q.get("view") === "cash-flow";
+  if (cashFlow) {
+    if (prime !== "spark" || year !== cashFlowSnapshot.year || (q.has("prime") && q.get("prime") !== "spark") || (q.has("year") && q.get("year") !== String(cashFlowSnapshot.year)) || q.has("dataset"))
+      return Response.json({ error: "Cash flow workbook data is only available for Spark 2026" }, { status: 404 });
+    if (q.has("cash_flow_revision") && q.get("cash_flow_revision") !== cashFlowSnapshot.id)
+      return Response.json({ error: "Cash flow snapshot unavailable; refresh the dashboard" }, { status: 409 });
+    if (q.has("cash_flow_revision") && !q.get("cash_flow_as_of"))
+      return Response.json({ error: "Pinned cash flow exports require a cutoff" }, { status: 400 });
+    try {
+      rows.push(...cashFlowCsvRows(year, cashFlowCalendar(q.get("cash_flow_as_of") || undefined)));
+    } catch (error) {
+      return Response.json({ error: error instanceof Error ? error.message : "Invalid cash flow cutoff" }, { status: 400 });
+    }
+  } else if (positions) {
     const sourceRevision = q.get("source_revision");
     const sourceCutoff = q.get("source_cutoff");
     const portfolioRevision = q.get("portfolio_revision");
@@ -309,7 +323,7 @@ export async function GET(request: Request) {
     {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": `attachment; filename="${prime}-${scope}-${positions ? `positions-${month.key}` : archive ? `archive-income-${year}` : offchain ? `offchain-accruals-${year}` : source ? `source-income-${year}` : `income-statement-${year}`}.csv"`,
+        "Content-Disposition": `attachment; filename="${prime}-${scope}-${cashFlow ? `cash-flow-${year}` : positions ? `positions-${month.key}` : archive ? `archive-income-${year}` : offchain ? `offchain-accruals-${year}` : source ? `source-income-${year}` : `income-statement-${year}`}.csv"`,
         "Cache-Control": "no-store",
       },
     },
