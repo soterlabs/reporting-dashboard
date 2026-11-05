@@ -1,9 +1,7 @@
 import {
-  statementTotalLabel,
   financialPortfolioRows,
   positionAccruedIncome,
   metricAmount,
-  statementMonthNote,
 } from "@/lib/financial";
 import { financialStatements, financialPortfolio, cashFlowReport } from "@/lib/api";
 import { ReportingShell } from "./reporting-shell";
@@ -19,7 +17,7 @@ import {
   CircleHelp,
   FileText,
 } from "lucide-react";
-import { Controls } from "@/app/controls";
+import { Controls, ReportingMonthSelect } from "@/app/controls";
 import { FinancialNumber, FinancialLegend } from "./financial-number";
 import { venueEvidence, readUncertainty } from "@/lib/number-confidence";
 import { ArchiveIncome } from "./archive-income";
@@ -32,15 +30,9 @@ import {
   individualScope,
   chooseMonth,
   scopeTitle,
-  sourceCatalog,
-  sourceIncome,
   sourceRows,
   statementLines,
-  totalLabel,
-  annualAmount,
   yearMonths,
-  reportingYear,
-  type MonthReport,
   type Scope,
   type View,
 } from "@/lib/prime-reports";
@@ -93,7 +85,7 @@ export async function PrimeDashboard({
   const view: View =
     param(search, "view") === "cash-flow" ? "cash-flow" :
     param(search, "view") === "positions" ? "positions" : "income";
-  const year = reportingYear(param(search, "year"));
+  const year = 2026;
   const months = yearMonths(year);
   const month = chooseMonth(months, param(search, "month"));
   const title = scopeTitle(prime, scope);
@@ -129,7 +121,6 @@ export async function PrimeDashboard({
     sourceRows(portfolios),
     positionFinancial?.report,
   );
-  const available = portfolios.filter((p) => p.read.report).length;
   const query = new URLSearchParams({
     prime,
     scope,
@@ -160,9 +151,6 @@ export async function PrimeDashboard({
       positionFinancial?.report?.financial_revision || "none",
     );
   }
-  const anyStale = portfolios.some(
-    (p) => p.read.retained || p.read.report?.freshness.stale,
-  );
   return (
     <ReportingShell>
       <ReportingRefresh />
@@ -259,38 +247,7 @@ export async function PrimeDashboard({
                 Portfolio positions
               </Link>
             </nav>
-            <form method="get" className="period-form">
-              <input type="hidden" name="prime" value={prime} />
-              <input type="hidden" name="scope" value={scope} />
-              <input type="hidden" name="view" value={view} />
-              <label>
-                <span>Year</span>
-                <select name="year" defaultValue={year}>
-                  {Array.from(
-                    { length: new Date().getUTCFullYear() - 2019 },
-                    (_, i) => new Date().getUTCFullYear() - i,
-                  ).map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              {view === "positions" && (
-                <label>
-                  <span>Reporting month</span>
-                  <select name="month" defaultValue={month.key}>
-                    {months.map((m) => (
-                      <option key={m.key} value={m.key}>
-                        {m.label} {year}
-                        {m.state === "partial" ? " · MTD" : ""}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-              <button className="button primary">Apply</button>
-            </form>
+            {view === "positions" && <ReportingMonthSelect months={months} value={month.key} />}
           </div>
           {scope !== "individual" && (
             <div className="notice">
@@ -302,23 +259,6 @@ export async function PrimeDashboard({
               </span>
             </div>
           )}
-          <div className="report-status">
-            <span className="badge">Draft · Unaudited</span>
-            <span>
-              {view === "cash-flow" ? `${year} · Reporting API` : view === "income"
-                ? `${year} · Monthly columns · ${statementTotalLabel(financial?.report, totalLabel(months))}`
-                : `${month.label} ${year} · Closing positions`}
-            </span>
-            <span>
-              {view === "positions"
-                ? `${available}/${portfolios.length} venue source publications`
-                : ""}
-              {positionFinancial?.report
-                ? ` · ${positionFinancial.report.portfolio.positions.filter((p) => p.closing_value.value !== null || p.income.value !== null).length} reviewed financial members`
-                : ""}
-              {view === "positions" && anyStale ? " · Delayed publication" : ""}
-            </span>
-          </div>
           {financial?.message && <p role="status">{financial.message}</p>}
           {!!financial?.report?.source_lag_periods.length && (
             <p role="status">
@@ -348,13 +288,6 @@ export async function PrimeDashboard({
                 report={financial?.report}
                 retained={financial?.retained}
               />
-              {scope === "individual" && (
-                <SourceIncome
-                  monthly={annual}
-                  title={title}
-                  query={query.toString()}
-                />
-              )}
               {scope !== "individual" && (
                 <ScopePerimeter prime={prime} scope={scope} />
               )}
@@ -554,58 +487,7 @@ export async function PrimeDashboard({
               )}
             </>
           )}
-          {view !== "cash-flow" && <><details className="panel source-coverage">
-            <summary className="panel-heading">
-              <div>
-                <h2>Publication coverage</h2>
-                <p>
-                  {month.label} {year} · Actual source dates
-                </p>
-              </div>
-              <a
-                className="text-link"
-                href={API_DOC_URL}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Reporting API guide <ArrowUpRight size={13} />
-              </a>
-            </summary>
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Prime agent</th>
-                    <th>Publication date</th>
-                    <th>Coverage</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {portfolios.map((p) => (
-                    <tr key={p.prime}>
-                      <td>{name(p.prime)}</td>
-                      <td>
-                        {p.actualCutoff ? (
-                          date(p.actualCutoff)
-                        ) : (
-                          <span className="tbd">TBD</span>
-                        )}
-                      </td>
-                      <td>
-                        {p.read.message ||
-                          (p.read.report ? (
-                            `${p.read.report.freshness.stale ? "Delayed · " : ""}${p.read.report.data.result.venues.filter((v) => v.enabled).length} enabled allocations${p.read.report.data.result.complete ? "" : " · Inputs incomplete"}`
-                          ) : (
-                            <span className="tbd">TBD</span>
-                          ))}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </details>
-          <details className="source-details">
+          {view !== "cash-flow" && <><details hidden className="source-details">
             <summary>
               <FileText size={15} />
               Sources & accounting basis
@@ -672,7 +554,6 @@ export async function PrimeDashboard({
             </div>
           </details></>}
           <footer>
-            <span>Draft · Unaudited</span>
             <span>All monetary amounts are denominated in US dollars (USD).</span>
             <span>{view === "cash-flow" ? "Cash-flow reporting API" : financial?.report?.dashboard_composition ? "Reporting API + provisional expense snapshot" : "Reporting API only"}</span>
           </footer>
@@ -730,120 +611,5 @@ function ScopePerimeter({ prime, scope }: { prime: Prime; scope: Scope }) {
         </table>
       </div>
     </section>
-  );
-}
-function SourceIncome({
-  monthly,
-  title,
-  query,
-}: {
-  monthly: MonthReport[];
-  title: string;
-  query: string;
-}) {
-  const catalog = sourceCatalog(monthly);
-  const months = monthly.map((r) => r.month);
-  return (
-    <details className="panel income-schedule">
-      <summary className="panel-heading">
-        <div>
-          <h2>Supporting allocation income</h2>
-          <p>Source figures · Not additive to statement totals</p>
-        </div>
-        <ChevronRight size={16} />
-      </summary>
-      <div className="schedule-export">
-        <a className="text-link" href={`/api/export?${query}&dataset=source`}>
-          Source CSV <ArrowDownToLine size={13} />
-        </a>
-      </div>
-      <div
-        className="table-wrap financial-wrap"
-        tabIndex={0}
-        role="region"
-        aria-label={`${title} supporting allocation income`}
-      >
-        <table className="financial-table source-schedule">
-          <thead>
-            <tr>
-              <th>Allocation</th>
-              {monthly.map((r) => (
-                <th key={r.month.key}>
-                  {r.month.label} {r.month.key.slice(0, 4)}
-                  {r.month.state === "partial" && (
-                    <small>
-                      {statementMonthNote(r.month, {
-                        actual_cutoff: r.actualCutoff,
-                      })}
-                    </small>
-                  )}
-                </th>
-              ))}
-              <th className="year-total">{totalLabel(months)}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {catalog.flatMap((v) =>
-              [false, true].map((accrual) => {
-                const values = monthly.map((r) =>
-                  sourceIncome(r.read, v.venue_id, accrual),
-                );
-                return (
-                  <tr key={`${v.venue_id}:${accrual}`}>
-                    <th scope="row">
-                      <div className="allocation-name">
-                        {cleanLabel(v.label)}
-                      </div>
-                      <small>
-                        {accrual
-                          ? "Accrual-basis income"
-                          : "Reported income · Basis may differ"}
-                      </small>
-                    </th>
-                    {values.map((value, i) => (
-                      <td key={months[i].key}>
-                        <FinancialNumber
-                          value={value}
-                          evidence={
-                            monthly[i].read.report?.data.result.venues.find(
-                              (row) => row.venue_id === v.venue_id,
-                            )
-                              ? venueEvidence(
-                                  monthly[
-                                    i
-                                  ].read.report!.data.result.venues.find(
-                                    (row) => row.venue_id === v.venue_id,
-                                  )!,
-                                  "income",
-                                )
-                              : undefined
-                          }
-                          future={months[i].state === "future"}
-                          uncertainReason={readUncertainty(monthly[i].read)}
-                        />
-                      </td>
-                    ))}
-                    <td className="year-total">
-                      <FinancialNumber value={annualAmount(values, months)} />
-                    </td>
-                  </tr>
-                );
-              }),
-            )}
-            {!catalog.length && (
-              <tr>
-                <td colSpan={14} className="empty">
-                  <span className="tbd">TBD</span> · No compatible allocation
-                  publications in this year
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div className="panel-note">
-        Reported and accrued rows are alternate views of the same income.
-      </div>
-    </details>
   );
 }

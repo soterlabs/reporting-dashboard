@@ -1,3 +1,4 @@
+import { statementDisplayLabel } from "./statement-labels.ts";
 // Server-side validation of the stored cash-flow API contract. Workbook values
 // are not substituted when the API is absent; legacy exports remain separate.
 import { createHash } from "node:crypto";
@@ -117,5 +118,5 @@ export function validateCashFlow(value: unknown, prime: Prime, year: number, rev
 
 export function cashFlowApiCsv(doc: CashFlowReport): unknown[][] {
   return [["Line item",...doc.periods.map(p=>p.key),"YTD","Row ID","Parent row ID","Depth","Section","Report hash","Selection","Monthly coverage","Sources","Monthly quality","Monthly source references"],
-    ...doc.lines.map(row=>[row.label,...doc.periods.map(p=>row.kind==="section" ? "" : p.state==="future" ? "—" : metricAmount(row.values[p.key]) ?? "TBD"),row.kind==="section" ? "" : metricAmount(row.total) ?? "TBD",row.id,row.parent || "",row.depth,row.check ? "Reconciliation" : "Statement",doc.report_hash,doc.selection,JSON.stringify(Object.fromEntries(doc.periods.map(p=>[p.key,row.values[p.key].status]))),JSON.stringify(doc.source_manifest),JSON.stringify(Object.fromEntries(doc.periods.map(p=>[p.key,row.values[p.key].quality]))),JSON.stringify(Object.fromEntries(doc.periods.map(p=>[p.key,row.values[p.key].source_ref || null])))])];
+    ...doc.lines.map(row=>[statementDisplayLabel(row.id,row.label),...doc.periods.map(p=>row.kind==="section" ? "" : p.state==="future" ? "—" : metricAmount(row.values[p.key]) ?? "TBD"),row.kind==="section" ? "" : metricAmount(row.total) ?? "TBD",row.id,row.parent || "",row.depth,row.check ? "Reconciliation" : "Statement",doc.report_hash,doc.selection,JSON.stringify(Object.fromEntries(doc.periods.map(p=>[p.key,row.values[p.key].status]))),JSON.stringify(doc.source_manifest),JSON.stringify(Object.fromEntries(doc.periods.map(p=>[p.key,row.values[p.key].quality]))),JSON.stringify(Object.fromEntries(doc.periods.map(p=>[p.key,row.values[p.key].source_ref || null])))])];
 }

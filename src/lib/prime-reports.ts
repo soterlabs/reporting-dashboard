@@ -1,3 +1,4 @@
+import { statementDisplayLabel } from "./statement-labels.ts";
 import { sparkStatementPolicies } from "./financial-policies.ts";
 import { sheetStatementLines } from "./statement-layout.ts";
 import type { FinancialStatement } from "./financial.ts";
@@ -129,7 +130,7 @@ export function statementLines(
   const rows: StatementLine[] = apiLayout
     ? apiLayout.map((r) => ({
         id: r.id,
-        label: r.label,
+        label: statementDisplayLabel(r.id, r.label),
         parent: r.parent || undefined,
         level: r.depth,
         kind: r.kind || undefined,
