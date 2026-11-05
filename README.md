@@ -223,3 +223,29 @@ revisions or mismatched display hashes fail instead of silently exporting change
 years, portfolio views and API publications are unaffected.
 
 Full-month expense rows remain available when a revenue publication is delayed; net income stays TBD if that revenue cutoff stops before month end.
+
+
+## Spark cash flow workbook preview
+
+Spark's **Cash Flow Statement** tab (`view=cash-flow`) uses a versioned local
+snapshot of `prime_reporting_framework.xlsx`, sheet `Cash Flow Statement - Spark`.
+It presents the January–October 2026 operating, investing and financing rows,
+with expandable adjustment details and a separate collapsed reconciliation table.
+Every figure is provisional/orange; these workbook values are independent of the
+current income statement and are not live API/onchain data. Workbook cash
+reconciliation has unresolved gaps.
+
+`src/lib/data/spark-cash-flow-2026.v1.json` preserves source rows, cached monthly
+values, source total controls, cash definition and workbook SHA256. Blank inputs
+remain TBD. Formula zeroes and carried balances beyond October are outside source
+coverage and are not displayed as observations. Future periods remain dashes.
+YTD flow values sum known covered months; opening cash takes the first balance,
+and closing/measured/cumulative balances take the last covered observation.
+Cached workbook subtotals are displayed as supplied, even when their underlying
+inputs are incomplete; the UI/source note explicitly discloses this limitation.
+
+Page and Cash flow CSV use the same local metrics. CSV selects the immutable
+`cash_flow_revision`; unknown revisions fail, and unsupported prime/year exports
+return 404. This view performs no reporting API reads. Other prime tabs and
+historical years do not inherit Spark's workbook figures. Replacing these
+snapshot values with independently observed chain data is a later step.
