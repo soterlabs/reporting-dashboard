@@ -283,8 +283,9 @@ measured cash change, net cash change per statement, monthly gap, reconciliation
 gap (%), and monthly status. The percentage is absolute monthly gap divided by
 measured closing cash, displayed to two decimals. Missing or nonpositive closing
 cash yields TBD, and the monthly ratio is not aggregated into YTD. A displayed
-0.00% does not certify classification or complete inputs. Cumulative gap and the
-extra API rows stay under collapsed Diagnostics.
+0.00% does not certify classification or complete inputs. Diagnostics is removed
+from the UI; cumulative gap and the other supporting values remain available in
+the reporting API and full cash flow CSV export.
 The schedule compares observed cash change (closing minus opening cash)
 with net cash flow from operating, investing and financing activities. Their
 signed difference is the monthly reconciliation gap. Net income is adjusted for

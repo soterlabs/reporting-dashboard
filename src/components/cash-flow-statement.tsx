@@ -23,10 +23,9 @@ export function CashFlowStatement({ prime, year, months, report, retained = fals
   const calendar=months.map(m=>{const p=report?.periods.find(p=>p.key===m.key);return p ? {...m,state:p.state,cutoff:p.actual_cutoff} : m;});
   const collapsed=new Set([...groups].filter(id=>!expanded.has(id)));
   function toggle(id:string){setExpanded(current=>{const next=new Set(current);if(next.has(id))next.delete(id);else next.add(id);return next;});}
-  function table(mode: "statement" | "reconciliation" | "diagnostics" = "statement"){
+  function table(mode: "statement" | "reconciliation" = "statement"){
     const checks = mode !== "statement";
-    const mainIds = new Set(cashReconciliationRows.map(row => row.id));
-    const visible: StatementLine[] = mode === "reconciliation" ? cashReconciliationRows : mode === "diagnostics" ? layout.filter(r=>checkIds.has(r.id) && !mainIds.has(r.id)) : visibleStatementLines(rows,collapsed);
+    const visible: StatementLine[] = checks ? cashReconciliationRows : visibleStatementLines(rows,collapsed);
     function number(id:string,month?:string){
       if (id === "reconciliation-percentage" && report) {
         const percentage = month ? cashReconciliationPercentage(report, month) : { label: "—", detail: "Monthly ratio; not summed or averaged into YTD.", estimated: false };
@@ -40,7 +39,7 @@ export function CashFlowStatement({ prime, year, months, report, retained = fals
       const p=report?.periods.find(p=>p.key===month),future=month ? calendar.find(m=>m.key===month)?.state==="future" : false;
       return <FinancialNumber value={metricAmount(cell)} evidence={cell} future={future} detail={[cell?.reason,...(cell?.source_paths || [])].filter(Boolean).join(" · ")} uncertainReason={retained ? "Refresh failed; retained cash-flow publication" : p?.stale ? "Delayed cash-flow publication" : undefined} />;
     }
-    return <div className="table-wrap financial-wrap" tabIndex={0} role="region" aria-label={mode === "diagnostics" ? "Cash reconciliation diagnostics" : checks ? "Cash flow reconciliation" : `${title} annual cash flow statement; scroll horizontally for all months`}>
+    return <div className="table-wrap financial-wrap" tabIndex={0} role="region" aria-label={checks ? "Cash flow reconciliation" : `${title} annual cash flow statement; scroll horizontally for all months`}>
       <table className={`financial-table${mode === "reconciliation" ? " cash-reconciliation-table" : ""}`}><thead><tr><th scope="col" aria-label="Cash flow statement categories and items" />{calendar.map(m=><th scope="col" key={m.key}>{m.label} {year}{m.state==="partial" && <small>MTD</small>}</th>)}<th scope="col" className="year-total">{calendar.every(m=>m.state==="complete") ? "FY" : "YTD"}</th></tr></thead>
       <tbody>{visible.map(row=>row.kind==="section" ? <StatementSectionRow key={row.id} id={row.id} depth={row.level} columns={calendar.length+2}>
         {groups.has(row.id) ? <button className="row-toggle statement-label" aria-expanded={expanded.has(row.id)} onClick={()=>toggle(row.id)}>{expanded.has(row.id) ? <ChevronDown size={13}/> : <ChevronRight size={13}/>}<span>{row.label}</span></button> : row.label}
@@ -51,7 +50,7 @@ export function CashFlowStatement({ prime, year, months, report, retained = fals
   const coverage=Object.entries(report?.monthly_coverage || {}).filter(([,v])=>v);
   const missing=[...new Set(coverage.flatMap(([,v])=>v!.missing_chains))];
   if (reconciliationOnly) return report ? (
-    <details open className="panel source-coverage"><summary className="panel-heading"><h2 className="statement-title">{title} cash reconciliation</h2></summary>{table("reconciliation")}<p className="panel-note">OK requires complete, supported inputs and a monthly gap within 5m. Otherwise the status is Incomplete or Difference remains.</p><details><summary className="panel-heading">Diagnostics</summary>{table("diagnostics")}</details></details>
+    <details open className="panel source-coverage"><summary className="panel-heading"><h2 className="statement-title">{title} cash reconciliation</h2></summary>{table("reconciliation")}<p className="panel-note">OK requires complete, supported inputs and a monthly gap within 5m. Otherwise the status is Incomplete or Difference remains.</p></details>
   ) : (
     <section className="panel"><div className="panel-heading"><h2 className="statement-title">{title} cash reconciliation</h2></div><p className="panel-note">{message || "Event-backed cash reconciliation is not yet available for this prime and year."}</p></section>
   );
