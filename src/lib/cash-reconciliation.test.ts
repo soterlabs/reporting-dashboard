@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import Decimal from "decimal.js";
 import { cashReconciliationStatus } from "./cash-reconciliation.ts";
 
 const raw = () => JSON.parse(readFileSync(new URL("./fixtures/spark-cash-flow-api.json", import.meta.url), "utf8"));
@@ -14,7 +15,9 @@ function complete() {
     const cell = line.values[month];
     Object.assign(cell, { value: cell.value ?? cell.known_value ?? "0", known_value: null, status: "available", quality: "supported" });
   }
-  report.lines.find((r: { id: string }) => r.id === "reconciliation-gap").values[month].value = "0";
+  for (const [id, value] of [["opening-cash", "100"], ["closing-cash", "110"], ["measured-cash", "110"], ["measured-change", "10"], ["net-cash-change", "10"], ["reconciliation-gap", "0"]]) {
+    report.lines.find((r: { id: string }) => r.id === id).values[month].value = value;
+  }
   return report;
 }
 
@@ -31,11 +34,23 @@ test("complete comparisons use the unrounded symmetric workbook tolerance", () =
   const gap = report.lines.find((r: { id: string }) => r.id === "reconciliation-gap").values[month];
   for (const value of ["0", "5000000", "-5000000"]) {
     gap.value = value;
+    report.lines.find((r: { id: string }) => r.id === "net-cash-change").values[month].value = new Decimal(10).minus(value).toString();
     assert.equal(cashReconciliationStatus(report, month).label, "OK");
   }
   for (const value of ["5000000.000001", "-5000000.000001"]) {
     gap.value = value;
+    report.lines.find((r: { id: string }) => r.id === "net-cash-change").values[month].value = new Decimal(10).minus(value).toString();
     assert.equal(cashReconciliationStatus(report, month).label, "Difference remains");
+  }
+});
+
+test("a zero or small reported gap cannot pass if it contradicts the cash balance equations", () => {
+  for (const [id, value] of [["closing-cash", "111"], ["measured-cash", "111"], ["measured-change", "11"], ["net-cash-change", "9"], ["reconciliation-gap", "1"]]) {
+    const report = complete();
+    report.lines.find((r: { id: string }) => r.id === id).values[month].value = value;
+    const result = cashReconciliationStatus(report, month);
+    assert.equal(result.label, "Incomplete");
+    assert.match(result.detail, /do not agree/);
   }
 });
 
