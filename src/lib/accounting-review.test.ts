@@ -78,3 +78,16 @@ test("comparable YTD excludes a historical partial month and validates the reque
   for (const cutoff of ["2026-10-30", "2026-02-30", "2026-11-30", "2026-99-31"])
     assert.throws(() => withPrimeExpenses("spark", 2026, api, undefined, undefined, undefined, cutoff), /YTD expense cutoff/);
 });
+
+
+test("live November with historical SDE split dust validates without accepting material split errors", () => {
+  const raw = () => JSON.parse(gunzipSync(readFileSync(new URL("./fixtures/spark-november-accounting.json.gz", import.meta.url))).toString());
+  const api = validateStatement(raw(), "spark", 2026);
+  assert.equal(api.periods[10].state, "partial");
+  assert.ok(metricAmount(api.lines.find(l => l.id === "statement.interest")!.values["2026-11"]));
+  const corrupt = raw();
+  const split = corrupt.lines.find((l: { id: string }) => l.id === "investment.amm.curve.susds_usdt").values["2026-06"].allocation_split;
+  // Real production split differs by 3e-24 USD; an altered allocation is rejected.
+  split.sky_income_usd = new Decimal(split.sky_income_usd).plus("0.0000000001").toFixed(28);
+  assert.throws(() => validateStatement(corrupt, "spark", 2026), /contract mismatch/);
+});
