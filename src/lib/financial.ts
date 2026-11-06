@@ -8,6 +8,8 @@ import {
   sparkAmmPolicies,
   sparkStatementPolicies,
   sparkHistoryPolicy,
+  sparkHistoryPolicies,
+  sparkReconciledPolicy,
 } from "./financial-policies.ts";
 export {
   rollupPolicy,
@@ -38,6 +40,7 @@ export interface Metric {
   reason: string | null;
   source_paths: string[];
   source_ref?: string;
+  input_revision?: string;
   source_refs?: string[];
   missing_components?: string[];
   component_ids?: string[];
@@ -54,7 +57,8 @@ export interface Metric {
     sky_share_basis:
       | "published_rounded_percentage"
       | "saved_source_share"
-      | "not_applicable_empty_position";
+      | "not_applicable_empty_position"
+      | "effective_dated_designated_exposure";
     rounding_delta_usd: string;
     sky_share_excluded_income_usd?: string;
   };
@@ -78,6 +82,7 @@ export interface FinancialStatement {
     financial_revision: string | null;
     monthly_revision?: string | null;
     offchain_revision?: string | null;
+    reconciliation_revision?: string | null;
   }[];
   lines: {
     id: string;
@@ -99,7 +104,10 @@ export interface FinancialStatement {
         | "published_monthly_summary"
         | "counterparty_monthly_accrual"
         | "counterparty_monthly_archive"
-        | "spark_onchain_components";
+        | "spark_onchain_components"
+        | "spark_reviewed_chain_cash";
+      month?: string;
+      snapshot_revision?: string;
       repository?: string;
       commit?: string;
       path?: string;
@@ -111,6 +119,8 @@ export interface FinancialStatement {
   offchain_positions?: OffchainPosition[];
   archive_income?: ArchiveIncome[];
   source_lag_periods: string[];
+  spark_msc_reconciliation?: SparkMscMonth[];
+  spark_fee_true_up_control?: { amount: string | null; treatment: string; reporting_original_months: Metric; difference: Metric; added_to_reporting_income: false };
   display_decimals?: number;
   // Local dashboard presentation only; never part of an API publication/hash.
   dashboard_composition?: {
@@ -122,6 +132,9 @@ export interface FinancialStatement {
     display_hash: string;
     local_metric_ids: string[];
   };
+  pending_expense_inputs?: { id: string; reason: string }[];
+  accounting_rules?: string;
+  expense_input_revision?: string;
   statement_rows?: {
     id: string;
     label: string;
@@ -273,7 +286,7 @@ function metric(v: Metric) {
       ),
     );
     requireValue(
-      ["published_rounded_percentage", "saved_source_share", "not_applicable_empty_position"].includes(
+      ["published_rounded_percentage", "saved_source_share", "not_applicable_empty_position", "effective_dated_designated_exposure"].includes(
         split.sky_share_basis,
       ),
     );
@@ -529,6 +542,7 @@ export function validateStatement(
     p.financial_revision,
     p.monthly_revision,
     ...(offchain ? [p.offchain_revision] : []),
+    ...(v.policy_version === sparkReconciledPolicy ? [p.reconciliation_revision] : []),
   ];
   const validSource = (
     ref: string,
@@ -538,7 +552,9 @@ export function validateStatement(
     return (
       refs(p).includes(ref) &&
       source &&
-      (ref === p.offchain_revision
+      (ref === p.reconciliation_revision
+        ? prime === "spark" && v.policy_version === sparkReconciledPolicy && source.kind === "spark_reviewed_chain_cash" && source.month === p.key && hash(source.snapshot_revision) && source.cutoff === p.expected_cutoff
+        : ref === p.offchain_revision
         ? offchainSourceKind(v.policy_version, prime, source.kind) &&
           date(source.cutoff) &&
           source.cutoff.startsWith(p.key) &&
@@ -609,6 +625,7 @@ export function validateStatement(
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
+        (v.policy_version === sparkReconciledPolicy && (l.id === "gains.sparklend_nonstable" || (["revaluation.sparklend_assets", "funding.sky.net"].includes(l.id) && Array.isArray(l.components)))) ||
         (completeSpark &&
           ((l.id.startsWith("funding.savings") &&
             l.aggregation === "subtotal") ||
@@ -637,6 +654,10 @@ export function validateStatement(
       const cell = l.values[p.key];
       metric(cell);
       requireValue((cell.status === "future") === (p.state === "future"));
+      if (v.policy_version === sparkReconciledPolicy && l.id === "expenses.compensation.spk") {
+        requireValue(hash(v.expense_input_revision) && cell.input_revision === v.expense_input_revision);
+        continue; // Authored expense input has its own revision, not an unrelated chain publication.
+      }
       requireValue(
         p.financial_revision !== null ||
           (monthly && p.monthly_revision !== null) ||
@@ -667,6 +688,7 @@ export function validateStatement(
               ((prime === "spark" &&
                 sparkIncomePolicies.includes(v.policy_version) &&
                 (l.id.startsWith("fees.") ||
+                  (v.policy_version === sparkReconciledPolicy && l.id.startsWith("revaluation.")) ||
                   l.id.startsWith("gains.") ||
                   l.id.startsWith("investment.venue.") ||
                   (completeSpark &&
@@ -676,9 +698,12 @@ export function validateStatement(
                         "investment.sparklend.weth",
                         "investment.morpho.sentora_rlusd",
                       ].includes(l.id))) ||
+                  l.id.startsWith("rewards.treasury.") ||
+                  l.id === "funding.sky.sde_adjustment" ||
+                  l.id === "funding.sky.retained" ||
                   l.id.startsWith("rewards.lending.sparklend.") ||
                   l.id === "rewards.unattributed_sparklend_receipts" ||
-                  (v.policy_version === sparkHistoryPolicy &&
+                  (sparkHistoryPolicies.includes(v.policy_version) &&
                     (l.id === "investment.anchorage" ||
                       l.id.startsWith("rewards.issuer.") ||
                       sparkAmmIds.includes(l.id))))) ||
@@ -706,7 +731,7 @@ export function validateStatement(
           requireValue(split && cell.recognition === "investment_return");
           const rounded = source.kind === "published_monthly_summary";
           const emptyPosition =
-            v.policy_version === sparkHistoryPolicy &&
+            sparkHistoryPolicies.includes(v.policy_version) &&
             source.kind === "spark_onchain_components" &&
             split.sky_share_basis === "not_applicable_empty_position" &&
             [
@@ -717,6 +742,8 @@ export function validateStatement(
             ].every((n) => n !== null && new SplitDecimal(n!).eq(0));
           requireValue(
             emptyPosition ||
+              (v.policy_version === sparkReconciledPolicy && source.kind === "spark_onchain_components"
+                && split.sky_share_basis === "effective_dated_designated_exposure") ||
               split.sky_share_basis ===
                 (rounded
                   ? "published_rounded_percentage"
@@ -728,8 +755,8 @@ export function validateStatement(
             ),
           );
           requireValue(
-            new SplitDecimal(split.sky_share).gte(0) &&
-              new SplitDecimal(split.sky_share).lte(1),
+            split.sky_share_basis === "effective_dated_designated_exposure" ||
+              (new SplitDecimal(split.sky_share).gte(0) && new SplitDecimal(split.sky_share).lte(1)),
           );
           const delta = new SplitDecimal(split.gross_income_usd)
             .minus(split.prime_income_usd)
@@ -754,10 +781,12 @@ export function validateStatement(
             );
           }
         }
+        if (cell.source_ref === p.reconciliation_revision)
+          requireValue(v.policy_version === sparkReconciledPolicy && l.id === "investment.anchorage" && cell.recognition === "receipt" && cell.period_start === p.key + "-01" && cell.period_end === p.expected_cutoff);
         if (cell.source_ref === p.monthly_revision)
           requireValue(
             [
-              ...(v.policy_version === sparkHistoryPolicy &&
+              ...(sparkHistoryPolicies.includes(v.policy_version) &&
               prime === "spark" &&
               (l.id.startsWith("investment.venue.") ||
                 l.id.startsWith("investment.rwa.") ||
@@ -765,10 +794,12 @@ export function validateStatement(
                 l.id.startsWith("rewards.lending.aave."))
                 ? [l.id]
                 : []),
+              ...(v.policy_version === sparkReconciledPolicy && l.id === "investment.psm3.susds" ? [l.id] : []),
               "demand.agent_rate",
               "demand.distribution_rewards",
               "demand.total",
               "funding.sky.net",
+              ...(v.policy_version === sparkReconciledPolicy ? ["funding.sky.retained"] : []),
               ...(prime === "skybase" ? ["demand.gar"] : []),
               ...(prime === "grove" ? ["demand.chronicle_points"] : []),
               ...(prime === "spark" &&
@@ -895,6 +926,7 @@ export function validateStatement(
   if (offchain) validateOffchain(v, prime);
   if (archivePolicies.includes(v.policy_version)) validateArchive(v, prime);
 
+  if (v.policy_version === sparkReconciledPolicy) validateSparkMsc(v);
   return v;
 }
 export function validatePortfolio(
@@ -1138,4 +1170,58 @@ export function financialPortfolioRows(
         unpaid_income_usd: null,
       },
     }));
+}
+
+
+export interface SparkMscMonth {
+  month: string; status: "review_required" | "unavailable"; reason: string; source_ref: string | null;
+  MSC_supply_side: Metric; MSC_demand_side: Metric; Savings_interest: Metric;
+  MSC_supply_less_Savings: Metric; reporting_net_interest: Metric; net_interest_difference: Metric;
+  allocation_difference_total: Metric; Sky_funding_difference: Metric; published_summary_rounding: Metric;
+  bridged_net_interest: Metric; quantitative_bridge_residual: Metric;
+  MSC_total_less_Savings: Metric; reporting_net_revenue: Metric; net_revenue_difference: Metric;
+  other_reporting_components: Record<string, Metric>;
+  venue_differences: { id: string; label: string; MSC: Metric; reporting: Metric; difference: Metric; reason: string; review_status: "documented_method_difference" | "review_required" }[];
+  reviewed_cash_evidence: unknown; principal_included: false; operating_expenses_included: false;
+}
+function validateSparkMsc(report: FinancialStatement) {
+  requireValue(report.prime === "spark" && Array.isArray(report.spark_msc_reconciliation) && report.spark_fee_true_up_control?.added_to_reporting_income === false);
+  const rows = report.spark_msc_reconciliation!;
+  const elapsed = report.periods.filter(p => p.state !== "future");
+  requireValue(rows.length === elapsed.length && new Set(rows.map(r => r.month)).size === rows.length);
+  const value = (m: Metric) => metricAmount(m);
+  const checkTerms = (result: Metric, terms: [Metric, number][]) => {
+    metric(result); terms.forEach(([cell]) => metric(cell));
+    const known=terms.filter(([cell])=>value(cell)!==null);
+    const expected=known.length ? known.reduce((n,[cell,sign])=>n.plus(new SplitDecimal(value(cell)!).times(sign)),new SplitDecimal(0)) : null;
+    requireValue(expected===null ? value(result)===null : value(result)!==null && expected.minus(value(result)!).abs().lte("1e-40"));
+    requireValue(result.status === (terms.every(([cell])=>cell.status==="available") ? "available" : known.length ? "partial" : "unavailable"));
+  };
+  for (const p of elapsed) {
+    const row=rows.find(r=>r.month===p.key);requireValue(row && row.principal_included===false && row.operating_expenses_included===false && ["review_required","unavailable"].includes(row.status));
+    const b=row!;
+    requireValue(b.source_ref===(p.monthly_revision || null));
+    requireValue(JSON.stringify(b.reporting_net_interest)===JSON.stringify(report.lines.find(l=>l.id==="statement.net_interest")?.values[p.key]));
+    requireValue(JSON.stringify(b.reporting_net_revenue)===JSON.stringify(report.lines.find(l=>l.id==="statement.net_revenue")?.values[p.key]));
+    requireValue(JSON.stringify(b.Savings_interest)===JSON.stringify(report.lines.find(l=>l.id==="funding.savings")?.values[p.key]));
+    if(b.source_ref){
+    checkTerms(b.MSC_supply_less_Savings,[[b.MSC_supply_side,1],[b.Savings_interest,-1]]);
+    checkTerms(b.net_interest_difference,[[b.reporting_net_interest,1],[b.MSC_supply_less_Savings,-1]]);
+    checkTerms(b.MSC_total_less_Savings,[[b.MSC_supply_side,1],[b.MSC_demand_side,1],[b.Savings_interest,-1]]);
+    checkTerms(b.net_revenue_difference,[[b.reporting_net_revenue,1],[b.MSC_total_less_Savings,-1]]);
+    } else {
+      for(const cell of [b.MSC_supply_less_Savings,b.net_interest_difference,b.MSC_total_less_Savings,b.net_revenue_difference]) {metric(cell);requireValue(cell.status==="unavailable");}
+    }
+    requireValue(Array.isArray(b.venue_differences) && new Set(b.venue_differences.map(v=>v.id)).size===b.venue_differences.length);
+    for(const v of b.venue_differences){requireValue(["documented_method_difference","review_required"].includes(v.review_status));checkTerms(v.difference,[[v.reporting,1],[v.MSC,-1]]);}
+    if(b.source_ref){
+      checkTerms(b.allocation_difference_total,b.venue_differences.map(v=>[v.difference,1]));
+      checkTerms(b.bridged_net_interest,[[b.MSC_supply_less_Savings,1],[b.allocation_difference_total,1],[b.Sky_funding_difference,1],[b.published_summary_rounding,1]]);
+      checkTerms(b.quantitative_bridge_residual,[[b.reporting_net_interest,1],[b.bridged_net_interest,-1]]);
+    } else {
+      for(const cell of [b.bridged_net_interest,b.quantitative_bridge_residual]) {metric(cell);requireValue(cell.status==="unavailable");}
+    }
+  }
+  metric(report.spark_fee_true_up_control!.reporting_original_months);
+  metric(report.spark_fee_true_up_control!.difference);
 }

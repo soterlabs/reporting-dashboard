@@ -106,7 +106,11 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
   const policy=prime==="spark" ? POLICY : "dashboard.grove-expenses.v1";
   const selectedData = snapshots.get(revision);
   if (!selectedData) throw new Error("Expense snapshot is unavailable; refresh the dashboard");
-  const data: ExpenseSnapshot = selectedData;
+  const data: ExpenseSnapshot = structuredClone(selectedData);
+  // Contributor compensation is supplied once by the API's approved expense input.
+  const contributor = prime === "spark" ? input?.lines.find(l=>l.id === "expenses.compensation.spk") : undefined;
+  if (contributor) data.lines.push({id:contributor.id,label:contributor.label,parent:"expenses.compensation",source_row:7,
+    values:Object.fromEntries(months.map(m=>[m,metricAmount(contributor.values[m])]))});
   check(data.prime===prime,"expense snapshot perimeter differs");
   check(!input?.dashboard_composition, "composition requires the original API input");
   check(!input || (input.prime === prime && input.year === year), "API input perimeter differs");
@@ -131,6 +135,8 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
       }
       const end = new Date(Date.UTC(2026, Number(p.key.slice(5)), 0)).toISOString().slice(0, 10);
       const value = source.values[p.key];
+      if (contributor && source.id === contributor.id && p.expected_cutoff && p.expected_cutoff >= end)
+        return [p.key, structuredClone(contributor.values[p.key])];
       if (value == null || !p.expected_cutoff || p.expected_cutoff < end) return [p.key, emptyMetric(false, value == null ? "expense_not_provided" : "monthly_expense_after_selected_cutoff")];
       const basis = source.source_row <= 18 ? data.operating_basis[p.key] : "workbook_nonoperating_expense";
       const column = String.fromCharCode(74 + Number(p.key.slice(5)) - 1);
@@ -149,7 +155,7 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
     const earned = revenue?.values[p.key], spent = expenses.values[p.key];
     // Missing expenses are never treated as zero, and annual net income is a
     // sum of matching monthly pairs, not unmatched annual revenue/expense sums.
-    if (metricAmount(earned) === null || spent.status !== "available") return [p.key, { ...emptyMetric(false, "revenue_or_expenses_missing"), missing_components: [...(metricAmount(earned) === null ? ["statement.net_revenue"] : []), ...(spent.status !== "available" ? ["expenses.total"] : [])] }];
+    if (metricAmount(earned) === null || (contributor ? metricAmount(spent) === null : spent.status !== "available")) return [p.key, { ...emptyMetric(false, "revenue_or_expenses_missing"), missing_components: [...(metricAmount(earned) === null ? ["statement.net_revenue"] : []), ...(spent.status !== "available" ? ["expenses.total"] : [])] }];
     const expenseEnd = new Date(Date.UTC(year, Number(p.key.slice(5)), 0)).toISOString().slice(0, 10);
     const revenueEnd = earned?.period_end || p.actual_cutoff || p.expected_cutoff;
     if (!revenueEnd || revenueEnd < expenseEnd)
@@ -158,6 +164,7 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
   }));
   local.set("dashboard.net_income", { id: "dashboard.net_income", label: "Net income", aggregation: "subtotal",
     components: [{ id: "statement.net_revenue", sign: 1 }, { id: "expenses.total", sign: -1 }], values: netValues, total: total(netValues, report.periods) });
+  report.lines = report.lines.filter(l=>!local.has(l.id));
   report.lines.push(...local.values());
   const expenseStart = originalRows.findIndex(r => r.id === "expenses");
   const layout = expenseStart >= 0 ? originalRows.slice(0, expenseStart) : originalRows.filter(r => r.id !== "net-income");
@@ -167,7 +174,9 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
     const rowId = source.id === "expenses.operating" ? "operating" : source.id === "expenses.incentives" ? "incentives" : source.id === "expenses.other" ? "other-expenses" : source.id === "expenses.distribution" ? "distribution" : source.id;
     const parentId = parent === "expenses.operating" ? "operating" : parent === "expenses.incentives" ? "incentives" : parent === "expenses.other" ? "other-expenses" : parent;
     layout.push({ id: rowId, label: source.label, parent: parentId, depth, kind: null, metric_id: source.id });
-    data.lines.filter(l => l.parent === source.id).forEach(l => append(l, depth + 1));
+    // Staff-function amounts still feed calculations but are not display rows.
+    if (!(prime === "spark" && depth >= 2))
+      data.lines.filter(l => l.parent === source.id).forEach(l => append(l, depth + 1));
   }
   ROOTS.forEach(id => append(data.lines.find(l => l.id === id)!, 1));
   layout.push({ id: "noninterest-expense", label: "Total noninterest expense", parent: null, depth: 0, kind: "subtotal", metric_id: "expenses.total" },
@@ -182,3 +191,12 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
 
 // Preserve callers and pinned Spark exports from the original expense import.
 export const withSparkExpenses=withPrimeExpenses;
+
+// Use the last supplied expense month for Spark's live income view. Pinned exports
+// retain their selected API cutoff; advancing the sheet advances the live view.
+export function expenseReportingCutoff(prime: Prime): string | undefined {
+  if (prime !== "spark") return undefined;
+  const available = months.filter(m=>snapshot.lines.filter(l=>l.id!=="expenses.total").every(l=>l.values[m]!==null));
+  const last=available.at(-1);
+  return last ? new Date(Date.UTC(2026,Number(last.slice(5)),0)).toISOString().slice(0,10) : undefined;
+}

@@ -7,7 +7,7 @@ import { financialStatements, financialPortfolio, cashFlowReport } from "@/lib/a
 import { ReportingShell } from "./reporting-shell";
 import { CashFlowStatement } from "./cash-flow-statement";
 
-import { withPrimeExpenses } from "@/lib/spark-expenses";
+import { withPrimeExpenses, expenseReportingCutoff } from "@/lib/spark-expenses";
 import Link from "next/link";
 import {
   ArrowDownToLine,
@@ -22,6 +22,7 @@ import { FinancialNumber, FinancialLegend } from "./financial-number";
 import { venueEvidence, readUncertainty } from "@/lib/number-confidence";
 import { ArchiveIncome } from "./archive-income";
 import { OffchainAccruals } from "./offchain-accruals";
+import { SparkMscBridge } from "./spark-msc-bridge";
 import { IncomeStatement } from "./income-statement";
 import { ReportingRefresh } from "./reporting-refresh";
 import { annualReports, portfolioReports } from "@/lib/report-data";
@@ -103,7 +104,7 @@ export async function PrimeDashboard({
     : await portfolioReports(prime, scope, month);
   const apiFinancial =
     scope === "individual" && view === "income"
-      ? await financialStatements(prime, year)
+      ? await financialStatements(prime, year, undefined, prime === "spark" ? expenseReportingCutoff(prime) : undefined)
       : null;
   const financial = apiFinancial
     ? { ...apiFinancial, report: withPrimeExpenses(prime, year, apiFinancial.report, months) || null }
@@ -282,6 +283,7 @@ export async function PrimeDashboard({
                 financial={financial?.report}
                 retained={financial?.retained}
               />
+              {prime === "spark" && <SparkMscBridge key={`msc:${year}:${financial?.report?.selection}`} report={financial?.report} />}
               <OffchainAccruals
                 report={financial?.report}
                 retained={financial?.retained}

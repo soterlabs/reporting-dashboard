@@ -8,9 +8,11 @@ export const sparkIncomePolicy = "prime-management.spark-income.v3.6";
 export const sparkAmmPolicy = "prime-management.spark-amms.v3.7";
 export const sparkStatementPolicy = "prime-management.spark-statement.v3.8";
 export const sparkHistoryPolicy = "prime-management.spark-history.v3.9";
+export const sparkReconciledPolicy = "prime-management.spark-reconciled.v3.10";
+export const sparkHistoryPolicies = [sparkHistoryPolicy, sparkReconciledPolicy];
 export const sparkStatementPolicies = [
   sparkStatementPolicy,
-  sparkHistoryPolicy,
+  ...sparkHistoryPolicies,
 ];
 export const sparkAmmPolicies = [sparkAmmPolicy, ...sparkStatementPolicies];
 export const sparkIncomePolicies = [sparkIncomePolicy, ...sparkAmmPolicies];

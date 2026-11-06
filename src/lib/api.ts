@@ -134,9 +134,10 @@ export async function financialStatements(
   prime: Prime,
   year: number,
   revision?: string,
+  cutoff?: string,
 ) {
   return financialRead<FinancialStatement>(
-    `/v3/reporting/statements?${new URLSearchParams({ prime, year: String(year), ...(revision ? { revision } : {}) })}`,
+    `/v3/reporting/statements?${new URLSearchParams({ prime, year: String(year), ...(revision ? { revision } : {}), ...(!revision && prime === "spark" ? {accounting:"true"} : {}), ...(!revision && cutoff ? {cutoff} : {}) })}`,
     (v) => validateStatement(v, prime, year, revision),
   );
 }

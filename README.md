@@ -316,3 +316,25 @@ coverage cards are removed. Accounting/transaction source panels remain in the c
 but are hidden. Draft labels and repeated explanatory header lines are removed;
 the footer retains the USD denomination note. “Net gains on non-stable assets” is
 a display/CSV label; retained API documents and their hashes are unchanged.
+
+## Spark reporting income and MSC comparison
+
+The dashboard accepts `prime-management.spark-reconciled.v3.10` from the Reporting
+API while retaining support for older selections. The API supplies PSM3 sUSDS
+yield beneath sUSDS, separate SparkLend asset and Savings ETH liability FX
+components beneath net gains, and reviewed Anchorage receipt attribution.
+Gross Savings-funded yield remains revenue; Savings VSR interest is a separate
+funding cost. Principal never enters these income rows.
+
+Spark's **MSC to reporting** card compares monthly MSC headlines, less Savings
+interest, with reporting net interest and total net revenue. Expand its details
+for per-venue recognition differences, fees and revaluation. Missing MSC summaries
+remain unavailable. Quantitative bridge identities are validated, but the card
+does not certify unresolved economic classifications merely because arithmetic
+balances. September's historical SparkLend fee true-up is not new reporting income.
+
+Deploy the settlement-cycle v3.10 API before this dashboard change to populate
+the card. Older API responses continue to render without it. No production
+backfill or publication is performed by the dashboard.
+
+Spark live income requests use `accounting=true` and the last supplied expense month as cutoff. The opt-in keeps older deployed dashboard clients compatible while the API and UI roll out. October DR remains TBD until published. Contributor SPK compensation comes from the independently versioned API expense input; staff functions still contribute to totals but are hidden below the two displayed expense levels.
