@@ -8,9 +8,28 @@ export const cashReconciliationRows = [
   { id: "measured-change", label: "Change in measured cash", level: 0 },
   { id: "net-cash-change", label: "Net cash change per statement", level: 0 },
   { id: "reconciliation-gap", label: "Gap: measured change minus statement", level: 0 },
-  { id: "cumulative-gap", label: "Cumulative gap", level: 0 },
+  { id: "reconciliation-percentage", label: "Reconciliation gap (%)", level: 0 },
   { id: "reconciliation-status", label: "Status", level: 0 },
 ];
+
+export function cashReconciliationPercentage(report: CashFlowReport, month: string) {
+  if (report.periods.find(p => p.key === month)?.state === "future") {
+    return { label: "—", detail: "Future period", estimated: false };
+  }
+  const gap = report.lines.find(line => line.id === "reconciliation-gap")?.values[month];
+  const cash = report.lines.find(line => line.id === "measured-cash")?.values[month];
+  const numerator = gap?.value ?? gap?.known_value;
+  const denominator = cash?.value ?? cash?.known_value;
+  if (numerator == null || denominator == null || !new D(denominator).gt(0)) {
+    return { label: "TBD", detail: "Requires a known gap and a positive measured closing cash balance.", estimated: false };
+  }
+  const percentage = new D(numerator).abs().div(denominator).times(100);
+  return {
+    label: `${percentage.toFixed(2, Decimal.ROUND_HALF_UP)}%`,
+    detail: `Absolute monthly gap ÷ measured closing cash × 100. Higher precision: ${percentage.toSignificantDigits(8).toString()}%. ${gap?.status !== "available" || cash?.status !== "available" ? "Based on incomplete inputs. " : ""}A rounded 0.00% is not proof of complete or correct classification.`,
+    estimated: gap?.quality === "estimate" || cash?.quality === "estimate",
+  };
+}
 
 export function cashReconciliationStatus(report: CashFlowReport, month: string, retained = false) {
   const period = report.periods.find(p => p.key === month);

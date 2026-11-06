@@ -10,7 +10,7 @@ import { metricAmount } from "@/lib/financial";
 import { name, type Prime } from "@/lib/reporting";
 import { FinancialNumber } from "./financial-number";
 import { StatementSectionRow } from "./statement-section-row";
-import { cashReconciliationRows, cashReconciliationStatus } from "@/lib/cash-reconciliation";
+import { cashReconciliationRows, cashReconciliationStatus, cashReconciliationPercentage } from "@/lib/cash-reconciliation";
 
 export function CashFlowStatement({ prime, year, months, report, retained = false, message, reconciliationOnly = false }: {
   prime: Prime; year: number; months: Month[]; report?: CashFlowReport | null; retained?: boolean; message?: string | null; reconciliationOnly?: boolean;
@@ -28,6 +28,10 @@ export function CashFlowStatement({ prime, year, months, report, retained = fals
     const mainIds = new Set(cashReconciliationRows.map(row => row.id));
     const visible: StatementLine[] = mode === "reconciliation" ? cashReconciliationRows : mode === "diagnostics" ? layout.filter(r=>checkIds.has(r.id) && !mainIds.has(r.id)) : visibleStatementLines(rows,collapsed);
     function number(id:string,month?:string){
+      if (id === "reconciliation-percentage" && report) {
+        const percentage = month ? cashReconciliationPercentage(report, month) : { label: "—", detail: "Monthly ratio; not summed or averaged into YTD.", estimated: false };
+        return <span className="financial-number" title={[percentage.detail, retained ? "Refresh failed; retained publication." : null].filter(Boolean).join(" ")}>{percentage.label}{percentage.estimated && <sup aria-label="Estimated or provisional">*</sup>}</span>;
+      }
       if (id === "reconciliation-status" && report) {
         const status = month ? cashReconciliationStatus(report, month, retained) : { label: "—", detail: "Status is assessed monthly, not aggregated across the year." };
         return <span title={status.detail}>{status.label}</span>;

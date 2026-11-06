@@ -12,6 +12,8 @@ export default async function Page({
   const prime = parsePrime((await params).prime);
   if (!prime) notFound();
   const search = await searchParams;
+  if (search.view === "positions")
+    redirect(individualReportHref(prime, { ...search, view: "income" }));
   if (search.scope === "combined" || search.scope === "group")
     redirect(individualReportHref(prime, search));
   return <PrimeDashboard prime={prime} search={search} />;

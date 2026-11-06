@@ -2,10 +2,40 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import Decimal from "decimal.js";
-import { cashReconciliationStatus } from "./cash-reconciliation.ts";
+import { cashReconciliationStatus, cashReconciliationPercentage } from "./cash-reconciliation.ts";
 
 const raw = () => JSON.parse(readFileSync(new URL("./fixtures/spark-cash-flow-api.json", import.meta.url), "utf8"));
 const month = "2026-10";
+test("monthly percentage uses the absolute gap over measured closing cash, independently of certification", () => {
+  const report = raw();
+  const gap = report.lines.find((r: { id: string }) => r.id === "reconciliation-gap").values[month];
+  const cash = report.lines.find((r: { id: string }) => r.id === "measured-cash").values[month];
+  Object.assign(cash, { value: null, known_value: "200", status: "partial" });
+  for (const value of ["1", "-1"]) {
+    Object.assign(gap, { value: null, known_value: value, status: "partial", quality: "estimate" });
+    const percentage = cashReconciliationPercentage(report, month);
+    assert.equal(percentage.label, "0.50%");
+    assert.equal(percentage.estimated, true);
+    assert.equal(cashReconciliationStatus(report, month).label, "Incomplete");
+  }
+  gap.known_value = "0.000001";
+  assert.equal(cashReconciliationPercentage(report, month).label, "0.00%");
+  assert.match(cashReconciliationPercentage(report, month).detail, /Higher precision: 5e-7%/);
+  assert.equal(cashReconciliationStatus(report, month).label, "Incomplete");
+});
+
+test("missing or nonpositive cash never becomes a zero percentage; future ratios remain blank", () => {
+  const report = raw();
+  const cash = report.lines.find((r: { id: string }) => r.id === "measured-cash").values[month];
+  for (const value of [null, "0", "-1"]) {
+    Object.assign(cash, { value: null, known_value: value });
+    assert.equal(cashReconciliationPercentage(report, month).label, "TBD");
+  }
+  cash.value = "100";
+  Object.assign(report.lines.find((r: { id: string }) => r.id === "reconciliation-gap").values[month], { value: null, known_value: null });
+  assert.equal(cashReconciliationPercentage(report, month).label, "TBD");
+  assert.equal(cashReconciliationPercentage(report, "2026-12").label, "—");
+});
 function complete() {
   const report = raw();
   report.monthly_coverage[month] = { classification_complete: true, missing_chains: [], partial_chains: [], token_registry_gaps: [], unclassified_events: 0, savings_failures: {}, allocation_basis_failures: {} };
