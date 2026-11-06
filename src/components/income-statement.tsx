@@ -128,7 +128,14 @@ export function IncomeStatement({
                   ) : (
                     <span className="statement-label">
                       <span className="row-toggle-spacer" aria-hidden="true" />
-                      <span>{row.label}</span>
+                      <span>
+                        {row.label}
+                        {row.id === "net-income" && (
+                          <small className="net-income-formula">
+                            Total net revenue − Total noninterest expense
+                          </small>
+                        )}
+                      </span>
                     </span>
                   )}
                 </th>
