@@ -1047,6 +1047,20 @@ footer {
   padding-top: 17px;
   padding-bottom: 17px;
 }
+.financial-table .section > .statement-section-cell {
+  position: static;
+  width: auto;
+  box-shadow: none;
+  padding: 18px 14px;
+  border-top: 8px solid var(--card);
+  font-weight: 600;
+}
+.statement-section-label {
+  position: sticky;
+  left: 14px;
+  width: max-content;
+  max-width: 100%;
+}
 .financial-table .subtotal th,
 .financial-table .subtotal td {
   background: var(--tint);

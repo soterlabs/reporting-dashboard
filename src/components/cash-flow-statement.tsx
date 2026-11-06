@@ -11,6 +11,7 @@ import { CashFlowReconciliation } from "./cash-flow-reconciliation";
 import type { FinancialStatement } from "@/lib/financial";
 import { name, type Prime } from "@/lib/reporting";
 import { FinancialNumber } from "./financial-number";
+import { StatementSectionRow } from "./statement-section-row";
 
 export function CashFlowStatement({ prime, year, month, months, report, financial, retained = false, message }: {
   prime: Prime; year: number; month: string; financial?: FinancialStatement | null; months: Month[]; report?: CashFlowReport | null; retained?: boolean; message?: string | null;
@@ -31,10 +32,12 @@ export function CashFlowStatement({ prime, year, month, months, report, financia
       return <FinancialNumber value={metricAmount(cell)} evidence={cell} future={future} detail={[cell?.reason,...(cell?.source_paths || [])].filter(Boolean).join(" · ")} uncertainReason={retained ? "Refresh failed; retained cash-flow publication" : p?.stale ? "Delayed cash-flow publication" : undefined} />;
     }
     return <div className="table-wrap financial-wrap" tabIndex={0} role="region" aria-label={checks ? "Cash flow reconciliation" : `${title} annual cash flow statement; scroll horizontally for all months`}>
-      <table className="financial-table"><thead><tr><th scope="col">Line item</th>{calendar.map(m=><th scope="col" key={m.key}>{m.label} {year}{m.state==="partial" && <small>MTD</small>}</th>)}<th scope="col" className="year-total">{calendar.every(m=>m.state==="complete") ? "FY" : "YTD"}</th></tr></thead>
-      <tbody>{visible.map(row=><tr key={row.id} data-row-id={row.id} data-depth={row.level} className={row.kind || (groups.has(row.id) ? "group" : "")}>
+      <table className="financial-table"><thead><tr><th scope="col" aria-label="Cash flow statement categories and items" />{calendar.map(m=><th scope="col" key={m.key}>{m.label} {year}{m.state==="partial" && <small>MTD</small>}</th>)}<th scope="col" className="year-total">{calendar.every(m=>m.state==="complete") ? "FY" : "YTD"}</th></tr></thead>
+      <tbody>{visible.map(row=>row.kind==="section" ? <StatementSectionRow key={row.id} id={row.id} depth={row.level} columns={calendar.length+2}>
+        {groups.has(row.id) ? <button className="row-toggle statement-label" aria-expanded={expanded.has(row.id)} onClick={()=>toggle(row.id)}>{expanded.has(row.id) ? <ChevronDown size={13}/> : <ChevronRight size={13}/>}<span>{row.label}</span></button> : row.label}
+      </StatementSectionRow> : <tr key={row.id} data-row-id={row.id} data-depth={row.level} className={row.kind || (groups.has(row.id) ? "group" : "")}>
         <th scope="row" style={{"--statement-depth":row.level} as CSSProperties}>{groups.has(row.id) ? <button className="row-toggle statement-label" aria-expanded={expanded.has(row.id)} onClick={()=>toggle(row.id)}>{expanded.has(row.id) ? <ChevronDown size={13}/> : <ChevronRight size={13}/>}<span>{row.label}</span></button> : <span className="statement-label"><span className="row-toggle-spacer" aria-hidden="true"/><span>{row.label}</span></span>}</th>
-        {calendar.map(m=><td key={m.key}>{row.kind!=="section" && number(row.id,m.key)}</td>)}<td className="year-total">{row.kind!=="section" && number(row.id)}</td></tr>)}</tbody></table></div>;
+        {calendar.map(m=><td key={m.key}>{number(row.id,m.key)}</td>)}<td className="year-total">{number(row.id)}</td></tr>)}</tbody></table></div>;
   }
   const coverage=Object.entries(report?.monthly_coverage || {}).filter(([,v])=>v);
   const missing=[...new Set(coverage.flatMap(([,v])=>v!.missing_chains))];
