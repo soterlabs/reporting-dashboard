@@ -309,7 +309,11 @@ this card does not fabricate those missing endpoints or certify a full statement
 The dashboard is fixed to 2026 and has no Year or Apply controls. Position months
 update immediately; the reconciliation card keeps its own month selector. Statement
 tables expand to their full height, with horizontal scrolling on narrow screens.
-Cash reconciliation details start open. Supporting allocation income and publication
+The annual **Cash reconciliation** table lives in its own **Reconciliation** tab
+and starts open. It uses the same pinned cash-flow publications and full Cash flow
+CSV export. Primes without event-backed cash-flow data show an unavailable message;
+the separate **Reconciliation checks** card remains on the Cash Flow Statement tab.
+Supporting allocation income and publication
 coverage cards are removed. Accounting/transaction source panels remain in the code
 but are hidden. Draft labels and repeated explanatory header lines are removed;
 the footer retains the USD denomination note. “Net gains on non-stable assets” is
