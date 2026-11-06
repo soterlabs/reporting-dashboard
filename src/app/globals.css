@@ -1040,20 +1040,22 @@ footer {
   white-space: normal;
   line-height: 1.45;
 }
-.financial-table .section th,
-.financial-table .section td {
-  background: var(--sidebar);
-  font-weight: 600;
-  padding-top: 17px;
-  padding-bottom: 17px;
-}
 .financial-table .section > .statement-section-cell {
   position: static;
   width: auto;
   box-shadow: none;
-  padding: 18px 14px;
-  border-top: 8px solid var(--card);
+  padding: 28px 14px 12px;
+  border: 0;
+  background: var(--card);
+  color: var(--fg);
   font-weight: 600;
+}
+.financial-table tbody tr:has(+ .section) > th,
+.financial-table tbody tr:has(+ .section) > td {
+  border-bottom: 0;
+}
+.financial-table tbody tr.section:hover > .statement-section-cell {
+  filter: none;
 }
 .statement-section-label {
   position: sticky;
