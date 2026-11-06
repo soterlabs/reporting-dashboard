@@ -219,10 +219,10 @@ export async function PrimeDashboard({
                     : "Prime agents combined · Inter-prime eliminations TBD."}
               </p>
             </div>
-            {(!cashView || (prime === "spark" && year === 2026)) && <a className="button export" href={`/api/export?${query}`}>
+            {(!cashView || (prime === "spark" && year === 2026)) ? <a className="button export" href={`/api/export?${query}`}>
               <ArrowDownToLine size={15} />
               {cashView ? "Cash flow CSV" : view === "income" ? "Statement CSV" : "Positions CSV"}
-            </a>}
+            </a> : <span className="button export export-placeholder" aria-hidden="true" />}
           </div>
 
           <div className="report-toolbar">

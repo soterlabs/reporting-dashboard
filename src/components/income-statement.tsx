@@ -56,7 +56,7 @@ export function IncomeStatement({
     });
   }
   return (
-    <section className="panel">
+    <section className="panel statement-panel">
       <div className="panel-heading">
         <div>
           <h2 className="statement-title">{title} income statement</h2>

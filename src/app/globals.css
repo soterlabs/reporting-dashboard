@@ -508,6 +508,17 @@ h2 {
   font-size: 18px;
   line-height: 1.35;
 }
+.statement-panel > .panel-heading {
+  min-height: 75px;
+}
+.export-placeholder {
+  visibility: hidden;
+}
+@media (max-width: 800px) {
+  .statement-panel > .panel-heading {
+    min-height: 84px;
+  }
+}
 .count {
   font-size: 10px;
   color: var(--muted);
