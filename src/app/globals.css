@@ -504,6 +504,10 @@ h2 {
   font-size: 11px;
   margin-top: 6px;
 }
+.panel-heading .statement-title {
+  font-size: 18px;
+  line-height: 1.35;
+}
 .count {
   font-size: 10px;
   color: var(--muted);
@@ -1074,6 +1078,9 @@ footer {
 .financial-table .subtotal td {
   background: var(--tint);
   font-weight: 600;
+}
+.financial-table tr.subtotal:is([data-row-id="noninterest-income"], [data-row-id="net-interest"]) > :is(th, td) {
+  font-weight: 400;
 }
 .financial-table .total th,
 .financial-table .total td {

@@ -59,7 +59,7 @@ export function IncomeStatement({
     <section className="panel">
       <div className="panel-heading">
         <div>
-          <h2>{title} income statement</h2>
+          <h2 className="statement-title">{title} income statement</h2>
         </div>
         <button
           className="button"
