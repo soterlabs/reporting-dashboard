@@ -1326,6 +1326,9 @@ footer {
   .app-shell .financial-table th, .app-shell .financial-table td { padding: 11px 4px; font-size: 10px; }
   .app-shell .financial-table tbody th { padding-inline-start: calc(8px + var(--statement-depth, 0) * 14px); font-size: 11px; }
   .app-shell .financial-table .year-total { width: 94px; }
+  .app-shell .cash-reconciliation-table { table-layout: auto; }
+  .app-shell .cash-reconciliation-table th:first-child { width: 220px; }
+  .app-shell .cash-reconciliation-table td.year-total { min-width: 0; }
 }
 .sidebar-toggle { border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--fg); padding: 7px; display: grid; place-items: center; }
 @media (max-width: 800px) {
