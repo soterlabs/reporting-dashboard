@@ -1077,13 +1077,8 @@ export function metricAmount(item?: Metric | null): string | null {
 
 export function statementMonthNote(
   month: Month,
-  period?: Pick<FinancialStatement["periods"][number], "actual_cutoff">,
 ): string | null {
-  if (month.state !== "partial") return null;
-  const cutoff = period?.actual_cutoff;
-  return cutoff
-    ? `MTD · ${new Date(`${cutoff}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })}`
-    : "MTD";
+  return month.state === "partial" ? "MTD" : null;
 }
 
 // Retained reports keep the API's period classification when the calendar advances.
@@ -1103,7 +1098,7 @@ export function statementTotalLabel(
   report: FinancialStatement | null | undefined,
   fallback: string,
 ) {
-  return report ? `${report.total_label} ${report.year}` : fallback;
+  return report?.total_label ?? fallback.replace(/\s+\d{4}$/, "");
 }
 
 export function positionAccruedIncome(

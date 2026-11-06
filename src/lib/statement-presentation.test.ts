@@ -59,18 +59,18 @@ test("available sums show numbers, losses and zeroes while unknown and future ce
   assert.equal(metricAmount(undefined), null);
 });
 
-test("month headers share the EOM convention and retain only the selected publication's MTD date", () => {
+test("month headers show only MTD for a partial publication", () => {
   const report = validateStatement(input, "grove", 2026);
   const months = statementMonths(
     report,
     yearMonths(2026, new Date("2027-01-05")),
   );
-  assert.equal(statementMonthNote(months[0], report.periods[0]), null);
+  assert.equal(statementMonthNote(months[0]), null);
   assert.equal(
-    statementMonthNote(months[9], report.periods[9]),
-    "MTD · Oct 27",
+    statementMonthNote(months[9]),
+    "MTD",
   );
-  assert.equal(statementMonthNote(months[10], report.periods[10]), null);
+  assert.equal(statementMonthNote(months[10]), null);
   assert.equal(statementMonthNote(months[9]), "MTD");
 });
 

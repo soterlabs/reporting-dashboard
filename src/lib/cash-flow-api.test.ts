@@ -43,6 +43,10 @@ test("cash-flow CSV uses API values, source selection, exact precision and futur
  assert.equal(row[10],metricAmount(doc.lines.find(r=>r.id==="buybacks")!.values["2026-10"]));
  assert.equal(row[11],"TBD");assert.equal(row[12],"—");assert.equal(row[h.indexOf("Selection")],doc.selection);
  assert.ok(!h.includes("Workbook total (control)"));assert.ok(h.includes("Monthly quality"));
+ const netCash=csv.find(r=>r[h.indexOf("Row ID")]==="net-cash-change")!;
+ assert.equal(netCash[0],"Net increase in cash and stablecoin balances");
+ assert.equal(netCash[10],metricAmount(doc.lines.find(r=>r.id==="net-cash-change")!.values["2026-10"]));
+ assert.equal(doc.lines.find(r=>r.id==="net-cash-change")!.label,"Net increase (decrease) in cash and stablecoin balances");
 });
 test("cumulative reconciliation and MSC balances cannot bypass arithmetic validation",()=>{
  for(const id of ["cumulative-gap","msc-receivable"]){

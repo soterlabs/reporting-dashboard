@@ -504,6 +504,21 @@ h2 {
   font-size: 11px;
   margin-top: 6px;
 }
+.panel-heading .statement-title {
+  font-size: 18px;
+  line-height: 1.35;
+}
+.statement-panel > .panel-heading {
+  min-height: 75px;
+}
+.export-placeholder {
+  visibility: hidden;
+}
+@media (max-width: 800px) {
+  .statement-panel > .panel-heading {
+    min-height: 84px;
+  }
+}
 .count {
   font-size: 10px;
   color: var(--muted);
@@ -1040,18 +1055,43 @@ footer {
   white-space: normal;
   line-height: 1.45;
 }
-.financial-table .section th,
-.financial-table .section td {
-  background: var(--sidebar);
+.financial-table .section > .statement-section-cell {
+  position: static;
+  width: auto;
+  box-shadow: none;
+  padding: 28px 14px 12px;
+  border: 0;
+  background: var(--card);
+  color: var(--fg);
+  font-size: 15px;
   font-weight: 600;
-  padding-top: 17px;
-  padding-bottom: 17px;
+}
+.financial-table tbody tr:has(+ .section) > th,
+.financial-table tbody tr:has(+ .section) > td {
+  border-bottom: 0;
+}
+.financial-table tbody tr.section:hover > .statement-section-cell {
+  filter: none;
+}
+.statement-section-label {
+  position: sticky;
+  left: 14px;
+  width: max-content;
+  max-width: 100%;
+}
+.financial-table .subtotal th,
+.financial-table .subtotal td,
+.financial-table .total th,
+.financial-table .total td {
+  border-top: 1px solid var(--border);
 }
 .financial-table .subtotal th,
 .financial-table .subtotal td {
   background: var(--tint);
   font-weight: 600;
-  border-top: 1px solid var(--border);
+}
+.financial-table tr.subtotal:is([data-row-id="noninterest-income"], [data-row-id="net-interest"]) > :is(th, td) {
+  font-weight: 400;
 }
 .financial-table .total th,
 .financial-table .total td {
@@ -1060,6 +1100,9 @@ footer {
   font-weight: 600;
   padding-top: 17px;
   padding-bottom: 17px;
+}
+.financial-table tr.total:is([data-row-id="net-income"], [data-row-id="net-cash-change"]) > :is(th, td) {
+  border-top: 16px solid #fff;
 }
 .financial-table .year-total {
   background: color-mix(in srgb, var(--tint) 65%, var(--card));
@@ -1085,6 +1128,14 @@ footer {
 }
 .statement-label > span:last-child {
   overflow-wrap: anywhere;
+}
+.financial-table .net-income-formula {
+  color: inherit;
+  opacity: 0.8;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
 }
 .row-toggle {
   padding: 0;
@@ -1286,6 +1337,9 @@ footer {
   .app-shell .financial-table th, .app-shell .financial-table td { padding: 11px 4px; font-size: 10px; }
   .app-shell .financial-table tbody th { padding-inline-start: calc(8px + var(--statement-depth, 0) * 14px); font-size: 11px; }
   .app-shell .financial-table .year-total { width: 94px; }
+  .app-shell .cash-reconciliation-table { table-layout: auto; }
+  .app-shell .cash-reconciliation-table th:first-child { width: 220px; }
+  .app-shell .cash-reconciliation-table td.year-total { min-width: 0; }
 }
 .sidebar-toggle { border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--fg); padding: 7px; display: grid; place-items: center; }
 @media (max-width: 800px) {

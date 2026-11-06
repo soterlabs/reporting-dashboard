@@ -84,24 +84,26 @@ export async function PrimeDashboard({
 }) {
   const scope: Scope = individualScope();
   const view: View =
+    param(search, "view") === "reconciliation" ? "reconciliation" :
     param(search, "view") === "cash-flow" ? "cash-flow" :
     param(search, "view") === "positions" ? "positions" : "income";
+  const cashView = view === "cash-flow" || view === "reconciliation";
   const year = 2026;
   const months = yearMonths(year);
   const month = chooseMonth(months, param(search, "month"));
   const title = scopeTitle(prime, scope);
-  const cashFlow = view === "cash-flow" && prime === "spark" && year === 2026 ? await cashFlowReport(prime,year) : null;
+  const cashFlow = cashView && prime === "spark" && year === 2026 ? await cashFlowReport(prime,year) : null;
   // Financial components are independent of the unclassified source schedule.
   const annual =
     view === "income" && scope === "individual"
       ? await annualReports(prime, year)
       : [];
   const fromAnnual = annual.find((r) => r.month.key === month.key);
-  const portfolios = view === "cash-flow" ? [] : fromAnnual
+  const portfolios = cashView ? [] : fromAnnual
     ? [{ prime, ...fromAnnual }]
     : await portfolioReports(prime, scope, month);
   const apiFinancial =
-    scope === "individual" && (view === "income" || view === "cash-flow")
+    scope === "individual" && view === "income"
       ? await financialStatements(prime, year)
       : null;
   const financial = apiFinancial
@@ -125,11 +127,11 @@ export async function PrimeDashboard({
   const query = new URLSearchParams({
     prime,
     scope,
-    view,
+    view: view === "reconciliation" ? "cash-flow" : view,
     year: String(year),
     month: month.key,
   });
-  if (view === "cash-flow") {
+  if (cashView) {
     query.set("cash_flow_selection",cashFlow?.report?.selection || "none");
   }
   if (financial?.report)
@@ -191,7 +193,7 @@ export async function PrimeDashboard({
           <Building2 size={23} />
           <div>
             <strong>Prime-agent reporting</strong>
-            <small>Financial statements & positions</small>
+            <small>Financial reporting</small>
           </div>
         </div>
       </aside>
@@ -212,16 +214,16 @@ export async function PrimeDashboard({
               <h1>{title}</h1>
               <p>
                 {scope === "individual"
-                  ? "Income, cash flow and investment positions."
+                  ? "Income, cash flow and reconciliation."
                   : scope === "group"
                     ? "Prime and controlled entities · Consolidation scope TBD."
                     : "Prime agents combined · Inter-prime eliminations TBD."}
               </p>
             </div>
-            {(view !== "cash-flow" || (prime === "spark" && year === 2026)) && <a className="button export" href={`/api/export?${query}`}>
+            {(!cashView || (prime === "spark" && year === 2026)) ? <a className="button export" href={`/api/export?${query}`}>
               <ArrowDownToLine size={15} />
-              {view === "cash-flow" ? "Cash flow CSV" : view === "income" ? "Statement CSV" : "Positions CSV"}
-            </a>}
+              {cashView ? "Cash flow CSV" : view === "income" ? "Statement CSV" : "Positions CSV"}
+            </a> : <span className="button export export-placeholder" aria-hidden="true" />}
           </div>
 
           <div className="report-toolbar">
@@ -241,11 +243,11 @@ export async function PrimeDashboard({
                 Cash Flow Statement
               </Link>
               <Link
-                href={reportHref(prime, scope, "positions", year, month.key)}
-                className={view === "positions" ? "selected" : ""}
-                aria-current={view === "positions" ? "page" : undefined}
+                href={reportHref(prime, scope, "reconciliation", year, month.key)}
+                className={view === "reconciliation" ? "selected" : ""}
+                aria-current={view === "reconciliation" ? "page" : undefined}
               >
-                Portfolio positions
+                Reconciliation
               </Link>
             </nav>
             {view === "positions" && <ReportingMonthSelect months={months} value={month.key} />}
@@ -267,7 +269,7 @@ export async function PrimeDashboard({
             </p>
           )}
           <FinancialLegend />
-          {view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${prime}:${year}`} prime={prime} year={year} month={month.key} financial={financial?.report} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
+          {view === "reconciliation" ? <CashFlowStatement reconciliationOnly key={`reconciliation:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
             <>
               <IncomeStatement
                 key={`${prime}:${year}`}
