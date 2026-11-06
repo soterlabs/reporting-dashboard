@@ -1084,7 +1084,7 @@ footer {
   padding-bottom: 17px;
 }
 .financial-table tr.total:is([data-row-id="net-income"], [data-row-id="net-cash-change"]) > :is(th, td) {
-  border-top: 4px solid #fff;
+  border-top: 16px solid #fff;
 }
 .financial-table .year-total {
   background: color-mix(in srgb, var(--tint) 65%, var(--card));
