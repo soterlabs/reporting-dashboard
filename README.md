@@ -272,44 +272,38 @@ Grove’s event-backed cash-flow statement is a separate onboarding step: its
 penalties and capital setoffs require net settlement classification and an
 approved opening receivable; Spark’s opening balance cannot be reused.
 
-## Cash-flow reconciliation card
+## Cash reconciliation tab
 
-Every individual prime has a Cash Flow Statement tab and six expandable checks:
-cash balance, Sky debt, MSC receivable, Sky settlement receipts, expense payments,
-and token buybacks. The card starts on the page’s selected month; its own Month selector switches
-checks without changing the annual table. Future months are disabled. Each check shows its
-formula, available inputs, tolerance and source links. No aggregate pass badge
-is inferred. Amounts remain neutral, rounded for display, with `*` on estimates.
+The Reconciliation tab contains one annual **<Prime> cash reconciliation** card,
+using the same 18px title style as the statement cards. Cash Flow Statement shows
+only the statement; the former six-check card is no longer rendered.
 
-A check passes only with complete, supported, current inputs. Partial, estimated,
-missing or retained-after-refresh-failure inputs stay **Not yet verifiable**,
-even when their known difference is zero. Complete comparisons outside tolerance
-show **Difference remains**. Cash reconciliation also requires complete scope and
-classification metadata, uses the workbook's 5m tolerance, and shares the sign of
-the existing measured-change-minus-statement gap. Settlement cash tolerance is
-one USD, applied to unrounded decimal amounts.
+The main table follows the workbook’s six-row check: measured closing cash,
+measured cash change, net cash change per statement, monthly gap, cumulative gap,
+and monthly status. The extra API rows stay under collapsed Diagnostics.
+The schedule compares observed cash change (closing minus opening cash)
+with net cash flow from operating, investing and financing activities. Their
+signed difference is the monthly reconciliation gap. Net income is adjusted for
+noncash items and timing before contributing to operating cash flow; it is not
+subtracted directly from the cash balance change. Partial sources, unclassified
+movements, bridge gaps and principal/yield attribution remain explicit. A zero
+known gap alone does not certify complete reconciliation. Status stays Incomplete
+for missing, estimated, delayed or unclassified inputs; complete supported inputs
+use the workbook’s 5m monthly tolerance. Status is not aggregated into YTD.
 
-Spark's observed settlement receipts are compared with the reviewed public MSC
-payment references in `settlement-cash-checks-2026.v1.json`, by **execution date**,
-not earned month. Multiple payments within a month are summed; absent references
-are unknown, never zero. References retain public forum links and post hashes.
-New MSC executions require a reviewed reference update. They are expected payments,
-not independently fetched transaction receipts.
-
-Grove currently has published expected MSC cash and provisional workbook expenses,
-but no event-backed cash-flow API publication. Its card displays these available
-inputs and explicitly identifies missing observed cash/debt evidence. Other primes
-have the same six checks without substituting Spark/Grove figures. Unsupported
-cash-flow exports are hidden. Debt, independent receivable, payables timing and
-Data Hub buyback comparisons remain unverifiable until those sources are published;
-this card does not fabricate those missing endpoints or certify a full statement.
+The API's retained selections, source hashes and cash flow CSV stay unchanged.
+Primes without event-backed cash flow publications show an unavailable message.
 
 ## Concise 2026 dashboard
 
 The dashboard is fixed to 2026 and has no Year or Apply controls. Position months
-update immediately; the reconciliation card keeps its own month selector. Statement
+update immediately. Statement
 tables expand to their full height, with horizontal scrolling on narrow screens.
-Cash reconciliation details start open. Supporting allocation income and publication
+The annual **Cash reconciliation** table lives in its own **Reconciliation** tab
+and starts open. It uses the same pinned cash-flow publications and full Cash flow
+CSV export. Primes without event-backed cash-flow data show an unavailable message;
+the former **Reconciliation checks** card is removed.
+Supporting allocation income and publication
 coverage cards are removed. Accounting/transaction source panels remain in the code
 but are hidden. Draft labels and repeated explanatory header lines are removed;
 the footer retains the USD denomination note. “Net gains on non-stable assets” is
