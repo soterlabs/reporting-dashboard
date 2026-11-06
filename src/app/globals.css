@@ -1048,6 +1048,7 @@ footer {
   border: 0;
   background: var(--card);
   color: var(--fg);
+  font-size: 15px;
   font-weight: 600;
 }
 .financial-table tbody tr:has(+ .section) > th,
@@ -1081,6 +1082,9 @@ footer {
   font-weight: 600;
   padding-top: 17px;
   padding-bottom: 17px;
+}
+.financial-table tr.total:is([data-row-id="net-income"], [data-row-id="net-cash-change"]) > :is(th, td) {
+  border-top: 4px solid #fff;
 }
 .financial-table .year-total {
   background: color-mix(in srgb, var(--tint) 65%, var(--card));
