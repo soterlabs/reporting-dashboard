@@ -83,17 +83,7 @@ export function IncomeStatement({
               {months.map((m) => (
                 <th scope="col" key={m.key}>
                   {m.label} {m.key.slice(0, 4)}
-                  {statementMonthNote(
-                    m,
-                    financial?.periods.find((p) => p.key === m.key),
-                  ) && (
-                    <small>
-                      {statementMonthNote(
-                        m,
-                        financial?.periods.find((p) => p.key === m.key),
-                      )}
-                    </small>
-                  )}
+                  {statementMonthNote(m) && <small>{statementMonthNote(m)}</small>}
                 </th>
               ))}
               <th scope="col" className="year-total">
@@ -138,7 +128,14 @@ export function IncomeStatement({
                   ) : (
                     <span className="statement-label">
                       <span className="row-toggle-spacer" aria-hidden="true" />
-                      <span>{row.label}</span>
+                      <span>
+                        {row.label}
+                        {row.id === "net-income" && (
+                          <small className="net-income-formula">
+                            Total net revenue − Total noninterest expense
+                          </small>
+                        )}
+                      </span>
                     </span>
                   )}
                 </th>

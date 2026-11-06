@@ -43,7 +43,7 @@ test("a retained October MTD statement keeps its labels and exact decimals after
     const months = statementMonths(statement, calendar);
     assert.equal(months[9].state, "partial");
     assert.equal(months[10].state, "future");
-    assert.equal(statementTotalLabel(statement, "FY 2026"), "YTD 2026");
+    assert.equal(statementTotalLabel(statement, "FY 2026"), "YTD");
     const rows = statementCsvRows(
       "obex",
       "individual",
@@ -54,7 +54,7 @@ test("a retained October MTD statement keeps its labels and exact decimals after
     );
     assert.equal(rows[0][12], "Oct 2026 MTD");
     assert.equal(rows[0][13], "Nov 2026");
-    assert.equal(rows[0][15], "YTD 2026");
+    assert.equal(rows[0][15], "YTD");
     const ar = rows.find((r) => r[2] === "AR (Agent rate)")!;
     assert.equal(ar[12], "12.000000000000000001");
     assert.equal(

@@ -1064,10 +1064,15 @@ footer {
   max-width: 100%;
 }
 .financial-table .subtotal th,
+.financial-table .subtotal td,
+.financial-table .total th,
+.financial-table .total td {
+  border-top: 1px solid var(--border);
+}
+.financial-table .subtotal th,
 .financial-table .subtotal td {
   background: var(--tint);
   font-weight: 600;
-  border-top: 1px solid var(--border);
 }
 .financial-table .total th,
 .financial-table .total td {
@@ -1101,6 +1106,14 @@ footer {
 }
 .statement-label > span:last-child {
   overflow-wrap: anywhere;
+}
+.financial-table .net-income-formula {
+  color: inherit;
+  opacity: 0.8;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
 }
 .row-toggle {
   padding: 0;
