@@ -307,7 +307,8 @@ preserving the prime and month. Position APIs and historical CSVs remain availab
 until a separate balance sheet replaces the view. Statement
 tables expand to their full height, with horizontal scrolling on narrow screens.
 The annual **Cash reconciliation** table lives in its own **Reconciliation** tab
-and starts open. It uses the same pinned cash-flow publications and full Cash flow
+and is always visible, without a collapse toggle. Statement cards share header
+heights and alignment across tabs. It uses the same pinned cash-flow publications and full Cash flow
 CSV export. Primes without event-backed cash-flow data show an unavailable message;
 the former **Reconciliation checks** card is removed.
 Supporting allocation income and publication
