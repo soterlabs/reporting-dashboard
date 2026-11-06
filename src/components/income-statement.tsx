@@ -10,6 +10,7 @@ import {
   type FinancialStatement,
 } from "@/lib/financial";
 import { FinancialNumber } from "./financial-number";
+import { StatementSectionRow } from "./statement-section-row";
 import {
   statementFinancialLine,
   statementRowUncertainty,
@@ -78,7 +79,7 @@ export function IncomeStatement({
         <table className="financial-table">
           <thead>
             <tr>
-              <th scope="col">Line item</th>
+              <th scope="col" aria-label="Income statement categories and items" />
               {months.map((m) => (
                 <th scope="col" key={m.key}>
                   {m.label} {m.key.slice(0, 4)}
@@ -101,7 +102,16 @@ export function IncomeStatement({
             </tr>
           </thead>
           <tbody>
-            {visibleStatementLines(rows, collapsed).map((row) => (
+            {visibleStatementLines(rows, collapsed).map((row) => row.kind === "section" ? (
+              <StatementSectionRow key={row.id} id={row.id} depth={row.level} columns={months.length + 2}>
+                {hasChildren(row.id) ? (
+                  <button className="row-toggle statement-label" aria-expanded={!collapsed.has(row.id)} onClick={() => toggle(row.id)}>
+                    {collapsed.has(row.id) ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
+                    <span>{row.label}</span>
+                  </button>
+                ) : row.label}
+              </StatementSectionRow>
+            ) : (
               <tr
                 key={row.id}
                 data-row-id={row.id}
@@ -140,7 +150,7 @@ export function IncomeStatement({
                       key={m.key}
                       title={metricExplanation(item, financial, labels)}
                     >
-                      {row.kind !== "section" && !row.structural && (
+                      {!row.structural && (
                         <FinancialNumber
                           value={metricAmount(item)}
                           evidence={item}
@@ -165,7 +175,7 @@ export function IncomeStatement({
                     labels,
                   )}
                 >
-                  {row.kind !== "section" && !row.structural && (
+                  {!row.structural && (
                     <FinancialNumber
                       value={metricAmount(values.get(row.id)?.total)}
                       evidence={values.get(row.id)?.total}
