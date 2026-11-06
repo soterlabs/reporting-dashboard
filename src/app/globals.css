@@ -511,6 +511,9 @@ h2 {
 .statement-panel > .panel-heading {
   min-height: 75px;
 }
+.export-placeholder {
+  visibility: hidden;
+}
 @media (max-width: 800px) {
   .statement-panel > .panel-heading {
     min-height: 84px;
