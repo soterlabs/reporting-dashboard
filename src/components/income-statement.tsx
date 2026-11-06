@@ -6,9 +6,9 @@ import {
   statementTotalLabel,
   metricExplanation,
   metricAmount,
-  statementMonthNote,
   type FinancialStatement,
 } from "@/lib/financial";
+import { StatementTableHeader } from "./statement-table-header";
 import { FinancialNumber } from "./financial-number";
 import { StatementSectionRow } from "./statement-section-row";
 import {
@@ -77,20 +77,9 @@ export function IncomeStatement({
         aria-label={`${title} annual income statement; scroll horizontally for all months`}
       >
         <table className="financial-table">
-          <thead>
-            <tr>
-              <th scope="col" aria-label="Income statement categories and items" />
-              {months.map((m) => (
-                <th scope="col" key={m.key}>
-                  {m.label} {m.key.slice(0, 4)}
-                  {statementMonthNote(m) && <small>{statementMonthNote(m)}</small>}
-                </th>
-              ))}
-              <th scope="col" className="year-total">
-                {statementTotalLabel(financial, totalLabel(months))}
-              </th>
-            </tr>
-          </thead>
+          <StatementTableHeader months={months} label="Income statement categories and items"
+            totalLabel={statementTotalLabel(financial, totalLabel(months))}
+            totalsThrough={financial?.dashboard_composition?.totals_through} />
           <tbody>
             {visibleStatementLines(rows, collapsed).map((row) => row.kind === "section" ? (
               <StatementSectionRow key={row.id} id={row.id} depth={row.level} columns={months.length + 2}>

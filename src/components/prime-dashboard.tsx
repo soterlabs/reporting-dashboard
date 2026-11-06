@@ -22,7 +22,6 @@ import { FinancialNumber, FinancialLegend } from "./financial-number";
 import { venueEvidence, readUncertainty } from "@/lib/number-confidence";
 import { ArchiveIncome } from "./archive-income";
 import { OffchainAccruals } from "./offchain-accruals";
-import { SparkMscBridge } from "./spark-msc-bridge";
 import { IncomeStatement } from "./income-statement";
 import { ReportingRefresh } from "./reporting-refresh";
 import { annualReports, portfolioReports } from "@/lib/report-data";
@@ -104,10 +103,10 @@ export async function PrimeDashboard({
     : await portfolioReports(prime, scope, month);
   const apiFinancial =
     scope === "individual" && view === "income"
-      ? await financialStatements(prime, year, undefined, prime === "spark" ? expenseReportingCutoff(prime) : undefined)
+      ? await financialStatements(prime, year)
       : null;
   const financial = apiFinancial
-    ? { ...apiFinancial, report: withPrimeExpenses(prime, year, apiFinancial.report, months) || null }
+    ? { ...apiFinancial, report: withPrimeExpenses(prime, year, apiFinancial.report, months, undefined, undefined, expenseReportingCutoff(prime)) || null }
     : null;
   const sourcePortfolio = portfolios[0];
   const positionFinancial =
@@ -141,6 +140,8 @@ export async function PrimeDashboard({
     query.set("financial_revision", financial.report.dashboard_composition.api_selection || "none");
     query.set("expense_as_of", financial.report.as_of);
     query.set("display_hash", financial.report.dashboard_composition.display_hash);
+    if (financial.report.dashboard_composition.totals_through)
+      query.set("totals_through", financial.report.dashboard_composition.totals_through);
   }
   if (view === "positions" && scope === "individual") {
     query.set(
@@ -283,7 +284,6 @@ export async function PrimeDashboard({
                 financial={financial?.report}
                 retained={financial?.retained}
               />
-              {prime === "spark" && <SparkMscBridge key={`msc:${year}:${financial?.report?.selection}`} report={financial?.report} />}
               <OffchainAccruals
                 report={financial?.report}
                 retained={financial?.retained}

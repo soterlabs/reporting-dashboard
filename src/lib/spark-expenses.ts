@@ -96,7 +96,7 @@ function fallback(year: number, calendar: Month[], asOf?: string,prime:Prime="sp
 }
 
 export function withPrimeExpenses(prime: Prime, year: number, input: FinancialStatement | null | undefined,
-  calendar: Month[] = yearMonths(year), revision?:string, asOf?: string): FinancialStatement | null | undefined {
+  calendar: Month[] = yearMonths(year), revision?:string, asOf?: string, totalsThrough?: string): FinancialStatement | null | undefined {
   if (!["spark","grove"].includes(prime) || year !== 2026) {
     if (revision !== undefined) throw new Error("Expense snapshot is unavailable for this prime/year");
     return input;
@@ -115,6 +115,14 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
   check(!input?.dashboard_composition, "composition requires the original API input");
   check(!input || (input.prime === prime && input.year === year), "API input perimeter differs");
   const report = structuredClone(input || fallback(year, calendar, asOf,prime,policy));
+  // Monthly cells follow the live API. Optionally align YTD with completed
+  // expense months; old pinned exports omit this option and remain reproducible.
+  if (totalsThrough) {
+    check(prime === "spark" && /^2026-\d{2}-\d{2}$/.test(totalsThrough) &&
+      totalsThrough === new Date(Date.UTC(2026, Number(totalsThrough.slice(5, 7)), 0)).toISOString().slice(0, 10) &&
+      totalsThrough <= (expenseReportingCutoff(prime) || ""), "invalid YTD expense cutoff");
+    totalsThrough = totalsThrough < report.as_of ? totalsThrough : report.as_of;
+  }
   const originalRows = report.statement_rows || statementLines(prime, "individual", input).map(r => {
     const line = statementFinancialLine(input, r);
     if (line && !report.lines.some(l => l.id === line.id)) report.lines.push(structuredClone(line));
@@ -166,6 +174,18 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
     components: [{ id: "statement.net_revenue", sign: 1 }, { id: "expenses.total", sign: -1 }], values: netValues, total: total(netValues, report.periods) });
   report.lines = report.lines.filter(l=>!local.has(l.id));
   report.lines.push(...local.values());
+  if (totalsThrough) {
+    const included = report.periods.filter(p => p.state !== "future" && p.key <= totalsThrough!.slice(0, 7));
+    for (const line of report.lines) {
+      const cells = included.map(p => line.values[p.key]).filter((c): c is Metric => !!c);
+      const summed = total(line.values, included);
+      line.total = { ...summed,
+        basis: `dashboard_ytd_through_${totalsThrough}`,
+        recognition: new Set(cells.map(c => c.recognition)).size === 1 ? cells[0].recognition : "mixed_management_components",
+        quality: cells.some(c => c.quality === "estimate") ? "estimate" : cells.length && cells.every(c => c.quality === "supported") ? "supported" : undefined,
+      };
+    }
+  }
   const expenseStart = originalRows.findIndex(r => r.id === "expenses");
   const layout = expenseStart >= 0 ? originalRows.slice(0, expenseStart) : originalRows.filter(r => r.id !== "net-income");
   layout.push({ id: "expenses", label: "Expenses", parent: null, depth: 0, kind: "section", metric_id: null });
@@ -185,15 +205,16 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
   report.dashboard_composition = { policy_version: policy, expense_revision: revision,
     expense_source: { ...data.source, data_file: `src/lib/data/${data.id}.json` },
     api_report_hash: input?.report_hash || null, api_selection: input?.selection || null,
-    local_metric_ids: [...local.keys()], display_hash: hash({ policy, revision, api: input?.report_hash || null, as_of: report.as_of, lines: [...local.values()], layout }) };
+    ...(totalsThrough ? { totals_through: totalsThrough } : {}),
+    local_metric_ids: [...local.keys()], display_hash: hash({ policy, revision, api: input?.report_hash || null, as_of: report.as_of, lines: [...local.values()], layout, ...(totalsThrough ? { totals_through: totalsThrough, totals: report.lines.map(l => [l.id, l.total]) } : {}) }) };
   return report;
 }
 
 // Preserve callers and pinned Spark exports from the original expense import.
 export const withSparkExpenses=withPrimeExpenses;
 
-// Use the last supplied expense month for Spark's live income view. Pinned exports
-// retain their selected API cutoff; advancing the sheet advances the live view.
+// Last supplied expense month for comparable Spark YTD totals. Monthly cells
+// retain the live API cutoff; advancing the sheet advances comparable totals.
 export function expenseReportingCutoff(prime: Prime): string | undefined {
   if (prime !== "spark") return undefined;
   const available = months.filter(m=>snapshot.lines.filter(l=>l.id!=="expenses.total").every(l=>l.values[m]!==null));

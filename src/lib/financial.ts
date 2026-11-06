@@ -131,6 +131,7 @@ export interface FinancialStatement {
     api_selection: string | null;
     display_hash: string;
     local_metric_ids: string[];
+    totals_through?: string;
   };
   pending_expense_inputs?: { id: string; reason: string }[];
   accounting_rules?: string;

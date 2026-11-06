@@ -8,6 +8,7 @@ import { collapsedStatementGroups, type Month, type StatementLine } from "@/lib/
 import { visibleStatementLines } from "@/lib/statement-layout";
 import { metricAmount } from "@/lib/financial";
 import { name, type Prime } from "@/lib/reporting";
+import { StatementTableHeader } from "./statement-table-header";
 import { FinancialNumber } from "./financial-number";
 import { StatementSectionRow } from "./statement-section-row";
 import { cashReconciliationRows, cashReconciliationStatus, cashReconciliationPercentage } from "@/lib/cash-reconciliation";
@@ -40,7 +41,7 @@ export function CashFlowStatement({ prime, year, months, report, retained = fals
       return <FinancialNumber value={metricAmount(cell)} evidence={cell} future={future} detail={[cell?.reason,...(cell?.source_paths || [])].filter(Boolean).join(" · ")} uncertainReason={retained ? "Refresh failed; retained cash-flow publication" : p?.stale ? "Delayed cash-flow publication" : undefined} />;
     }
     return <div className="table-wrap financial-wrap" tabIndex={0} role="region" aria-label={checks ? "Cash flow reconciliation" : `${title} annual cash flow statement; scroll horizontally for all months`}>
-      <table className={`financial-table${mode === "reconciliation" ? " cash-reconciliation-table" : ""}`}><thead><tr><th scope="col" aria-label="Cash flow statement categories and items" />{calendar.map(m=><th scope="col" key={m.key}>{m.label} {year}{m.state==="partial" && <small>MTD</small>}</th>)}<th scope="col" className="year-total">{calendar.every(m=>m.state==="complete") ? "FY" : "YTD"}</th></tr></thead>
+      <table className={`financial-table${mode === "reconciliation" ? " cash-reconciliation-table" : ""}`}><StatementTableHeader months={calendar} label={checks ? "Cash reconciliation categories and items" : "Cash flow statement categories and items"} totalLabel={calendar.every(m=>m.state==="complete") ? "FY" : "YTD"} />
       <tbody>{visible.map(row=>row.kind==="section" ? <StatementSectionRow key={row.id} id={row.id} depth={row.level} columns={calendar.length+2}>
         {groups.has(row.id) ? <button className="row-toggle statement-label" aria-expanded={expanded.has(row.id)} onClick={()=>toggle(row.id)}>{expanded.has(row.id) ? <ChevronDown size={13}/> : <ChevronRight size={13}/>}<span>{row.label}</span></button> : row.label}
       </StatementSectionRow> : <tr key={row.id} data-row-id={row.id} data-depth={row.level} className={row.kind || (groups.has(row.id) ? "group" : "")}>
