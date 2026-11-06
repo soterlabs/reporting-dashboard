@@ -102,7 +102,7 @@ export async function PrimeDashboard({
     ? [{ prime, ...fromAnnual }]
     : await portfolioReports(prime, scope, month);
   const apiFinancial =
-    scope === "individual" && (view === "income" || view === "cash-flow")
+    scope === "individual" && view === "income"
       ? await financialStatements(prime, year)
       : null;
   const financial = apiFinancial
@@ -275,7 +275,7 @@ export async function PrimeDashboard({
             </p>
           )}
           <FinancialLegend />
-          {view === "reconciliation" ? <CashFlowStatement reconciliationOnly key={`reconciliation:${prime}:${year}`} prime={prime} year={year} month={month.key} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${prime}:${year}`} prime={prime} year={year} month={month.key} financial={financial?.report} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
+          {view === "reconciliation" ? <CashFlowStatement reconciliationOnly key={`reconciliation:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
             <>
               <IncomeStatement
                 key={`${prime}:${year}`}
