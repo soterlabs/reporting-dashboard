@@ -192,7 +192,7 @@ export async function PrimeDashboard({
           <Building2 size={23} />
           <div>
             <strong>Prime-agent reporting</strong>
-            <small>Financial statements & positions</small>
+            <small>Financial reporting</small>
           </div>
         </div>
       </aside>
@@ -213,7 +213,7 @@ export async function PrimeDashboard({
               <h1>{title}</h1>
               <p>
                 {scope === "individual"
-                  ? "Income, cash flow and investment positions."
+                  ? "Income, cash flow and reconciliation."
                   : scope === "group"
                     ? "Prime and controlled entities · Consolidation scope TBD."
                     : "Prime agents combined · Inter-prime eliminations TBD."}
@@ -247,13 +247,6 @@ export async function PrimeDashboard({
                 aria-current={view === "reconciliation" ? "page" : undefined}
               >
                 Reconciliation
-              </Link>
-              <Link
-                href={reportHref(prime, scope, "positions", year, month.key)}
-                className={view === "positions" ? "selected" : ""}
-                aria-current={view === "positions" ? "page" : undefined}
-              >
-                Portfolio positions
               </Link>
             </nav>
             {view === "positions" && <ReportingMonthSelect months={months} value={month.key} />}

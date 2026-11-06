@@ -278,9 +278,14 @@ The Reconciliation tab contains one annual **<Prime> cash reconciliation** card,
 using the same 18px title style as the statement cards. Cash Flow Statement shows
 only the statement; the former six-check card is no longer rendered.
 
-The main table follows the workbook’s six-row check: measured closing cash,
-measured cash change, net cash change per statement, monthly gap, cumulative gap,
-and monthly status. The extra API rows stay under collapsed Diagnostics.
+The main table uses six rows: measured closing cash,
+measured cash change, net cash change per statement, monthly gap, reconciliation
+gap (%), and monthly status. The percentage is absolute monthly gap divided by
+measured closing cash, displayed to two decimals. Missing or nonpositive closing
+cash yields TBD, and the monthly ratio is not aggregated into YTD. A displayed
+0.00% does not certify classification or complete inputs. Diagnostics is removed
+from the UI; cumulative gap and the other supporting values remain available in
+the reporting API and full cash flow CSV export.
 The schedule compares observed cash change (closing minus opening cash)
 with net cash flow from operating, investing and financing activities. Their
 signed difference is the monthly reconciliation gap. Net income is adjusted for
@@ -296,8 +301,10 @@ Primes without event-backed cash flow publications show an unavailable message.
 
 ## Concise 2026 dashboard
 
-The dashboard is fixed to 2026 and has no Year or Apply controls. Position months
-update immediately. Statement
+The dashboard is fixed to 2026 and has no Year or Apply controls. Portfolio positions
+is removed from navigation; legacy view links redirect to Income Statement while
+preserving the prime and month. Position APIs and historical CSVs remain available
+until a separate balance sheet replaces the view. Statement
 tables expand to their full height, with horizontal scrolling on narrow screens.
 The annual **Cash reconciliation** table lives in its own **Reconciliation** tab
 and starts open. It uses the same pinned cash-flow publications and full Cash flow
