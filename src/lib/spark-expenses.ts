@@ -118,10 +118,12 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
   // Monthly cells follow the live API. Optionally align YTD with completed
   // expense months; old pinned exports omit this option and remain reproducible.
   if (totalsThrough) {
-    check(prime === "spark" && /^2026-\d{2}-\d{2}$/.test(totalsThrough) &&
-      totalsThrough === new Date(Date.UTC(2026, Number(totalsThrough.slice(5, 7)), 0)).toISOString().slice(0, 10) &&
+    check(prime === "spark" && (totalsThrough === "2025-12-31" || /^2026-\d{2}-\d{2}$/.test(totalsThrough)) &&
+      totalsThrough === new Date(Date.UTC(Number(totalsThrough.slice(0, 4)), Number(totalsThrough.slice(5, 7)), 0)).toISOString().slice(0, 10) &&
       totalsThrough <= (expenseReportingCutoff(prime) || ""), "invalid YTD expense cutoff");
-    totalsThrough = totalsThrough < report.as_of ? totalsThrough : report.as_of;
+    const limit = totalsThrough < report.as_of ? totalsThrough : report.as_of;
+    const end = new Date(Date.UTC(Number(limit.slice(0, 4)), Number(limit.slice(5, 7)), 0)).toISOString().slice(0, 10);
+    totalsThrough = limit === end ? end : new Date(Date.UTC(Number(limit.slice(0, 4)), Number(limit.slice(5, 7)) - 1, 0)).toISOString().slice(0, 10);
   }
   const originalRows = report.statement_rows || statementLines(prime, "individual", input).map(r => {
     const line = statementFinancialLine(input, r);
@@ -181,6 +183,7 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
       const summed = total(line.values, included);
       line.total = { ...summed,
         basis: `dashboard_ytd_through_${totalsThrough}`,
+        reason: summed.status === "available" ? "dashboard_sum_of_matching_months" : "missing_monthly_components",
         recognition: new Set(cells.map(c => c.recognition)).size === 1 ? cells[0].recognition : "mixed_management_components",
         quality: cells.some(c => c.quality === "estimate") ? "estimate" : cells.length && cells.every(c => c.quality === "supported") ? "supported" : undefined,
       };

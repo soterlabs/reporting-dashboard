@@ -153,7 +153,9 @@ export function statementCsvRows(
         row.id,
         row.parent || "",
         row.level,
-        local
+        composition?.totals_through
+          ? `YTD sums monthly values through ${composition.totals_through}; monthly API values and provisional workbook expenses retain their own sources`
+          : local
           ? line!.id === "dashboard.net_income"
             ? "Dashboard net revenue less provisional expenses, summed over matching months"
             : "Provisional workbook expense; subtotals use disjoint leaf amounts"
