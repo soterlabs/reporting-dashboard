@@ -278,13 +278,18 @@ The Reconciliation tab contains one annual **<Prime> cash reconciliation** card,
 using the same 18px title style as the statement cards. Cash Flow Statement shows
 only the statement; the former six-check card is no longer rendered.
 
-The annual schedule compares observed cash change (closing minus opening cash)
+The main table follows the workbook’s six-row check: measured closing cash,
+measured cash change, net cash change per statement, monthly gap, cumulative gap,
+and monthly status. The extra API rows stay under collapsed Diagnostics.
+The schedule compares observed cash change (closing minus opening cash)
 with net cash flow from operating, investing and financing activities. Their
 signed difference is the monthly reconciliation gap. Net income is adjusted for
 noncash items and timing before contributing to operating cash flow; it is not
 subtracted directly from the cash balance change. Partial sources, unclassified
 movements, bridge gaps and principal/yield attribution remain explicit. A zero
-known gap alone does not certify complete reconciliation.
+known gap alone does not certify complete reconciliation. Status stays Incomplete
+for missing, estimated, delayed or unclassified inputs; complete supported inputs
+use the workbook’s 5m monthly tolerance. Status is not aggregated into YTD.
 
 The API's retained selections, source hashes and cash flow CSV stay unchanged.
 Primes without event-backed cash flow publications show an unavailable message.
