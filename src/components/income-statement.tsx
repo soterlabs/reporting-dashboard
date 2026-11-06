@@ -83,17 +83,7 @@ export function IncomeStatement({
               {months.map((m) => (
                 <th scope="col" key={m.key}>
                   {m.label} {m.key.slice(0, 4)}
-                  {statementMonthNote(
-                    m,
-                    financial?.periods.find((p) => p.key === m.key),
-                  ) && (
-                    <small>
-                      {statementMonthNote(
-                        m,
-                        financial?.periods.find((p) => p.key === m.key),
-                      )}
-                    </small>
-                  )}
+                  {statementMonthNote(m) && <small>{statementMonthNote(m)}</small>}
                 </th>
               ))}
               <th scope="col" className="year-total">
