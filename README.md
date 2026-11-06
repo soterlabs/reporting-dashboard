@@ -336,3 +336,5 @@ balances. September's historical SparkLend fee true-up is not new reporting inco
 Deploy the settlement-cycle v3.10 API before this dashboard change to populate
 the card. Older API responses continue to render without it. No production
 backfill or publication is performed by the dashboard.
+
+Spark live income requests use `accounting=true` and the last supplied expense month as cutoff. The opt-in keeps older deployed dashboard clients compatible while the API and UI roll out. October DR remains TBD until published. Contributor SPK compensation comes from the independently versioned API expense input; staff functions still contribute to totals but are hidden below the two displayed expense levels.
