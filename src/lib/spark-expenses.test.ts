@@ -83,16 +83,16 @@ test("all imported amounts and derived results are provisional orange; real zero
   assert.equal(risk.values["2026-12"].status,"future");
 });
 
-test("staff functions and external-service detail retain indentation and a unique place in the hierarchy", () => {
+test("expense display has two levels while staff functions still feed calculations", () => {
   const r=withSparkExpenses("spark",2026,input(),calendar)!;
   const rows=statementLines("spark","individual",r);
   assert.equal(new Set(rows.map(r=>r.id)).size,rows.length);
-  const staff=rows.find(l=>l.id==="expenses.compensation.engineering")!;
-  assert.equal(staff.parent,"expenses.compensation");assert.equal(staff.level,3);
+  assert.equal(rows.find(l=>l.id==="expenses.compensation.engineering"),undefined);
+  assert.notEqual(line(r,"expenses.compensation.engineering").values["2026-01"].value,null);
   assert.equal(rows.find(l=>l.id==="expenses.compensation")!.parent,"operating");
-  assert.equal(rows.find(l=>l.id==="expenses.external_services.legal")!.level,3);
+  assert.equal(rows.find(l=>l.id==="expenses.external_services.legal"),undefined);
   assert.equal(rows.find(l=>l.id==="net-income")!.metricId,"dashboard.net_income");
-  assert.match(statementRowUncertainty(r,staff,"2026-01",true)!,/Provisional workbook/);
+  assert.match(statementRowUncertainty(r,rows.find(l=>l.id==="expenses.compensation")!,"2026-01",true)!,/Provisional workbook/);
 });
 
 test("a retained MTD report never imports the later full-month workbook expense, even after calendar rollover", () => {

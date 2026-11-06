@@ -40,6 +40,7 @@ export interface Metric {
   reason: string | null;
   source_paths: string[];
   source_ref?: string;
+  input_revision?: string;
   source_refs?: string[];
   missing_components?: string[];
   component_ids?: string[];
@@ -56,7 +57,8 @@ export interface Metric {
     sky_share_basis:
       | "published_rounded_percentage"
       | "saved_source_share"
-      | "not_applicable_empty_position";
+      | "not_applicable_empty_position"
+      | "effective_dated_designated_exposure";
     rounding_delta_usd: string;
     sky_share_excluded_income_usd?: string;
   };
@@ -130,6 +132,9 @@ export interface FinancialStatement {
     display_hash: string;
     local_metric_ids: string[];
   };
+  pending_expense_inputs?: { id: string; reason: string }[];
+  accounting_rules?: string;
+  expense_input_revision?: string;
   statement_rows?: {
     id: string;
     label: string;
@@ -281,7 +286,7 @@ function metric(v: Metric) {
       ),
     );
     requireValue(
-      ["published_rounded_percentage", "saved_source_share", "not_applicable_empty_position"].includes(
+      ["published_rounded_percentage", "saved_source_share", "not_applicable_empty_position", "effective_dated_designated_exposure"].includes(
         split.sky_share_basis,
       ),
     );
@@ -620,7 +625,7 @@ export function validateStatement(
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
-        (v.policy_version === sparkReconciledPolicy && l.id === "gains.sparklend_nonstable") ||
+        (v.policy_version === sparkReconciledPolicy && (l.id === "gains.sparklend_nonstable" || (["revaluation.sparklend_assets", "funding.sky.net"].includes(l.id) && Array.isArray(l.components)))) ||
         (completeSpark &&
           ((l.id.startsWith("funding.savings") &&
             l.aggregation === "subtotal") ||
@@ -649,6 +654,10 @@ export function validateStatement(
       const cell = l.values[p.key];
       metric(cell);
       requireValue((cell.status === "future") === (p.state === "future"));
+      if (v.policy_version === sparkReconciledPolicy && l.id === "expenses.compensation.spk") {
+        requireValue(hash(v.expense_input_revision) && cell.input_revision === v.expense_input_revision);
+        continue; // Authored expense input has its own revision, not an unrelated chain publication.
+      }
       requireValue(
         p.financial_revision !== null ||
           (monthly && p.monthly_revision !== null) ||
@@ -689,6 +698,9 @@ export function validateStatement(
                         "investment.sparklend.weth",
                         "investment.morpho.sentora_rlusd",
                       ].includes(l.id))) ||
+                  l.id.startsWith("rewards.treasury.") ||
+                  l.id === "funding.sky.sde_adjustment" ||
+                  l.id === "funding.sky.retained" ||
                   l.id.startsWith("rewards.lending.sparklend.") ||
                   l.id === "rewards.unattributed_sparklend_receipts" ||
                   (sparkHistoryPolicies.includes(v.policy_version) &&
@@ -730,6 +742,8 @@ export function validateStatement(
             ].every((n) => n !== null && new SplitDecimal(n!).eq(0));
           requireValue(
             emptyPosition ||
+              (v.policy_version === sparkReconciledPolicy && source.kind === "spark_onchain_components"
+                && split.sky_share_basis === "effective_dated_designated_exposure") ||
               split.sky_share_basis ===
                 (rounded
                   ? "published_rounded_percentage"
@@ -741,8 +755,8 @@ export function validateStatement(
             ),
           );
           requireValue(
-            new SplitDecimal(split.sky_share).gte(0) &&
-              new SplitDecimal(split.sky_share).lte(1),
+            split.sky_share_basis === "effective_dated_designated_exposure" ||
+              (new SplitDecimal(split.sky_share).gte(0) && new SplitDecimal(split.sky_share).lte(1)),
           );
           const delta = new SplitDecimal(split.gross_income_usd)
             .minus(split.prime_income_usd)
@@ -785,6 +799,7 @@ export function validateStatement(
               "demand.distribution_rewards",
               "demand.total",
               "funding.sky.net",
+              ...(v.policy_version === sparkReconciledPolicy ? ["funding.sky.retained"] : []),
               ...(prime === "skybase" ? ["demand.gar"] : []),
               ...(prime === "grove" ? ["demand.chronicle_points"] : []),
               ...(prime === "spark" &&

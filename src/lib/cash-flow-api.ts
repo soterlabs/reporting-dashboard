@@ -50,8 +50,8 @@ function checkSum(cell: Metric, cells: Metric[]) {
   requireValue(cell.status===expected.status && (actual===null ? expected.amount===null : expected.amount!==null && new D(actual).equals(expected.amount)),"subtotal or coverage");
 }
 const children: Record<string,string[]> = {
-  "non-cash":["token-incentives","non-stable-gains","non-stable-transfers","other-non-cash"], receivables:["earned-not-received","sky-allocation-receipts","sky-demand-receipts","external-receipts"], payables:["expenses-booked","expenses-paid"],
-  "net-operating":["net-income","non-cash","receivables","payables"],"net-investing":["allocation-changes","investments"],"net-financing":["usds-drawn","deposits","sky-contributions","buybacks"],"net-cash-change":["net-operating","net-investing","net-financing"],
+  "non-cash":["issuer-rewards-noncash","token-incentives","contributor-spk","non-stable-gains","non-stable-transfers","other-non-cash"], receivables:["earned-not-received","sky-allocation-receipts","sky-demand-receipts","external-receipts"], payables:["expenses-booked","expenses-paid","savings-interest-paid"],
+  "net-operating":["net-income","non-cash","receivables","payables"],"net-investing":["allocation-changes","investments","sky-direct-deployments","treasury-disposals"],"net-financing":["usds-drawn","deposits","sky-contributions","buybacks"],"net-cash-change":["net-operating","net-investing","net-financing"],
 };
 export function validateCashFlow(value: unknown, prime: Prime, year: number, revision?: string): CashFlowReport {
   const doc=value as CashFlowReport;
@@ -66,7 +66,7 @@ export function validateCashFlow(value: unknown, prime: Prime, year: number, rev
   requireValue(doc.methodology?.opening_msc_receivable==="7071339","opening MSC receivable");
   requireValue(Array.isArray(doc.periods) && doc.periods.length===12 && Array.isArray(doc.lines) && doc.source_manifest && doc.monthly_coverage,"structure");
   const byId=new Map(doc.lines.map(r=>[r.id,r]));
-  requireValue(byId.size===doc.lines.length && Object.entries(children).every(([p,cs])=>byId.has(p) && cs.every(id=>byId.has(id))),"line identities");
+  requireValue(byId.size===doc.lines.length && Object.entries(children).every(([p,cs])=>byId.has(p) && cs.every(id=>byId.has(id) || ["issuer-rewards-noncash","contributor-spk","savings-interest-paid","sky-direct-deployments","treasury-disposals"].includes(id))),"line identities");
   doc.periods.forEach((p,i)=>{
     requireValue(p.key===`${year}-${String(i+1).padStart(2,"0")}` && p.revision===selected.revisions[i] && ["complete","partial","future"].includes(p.state),"period identity");
     const first=p.key+"-01",last=new Date(Date.UTC(year,i+1,0)).toISOString().slice(0,10);
@@ -97,7 +97,7 @@ export function validateCashFlow(value: unknown, prime: Prime, year: number, rev
       checkSum(row.total,chosen.map(p=>row.values[p.key]));
     }
   }
-  for(const [parent,ids] of Object.entries(children)) for(const p of doc.periods.filter(p=>p.state!=="future")) checkSum(byId.get(parent)!.values[p.key],ids.map(id=>byId.get(id)!.values[p.key]));
+  for(const [parent,ids] of Object.entries(children)) for(const p of doc.periods.filter(p=>p.state!=="future")) checkSum(byId.get(parent)!.values[p.key],ids.filter(id=>byId.has(id)).map(id=>byId.get(id)!.values[p.key]));
   for(const [id,opening,parts] of [
     ["cumulative-gap","0",[["reconciliation-gap",1]]],
     ["msc-receivable","7071339",[["earned-not-received",-1],["sky-allocation-receipts",-1],["sky-demand-receipts",-1]]],

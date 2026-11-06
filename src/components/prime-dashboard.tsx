@@ -7,7 +7,7 @@ import { financialStatements, financialPortfolio, cashFlowReport } from "@/lib/a
 import { ReportingShell } from "./reporting-shell";
 import { CashFlowStatement } from "./cash-flow-statement";
 
-import { withPrimeExpenses } from "@/lib/spark-expenses";
+import { withPrimeExpenses, expenseReportingCutoff } from "@/lib/spark-expenses";
 import Link from "next/link";
 import {
   ArrowDownToLine,
@@ -104,7 +104,7 @@ export async function PrimeDashboard({
     : await portfolioReports(prime, scope, month);
   const apiFinancial =
     scope === "individual" && view === "income"
-      ? await financialStatements(prime, year)
+      ? await financialStatements(prime, year, undefined, prime === "spark" ? expenseReportingCutoff(prime) : undefined)
       : null;
   const financial = apiFinancial
     ? { ...apiFinancial, report: withPrimeExpenses(prime, year, apiFinancial.report, months) || null }
