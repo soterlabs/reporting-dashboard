@@ -62,7 +62,7 @@ export function statementCsvRows(
       "Depth",
       "Subtotal derivation",
       "Subtotal source metric IDs",
-      ...(composition ? ["Dashboard composition policy", "Dashboard display hash", "Expense snapshot revision", "Expense source", "Dashboard signed components"] : []),
+      ...(composition ? ["Dashboard composition policy", "Dashboard display hash", "Expense snapshot revision", "Expense source", "Dashboard signed components", "YTD cutoff UTC"] : []),
     ],
     ...layout.map((row) => {
       const line = statementFinancialLine(report, row);
@@ -153,7 +153,9 @@ export function statementCsvRows(
         row.id,
         row.parent || "",
         row.level,
-        local
+        composition?.totals_through
+          ? `YTD sums monthly values through ${composition.totals_through}; monthly API values and provisional workbook expenses retain their own sources`
+          : local
           ? line!.id === "dashboard.net_income"
             ? "Dashboard net revenue less provisional expenses, summed over matching months"
             : "Provisional workbook expense; subtotals use disjoint leaf amounts"
@@ -162,7 +164,7 @@ export function statementCsvRows(
             : "Published API metric or unavailable",
         JSON.stringify(local ? (line?.components || []).map(c => c.id) : row.sources || []),
         ...(composition ? [composition.policy_version, composition.display_hash, composition.expense_revision,
-          JSON.stringify(composition.expense_source), JSON.stringify(local ? line?.components || [] : [])] : []),
+          JSON.stringify(composition.expense_source), JSON.stringify(local ? line?.components || [] : []), composition.totals_through || report?.as_of] : []),
       ];
     }),
   ];

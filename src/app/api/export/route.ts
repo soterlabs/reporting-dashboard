@@ -304,7 +304,8 @@ export async function GET(request: Request) {
     const expenseRevision = q.get("expense_revision");
     const expenseAsOf = q.get("expense_as_of");
     const displayHash = q.get("display_hash");
-    if ((expenseRevision && (!["spark","grove"].includes(prime) || year !== 2026 || !/^[a-f0-9]{64}$/.test(expenseRevision))) ||
+    const totalsThrough = q.get("totals_through");
+    if ((totalsThrough && !expenseRevision) || (expenseRevision && (!["spark","grove"].includes(prime) || year !== 2026 || !/^[a-f0-9]{64}$/.test(expenseRevision))) ||
         (selected === "none" && (!expenseRevision || !expenseAsOf)) ||
         (displayHash && (!expenseRevision || !/^[a-f0-9]{64}$/.test(displayHash))))
       return Response.json({ error: "Invalid expense selection" }, { status: 400 });
@@ -319,7 +320,7 @@ export async function GET(request: Request) {
       try {
         if (expenseAsOf && statement && expenseAsOf !== statement.as_of)
           throw new Error("Financial and expense cutoffs differ");
-        statement = withPrimeExpenses(prime, year, statement, months, expenseRevision || undefined, expenseAsOf || undefined) || null;
+        statement = withPrimeExpenses(prime, year, statement, months, expenseRevision || undefined, expenseAsOf || undefined, totalsThrough || undefined) || null;
         if (displayHash && statement?.dashboard_composition?.display_hash !== displayHash)
           throw new Error("Dashboard composition changed; refresh the dashboard before exporting");
       } catch (error) {

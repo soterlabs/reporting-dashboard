@@ -131,6 +131,7 @@ export interface FinancialStatement {
     api_selection: string | null;
     display_hash: string;
     local_metric_ids: string[];
+    totals_through?: string;
   };
   pending_expense_inputs?: { id: string; reason: string }[];
   accounting_rules?: string;
@@ -762,7 +763,13 @@ export function validateStatement(
             .minus(split.prime_income_usd)
             .minus(split.sky_income_usd);
           requireValue(
-            delta.eq(split.rounding_delta_usd) &&
+            (delta.eq(split.rounding_delta_usd) ||
+              // Python Decimal's saved 28-digit split can differ by tiny
+              // sub-wei USD dust when re-added at the reader's precision.
+              (v.policy_version === sparkReconciledPolicy &&
+                source.kind === "spark_onchain_components" &&
+                split.sky_share_basis === "effective_dated_designated_exposure" &&
+                delta.minus(split.rounding_delta_usd).abs().lte("1e-18"))) &&
               delta.abs().lte(rounded ? "0.015" : "1e-12"),
           );
           if (split.sky_share_excluded_income_usd !== undefined) {

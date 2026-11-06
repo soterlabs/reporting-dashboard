@@ -1337,9 +1337,6 @@ footer {
   .app-shell .financial-table th, .app-shell .financial-table td { padding: 11px 4px; font-size: 10px; }
   .app-shell .financial-table tbody th { padding-inline-start: calc(8px + var(--statement-depth, 0) * 14px); font-size: 11px; }
   .app-shell .financial-table .year-total { width: 94px; }
-  .app-shell .cash-reconciliation-table { table-layout: auto; }
-  .app-shell .cash-reconciliation-table th:first-child { width: 220px; }
-  .app-shell .cash-reconciliation-table td.year-total { min-width: 0; }
 }
 .sidebar-toggle { border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--fg); padding: 7px; display: grid; place-items: center; }
 @media (max-width: 800px) {
@@ -1374,6 +1371,8 @@ footer {
 /* Retain source panels for future use without showing them in the dashboard. */
 .source-details[hidden] { display: none; }
 
-.spark-msc-bridge > .panel-heading { flex-wrap: wrap; }
-.msc-adjustments { border-top: 1px solid var(--border); }
-.msc-adjustments > summary { padding: 1rem 1.25rem; cursor: pointer; font-size: .85rem; }
+
+/* Shared month header geometry keeps statement tabs aligned, even without MTD. */
+.financial-table thead th { height: 63px; vertical-align: middle; line-height: 1.4; }
+.financial-table .statement-month-note { min-height: 14px; line-height: 14px; }
+.cash-reconciliation-table td { white-space: normal; overflow-wrap: anywhere; }
