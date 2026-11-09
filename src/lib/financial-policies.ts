@@ -9,7 +9,9 @@ export const sparkAmmPolicy = "prime-management.spark-amms.v3.7";
 export const sparkStatementPolicy = "prime-management.spark-statement.v3.8";
 export const sparkHistoryPolicy = "prime-management.spark-history.v3.9";
 export const sparkReconciledPolicy = "prime-management.spark-reconciled.v3.10";
-export const sparkHistoryPolicies = [sparkHistoryPolicy, sparkReconciledPolicy];
+export const sparkReviewPolicy = "prime-management.spark-reviewed.v3.11";
+export const sparkReconciledPolicies = [sparkReconciledPolicy, sparkReviewPolicy];
+export const sparkHistoryPolicies = [sparkHistoryPolicy, ...sparkReconciledPolicies];
 export const sparkStatementPolicies = [
   sparkStatementPolicy,
   ...sparkHistoryPolicies,

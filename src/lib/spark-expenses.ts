@@ -17,6 +17,7 @@ type SourceLine = { id: string; label: string; parent: string | null; source_row
 export interface ExpenseSnapshot {
   schema_version: number; id: string; prime: string; year: number; currency: string;
   quality: string; status: string;
+  includes_contributor_compensation?: boolean;
   source: { file: string; sheet: string; sha256: string };
   operating_basis: Record<string, string | null>;
   lines: SourceLine[];
@@ -109,7 +110,7 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
   const data: ExpenseSnapshot = structuredClone(selectedData);
   // Contributor compensation is supplied once by the API's approved expense input.
   const contributor = prime === "spark" ? input?.lines.find(l=>l.id === "expenses.compensation.spk") : undefined;
-  if (contributor) data.lines.push({id:contributor.id,label:contributor.label,parent:"expenses.compensation",source_row:7,
+  if (contributor && !data.includes_contributor_compensation) data.lines.push({id:contributor.id,label:contributor.label,parent:"expenses.compensation",source_row:7,
     values:Object.fromEntries(months.map(m=>[m,metricAmount(contributor.values[m])]))});
   check(data.prime===prime,"expense snapshot perimeter differs");
   check(!input?.dashboard_composition, "composition requires the original API input");

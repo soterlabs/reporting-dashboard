@@ -137,7 +137,7 @@ export async function financialStatements(
   cutoff?: string,
 ) {
   return financialRead<FinancialStatement>(
-    `/v3/reporting/statements?${new URLSearchParams({ prime, year: String(year), ...(revision ? { revision } : {}), ...(!revision && prime === "spark" ? {accounting:"true"} : {}), ...(!revision && cutoff ? {cutoff} : {}) })}`,
+    `/v3/reporting/statements?${new URLSearchParams({ prime, year: String(year), ...(revision ? { revision } : {}), ...(!revision && prime === "spark" ? {accounting:"true",review:"true"} : {}), ...(!revision && cutoff ? {cutoff} : {}) })}`,
     (v) => validateStatement(v, prime, year, revision),
   );
 }
@@ -180,7 +180,7 @@ async function financialRead<T>(
 
 export async function cashFlowReport(prime: Prime, year: number, revision?: string) {
   return financialRead<CashFlowReport>(
-    `/v3/reporting/cash-flow?${new URLSearchParams({prime,year:String(year),...(revision ? {revision} : {})})}`,
+    `/v3/reporting/cash-flow?${new URLSearchParams({prime,year:String(year),...(revision ? {revision} : {review:"true"})})}`,
     value => validateCashFlow(value,prime,year,revision),
   );
 }

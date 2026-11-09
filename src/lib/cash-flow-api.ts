@@ -9,7 +9,7 @@ import type { StatementLine } from "./prime-reports.ts";
 
 export interface CashFlowReport {
   schema_version: "cash-flow.v1";
-  policy_version: "spark-cash-flow.events.v1";
+  policy_version: "spark-cash-flow.events.v1" | "spark-cash-flow.events.v2";
   prime: "spark";
   year: number;
   as_of: string;
@@ -55,7 +55,7 @@ const children: Record<string,string[]> = {
 };
 export function validateCashFlow(value: unknown, prime: Prime, year: number, revision?: string): CashFlowReport {
   const doc=value as CashFlowReport;
-  requireValue(doc?.schema_version==="cash-flow.v1" && doc.policy_version==="spark-cash-flow.events.v1" && doc.prime===prime && prime==="spark" && doc.year===year && year===2026,"identity");
+  requireValue(doc?.schema_version==="cash-flow.v1" && ["spark-cash-flow.events.v1","spark-cash-flow.events.v2"].includes(doc.policy_version) && doc.prime===prime && prime==="spark" && doc.year===year && year===2026,"identity");
   requireValue(hash.test(doc.report_hash) && typeof doc.selection==="string" && (!revision || doc.selection===revision),"selection");
   const {report_hash: reportHash,...body}=doc;
   requireValue(createHash("sha256").update(canonical(body)).digest("hex")===reportHash,"report hash");

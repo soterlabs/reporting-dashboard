@@ -9,7 +9,7 @@ import {
   sparkStatementPolicies,
   sparkHistoryPolicy,
   sparkHistoryPolicies,
-  sparkReconciledPolicy,
+  sparkReconciledPolicy, sparkReviewPolicy, sparkReconciledPolicies,
 } from "./financial-policies.ts";
 export {
   rollupPolicy,
@@ -543,18 +543,22 @@ export function validateStatement(
     p.financial_revision,
     p.monthly_revision,
     ...(offchain ? [p.offchain_revision] : []),
-    ...(v.policy_version === sparkReconciledPolicy ? [p.reconciliation_revision] : []),
+    ...(sparkReconciledPolicies.includes(v.policy_version) ? [p.reconciliation_revision] : []),
   ];
   const validSource = (
     ref: string,
     p: FinancialStatement["periods"][number],
   ) => {
+    if (v.policy_version === sparkReviewPolicy && ref === v.expense_input_revision && hash(ref)) {
+      const authored = v.lines.find(l => l.id === "expenses.compensation.spk")?.values[p.key];
+      return authored?.input_revision === ref && metricAmount(authored) !== null;
+    }
     const source = v.source_manifest?.[ref];
     return (
       refs(p).includes(ref) &&
       source &&
       (ref === p.reconciliation_revision
-        ? prime === "spark" && v.policy_version === sparkReconciledPolicy && source.kind === "spark_reviewed_chain_cash" && source.month === p.key && hash(source.snapshot_revision) && source.cutoff === p.expected_cutoff
+        ? prime === "spark" && sparkReconciledPolicies.includes(v.policy_version) && source.kind === "spark_reviewed_chain_cash" && source.month === p.key && hash(source.snapshot_revision) && source.cutoff === p.expected_cutoff
         : ref === p.offchain_revision
         ? offchainSourceKind(v.policy_version, prime, source.kind) &&
           date(source.cutoff) &&
@@ -626,7 +630,8 @@ export function validateStatement(
     const derived =
       rollupPolicies.includes(v.policy_version) &&
       (l.id.startsWith("statement.") ||
-        (v.policy_version === sparkReconciledPolicy && (l.id === "gains.sparklend_nonstable" || (["revaluation.sparklend_assets", "funding.sky.net"].includes(l.id) && Array.isArray(l.components)))) ||
+        (v.policy_version === sparkReviewPolicy && ["gains.eth_weth", "gains.other_reserves", "revaluation.retained_reserves"].includes(l.id)) ||
+        (sparkReconciledPolicies.includes(v.policy_version) && (l.id === "gains.sparklend_nonstable" || (["revaluation.sparklend_assets", "funding.sky.net"].includes(l.id) && Array.isArray(l.components)))) ||
         (completeSpark &&
           ((l.id.startsWith("funding.savings") &&
             l.aggregation === "subtotal") ||
@@ -655,7 +660,7 @@ export function validateStatement(
       const cell = l.values[p.key];
       metric(cell);
       requireValue((cell.status === "future") === (p.state === "future"));
-      if (v.policy_version === sparkReconciledPolicy && l.id === "expenses.compensation.spk") {
+      if (sparkReconciledPolicies.includes(v.policy_version) && l.id === "expenses.compensation.spk") {
         requireValue(hash(v.expense_input_revision) && cell.input_revision === v.expense_input_revision);
         continue; // Authored expense input has its own revision, not an unrelated chain publication.
       }
@@ -671,11 +676,9 @@ export function validateStatement(
         !(completeSpark && sparkAmmIds.includes(l.id) && !cell.source_refs) &&
         (cell.value !== null || cell.known_value !== null)
       ) {
-        requireValue(
-          Array.isArray(cell.source_refs) &&
-            cell.source_refs.length > 0 &&
-            cell.source_refs.every((ref) => validSource(ref, p)),
-        );
+        if (!(Array.isArray(cell.source_refs) && cell.source_refs.length > 0 &&
+              cell.source_refs.every(ref => validSource(ref, p))))
+          throw new Error(`Financial reporting contract mismatch (derived refs: ${l.id}/${p.key})`);
       } else if (
         monthly &&
         (cell.value !== null || cell.known_value !== null)
@@ -689,7 +692,7 @@ export function validateStatement(
               ((prime === "spark" &&
                 sparkIncomePolicies.includes(v.policy_version) &&
                 (l.id.startsWith("fees.") ||
-                  (v.policy_version === sparkReconciledPolicy && l.id.startsWith("revaluation.")) ||
+                  (sparkReconciledPolicies.includes(v.policy_version) && l.id.startsWith("revaluation.")) ||
                   l.id.startsWith("gains.") ||
                   l.id.startsWith("investment.venue.") ||
                   (completeSpark &&
@@ -700,6 +703,7 @@ export function validateStatement(
                         "investment.morpho.sentora_rlusd",
                       ].includes(l.id))) ||
                   l.id.startsWith("rewards.treasury.") ||
+                  (v.policy_version === sparkReviewPolicy && l.id.startsWith("audit.")) ||
                   l.id === "funding.sky.sde_adjustment" ||
                   l.id === "funding.sky.retained" ||
                   l.id.startsWith("rewards.lending.sparklend.") ||
@@ -743,7 +747,7 @@ export function validateStatement(
             ].every((n) => n !== null && new SplitDecimal(n!).eq(0));
           requireValue(
             emptyPosition ||
-              (v.policy_version === sparkReconciledPolicy && source.kind === "spark_onchain_components"
+              (sparkReconciledPolicies.includes(v.policy_version) && source.kind === "spark_onchain_components"
                 && split.sky_share_basis === "effective_dated_designated_exposure") ||
               split.sky_share_basis ===
                 (rounded
@@ -766,7 +770,7 @@ export function validateStatement(
             (delta.eq(split.rounding_delta_usd) ||
               // Python Decimal's saved 28-digit split can differ by tiny
               // sub-wei USD dust when re-added at the reader's precision.
-              (v.policy_version === sparkReconciledPolicy &&
+              (sparkReconciledPolicies.includes(v.policy_version) &&
                 source.kind === "spark_onchain_components" &&
                 split.sky_share_basis === "effective_dated_designated_exposure" &&
                 delta.minus(split.rounding_delta_usd).abs().lte("1e-18"))) &&
@@ -789,7 +793,7 @@ export function validateStatement(
           }
         }
         if (cell.source_ref === p.reconciliation_revision)
-          requireValue(v.policy_version === sparkReconciledPolicy && l.id === "investment.anchorage" && cell.recognition === "receipt" && cell.period_start === p.key + "-01" && cell.period_end === p.expected_cutoff);
+          requireValue(sparkReconciledPolicies.includes(v.policy_version) && l.id === "investment.anchorage" && cell.recognition === "receipt" && cell.period_start === p.key + "-01" && cell.period_end === p.expected_cutoff);
         if (cell.source_ref === p.monthly_revision)
           requireValue(
             [
@@ -801,12 +805,13 @@ export function validateStatement(
                 l.id.startsWith("rewards.lending.aave."))
                 ? [l.id]
                 : []),
-              ...(v.policy_version === sparkReconciledPolicy && l.id === "investment.psm3.susds" ? [l.id] : []),
+              ...(sparkReconciledPolicies.includes(v.policy_version) && l.id === "investment.psm3.susds" ? [l.id] : []),
+              ...(v.policy_version === sparkReviewPolicy && l.id.startsWith("audit.net_supply.") ? [l.id] : []),
               "demand.agent_rate",
               "demand.distribution_rewards",
               "demand.total",
               "funding.sky.net",
-              ...(v.policy_version === sparkReconciledPolicy ? ["funding.sky.retained"] : []),
+              ...(sparkReconciledPolicies.includes(v.policy_version) ? ["funding.sky.retained"] : []),
               ...(prime === "skybase" ? ["demand.gar"] : []),
               ...(prime === "grove" ? ["demand.chronicle_points"] : []),
               ...(prime === "spark" &&
@@ -933,7 +938,7 @@ export function validateStatement(
   if (offchain) validateOffchain(v, prime);
   if (archivePolicies.includes(v.policy_version)) validateArchive(v, prime);
 
-  if (v.policy_version === sparkReconciledPolicy) validateSparkMsc(v);
+  if (sparkReconciledPolicies.includes(v.policy_version)) validateSparkMsc(v);
   return v;
 }
 export function validatePortfolio(
