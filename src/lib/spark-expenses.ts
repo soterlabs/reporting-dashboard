@@ -17,6 +17,7 @@ type SourceLine = { id: string; label: string; parent: string | null; source_row
 export interface ExpenseSnapshot {
   schema_version: number; id: string; prime: string; year: number; currency: string;
   quality: string; status: string;
+  includes_contributor_compensation?: boolean;
   source: { file: string; sheet: string; sha256: string };
   operating_basis: Record<string, string | null>;
   lines: SourceLine[];
@@ -26,6 +27,7 @@ const check = (ok: unknown, message: string) => { if (!ok) throw new Error(`Expe
 export function validateExpenseSnapshot(input: unknown): ExpenseSnapshot {
   const s = input as ExpenseSnapshot;
   check(s?.schema_version === 1 && ["spark","grove"].includes(s.prime) && s.year === 2026 && s.currency === "USD", "invalid perimeter");
+  check(s.includes_contributor_compensation === undefined || typeof s.includes_contributor_compensation === "boolean", "invalid contributor inclusion flag");
   check(s.quality === "estimate" && s.status === "provisional_unverified", "must remain provisional");
   check(typeof s.id === "string" && new RegExp(`^${s.prime}-expenses-2026\\.v\\d+$`).test(s.id), "invalid snapshot version");
   check(s.operating_basis && Object.keys(s.operating_basis).length === 12 && months.every(m => m in s.operating_basis), "missing operating basis");
@@ -109,7 +111,7 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
   const data: ExpenseSnapshot = structuredClone(selectedData);
   // Contributor compensation is supplied once by the API's approved expense input.
   const contributor = prime === "spark" ? input?.lines.find(l=>l.id === "expenses.compensation.spk") : undefined;
-  if (contributor) data.lines.push({id:contributor.id,label:contributor.label,parent:"expenses.compensation",source_row:7,
+  if (contributor && !data.includes_contributor_compensation) data.lines.push({id:contributor.id,label:contributor.label,parent:"expenses.compensation",source_row:7,
     values:Object.fromEntries(months.map(m=>[m,metricAmount(contributor.values[m])]))});
   check(data.prime===prime,"expense snapshot perimeter differs");
   check(!input?.dashboard_composition, "composition requires the original API input");

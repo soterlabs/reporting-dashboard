@@ -150,3 +150,18 @@ test("pinned statements remain immutable and cached", async (t) => {
   assert.equal(a.report?.selection, b.report?.selection);
   assert.ok(calls <= 1);
 });
+
+
+test("live Spark reads opt into reviewed policies while retained reads preserve their selectors",async(t)=>{
+ const {cashFlowReport}=await import("./api.ts");
+ const calls:URL[]=[];
+ t.mock.method(globalThis,"fetch",async(url:string)=>{calls.push(new URL(url));return Response.json({});});
+ await financialStatements("spark",2026);
+ assert.equal(calls.at(-1)!.searchParams.get("review"),"true");
+ assert.equal(calls.at(-1)!.searchParams.get("accounting"),"true");
+ await cashFlowReport("spark",2026);
+ assert.equal(calls.at(-1)!.searchParams.get("review"),"true");
+ await cashFlowReport("spark",2026,"retained-selection");
+ assert.equal(calls.at(-1)!.searchParams.has("review"),false);
+ assert.equal(calls.at(-1)!.searchParams.get("revision"),"retained-selection");
+});
