@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import type { CashFlowReport } from "./cash-flow-api.ts";
+import { mscEarnedEntitlement, type CashFlowReport } from "./cash-flow-api.ts";
 import { metricAmount, type FinancialStatement, type Metric } from "./financial.ts";
 import type { Prime } from "./reporting.ts";
 import references from "./data/settlement-cash-checks-2026.v1.json" with { type: "json" };
@@ -66,7 +66,12 @@ export function reconciliationChecks({ prime, year, month, report, financial, re
   const openingReceivable=report ? {label:"Opening MSC receivable",amount:String(report.methodology.opening_msc_receivable),complete:true,estimated:false} : missing("Opening MSC receivable");
   const earned=cumulative(elapsed.map(m=>{
     const input=cash("earned-not-received","Approved earned entitlement",m);
-    return {...input,amount:input.amount===null ? null : new D(input.amount).negated().toString()};
+    const bridge=report?.lines.find(r=>r.id==="earned-not-received")?.values[m];
+    if(!report || !bridge) return {...input,amount:null};
+    const approved=mscEarnedEntitlement(report,bridge);
+    return {...input,amount:metricAmount(approved),
+      complete:approved.status==="available" && !report.periods.find(p=>p.key===m)?.stale,
+      estimated:approved.quality==="estimate"};
   }),"Approved earned entitlement, YTD");
   const received=cumulative(elapsed.flatMap(m=>[cash("sky-allocation-receipts","Allocation receipts",m),cash("sky-demand-receipts","Demand-side receipts",m)]),"Sky cash receipts, YTD");
   checks.push(compareCheck({id:"receivable",label:"MSC receivable",formula:"Opening receivable + earned entitlement − receipts versus independent closing receivable",
