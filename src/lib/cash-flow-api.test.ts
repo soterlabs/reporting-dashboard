@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { validateCashFlow,cashFlowApiCsv,validateCashSubtotal } from "./cash-flow-api.ts";
+import { validateCashFlow,cashFlowApiCsv,validateCashSubtotal,mscEarnedEntitlement } from "./cash-flow-api.ts";
+import Decimal from "decimal.js";
 import { metricAmount } from "./financial.ts";
 import { numberConfidence } from "./number-confidence.ts";
 const raw=()=>JSON.parse(readFileSync(new URL("./fixtures/spark-cash-flow-api.json",import.meta.url),"utf8"));
@@ -78,4 +79,30 @@ test("reviewed cash arithmetic accepts Python-rounded MTD accruals without toler
  validateCashSubtotal(metric(expected),values.map(metric),"spark-cash-flow.events.v2");
  assert.throws(()=>validateCashSubtotal(metric(expected),values.map(metric),"spark-cash-flow.events.v1"),/subtotal/);
  assert.throws(()=>validateCashSubtotal(metric(expected.replace(/.$/,"9")),values.map(metric),"spark-cash-flow.events.v2"),/subtotal/);
+});
+
+
+test("approved MSC basis excludes treasury income while unmarked reports retain legacy validation",()=>{
+ const doc=raw(), bridge=doc.lines.find((r:{id:string})=>r.id==="earned-not-received").values["2026-10"];
+ const approved={...bridge,value:"100",known_value:null,status:"available",recognition:"accrual",reason:null};
+ bridge.approved_msc_component=approved;
+ bridge.steakhouse_income_component={...approved,value:"20"};
+ validateCashFlow(rehash(doc),"spark",2026); // Old server: no methodology marker, old stock formula.
+ doc.methodology.msc_receivable_basis="approved_msc_component";
+ assert.throws(()=>validateCashFlow(rehash(doc),"spark",2026),/subtotal/);
+ const stock=doc.lines.find((r:{id:string})=>r.id==="msc-receivable");
+ const add=(cell:{value:string|null;known_value:string|null})=>{
+  if(cell.value!==null)cell.value=new Decimal(cell.value).plus(100).toString();
+  else if(cell.known_value!==null)cell.known_value=new Decimal(cell.known_value).plus(100).toString();
+ };
+ for(const p of doc.periods)if(p.state!=="future" && p.key>="2026-10")add(stock.values[p.key]);
+ add(stock.total);
+ validateCashFlow(rehash(doc),"spark",2026);
+ const absent=structuredClone(bridge);delete absent.approved_msc_component;
+ const missing=mscEarnedEntitlement(doc,absent);
+ assert.equal(missing.status,"unavailable");assert.equal(metricAmount(missing),null);
+ const malformed=structuredClone(bridge);malformed.approved_msc_component.value="oops";
+ assert.throws(()=>mscEarnedEntitlement(doc,malformed),/decimal/);
+ doc.methodology.msc_receivable_basis="unsupported";
+ assert.throws(()=>validateCashFlow(rehash(doc),"spark",2026),/MSC receivable basis/);
 });

@@ -57,9 +57,24 @@ const children: Record<string,string[]> = {
   "non-cash":["issuer-rewards-noncash","token-incentives","contributor-spk","non-stable-gains","non-stable-transfers","other-non-cash"], receivables:["earned-not-received","sky-allocation-receipts","sky-demand-receipts","external-receipts"], payables:["expenses-booked","expenses-paid","savings-interest-paid"],
   "net-operating":["net-income","non-cash","receivables","payables"],"net-investing":["allocation-changes","investments","sky-direct-deployments","treasury-disposals"],"net-financing":["usds-drawn","deposits","sky-contributions","buybacks"],"net-cash-change":["net-operating","net-investing","net-financing"],
 };
+// Positive approved MSC earnings; separate treasury income is never owed by Sky.
+export function mscEarnedEntitlement(doc: Pick<CashFlowReport, "methodology">, bridge: Metric): Metric {
+  if (doc.methodology.msc_receivable_basis === "approved_msc_component" &&
+      ("sky_staking_income_component" in bridge || "steakhouse_income_component" in bridge)) {
+    const approved = (bridge as Metric & { approved_msc_component?: Metric }).approved_msc_component;
+    if (approved) { checkMetric(approved); return approved; }
+    return {...bridge, value:null, known_value:null, status:"unavailable", source_paths:[],
+      reason:"Approved MSC entitlement is missing from the income-to-cash bridge"};
+  }
+  return {...bridge, value:bridge.value === null ? null : new D(bridge.value).negated().toString(),
+    known_value:bridge.known_value === null ? null : new D(bridge.known_value).negated().toString()};
+}
+
 export function validateCashFlow(value: unknown, prime: Prime, year: number, revision?: string): CashFlowReport {
   const doc=value as CashFlowReport;
   requireValue(doc?.schema_version==="cash-flow.v1" && ["spark-cash-flow.events.v1","spark-cash-flow.events.v2"].includes(doc.policy_version) && doc.prime===prime && prime==="spark" && doc.year===year && year===2026,"identity");
+  requireValue(doc.methodology?.msc_receivable_basis === undefined ||
+    doc.methodology.msc_receivable_basis === "approved_msc_component", "MSC receivable basis");
   const checkSum = (cell: Metric, cells: Metric[]) => validateCashSubtotal(cell, cells, doc.policy_version);
   requireValue(hash.test(doc.report_hash) && typeof doc.selection==="string" && (!revision || doc.selection===revision),"selection");
   const {report_hash: reportHash,...body}=doc;
@@ -112,6 +127,7 @@ export function validateCashFlow(value: unknown, prime: Prime, year: number, rev
     for(const p of doc.periods.filter(p=>p.state!=="future")){
       const terms=[running,...parts.map(([part,sign])=>{
         const cell=byId.get(part)!.values[p.key];
+        if(id === "msc-receivable" && part === "earned-not-received") return mscEarnedEntitlement(doc,cell);
         return {...cell,value:cell.value===null ? null : new D(cell.value).mul(sign).toString(),known_value:cell.known_value===null ? null : new D(cell.known_value).mul(sign).toString()};
       })];
       checkSum(row!.values[p.key],terms);running=row!.values[p.key];
