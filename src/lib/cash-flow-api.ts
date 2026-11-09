@@ -23,6 +23,10 @@ export interface CashFlowReport {
   source_note: string;
 }
 const D = Decimal.clone({ precision: 150 });
+// Reviewed cash-flow totals use Python Decimal(prec=100, ROUND_HALF_EVEN).
+// Match each addition exactly: a higher-precision client sum can otherwise
+// reject valid recurring-decimal MTD accruals at the last significant digit.
+const ReviewedCashArithmetic = Decimal.clone({ precision: 100, rounding: Decimal.ROUND_HALF_EVEN });
 const hash = /^[a-f0-9]{64}$/;
 const decimal = /^-?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/;
 const requireValue = (ok: unknown, message: string) => { if (!ok) throw new Error(`Invalid cash-flow report: ${message}`); };
@@ -41,12 +45,12 @@ function checkMetric(cell: Metric, future = false) {
   requireValue(!["unavailable","future"].includes(cell.status) || cell.value === null && cell.known_value === null,"missing value");
   requireValue(!future || cell.status === "future","future metric");
 }
-function sum(cells: Metric[]) {
+function sum(cells: Metric[], arithmetic: typeof Decimal = D) {
   const known = cells.filter(c=>metricAmount(c)!==null);
-  return { amount: known.length ? known.reduce((s,c)=>s.plus(metricAmount(c)!),new D(0)).toString() : null, status: cells.length && cells.every(c=>c.status==="available") ? "available" : known.length ? "partial" : "unavailable" };
+  return { amount: known.length ? known.reduce((s,c)=>s.plus(metricAmount(c)!),new arithmetic(0)).toString() : null, status: cells.length && cells.every(c=>c.status==="available") ? "available" : known.length ? "partial" : "unavailable" };
 }
-function checkSum(cell: Metric, cells: Metric[]) {
-  const expected = sum(cells),actual=metricAmount(cell);
+export function validateCashSubtotal(cell: Metric, cells: Metric[], policy: CashFlowReport["policy_version"]) {
+  const expected = sum(cells, policy === "spark-cash-flow.events.v2" ? ReviewedCashArithmetic : D),actual=metricAmount(cell);
   requireValue(cell.status===expected.status && (actual===null ? expected.amount===null : expected.amount!==null && new D(actual).equals(expected.amount)),"subtotal or coverage");
 }
 const children: Record<string,string[]> = {
@@ -56,6 +60,7 @@ const children: Record<string,string[]> = {
 export function validateCashFlow(value: unknown, prime: Prime, year: number, revision?: string): CashFlowReport {
   const doc=value as CashFlowReport;
   requireValue(doc?.schema_version==="cash-flow.v1" && ["spark-cash-flow.events.v1","spark-cash-flow.events.v2"].includes(doc.policy_version) && doc.prime===prime && prime==="spark" && doc.year===year && year===2026,"identity");
+  const checkSum = (cell: Metric, cells: Metric[]) => validateCashSubtotal(cell, cells, doc.policy_version);
   requireValue(hash.test(doc.report_hash) && typeof doc.selection==="string" && (!revision || doc.selection===revision),"selection");
   const {report_hash: reportHash,...body}=doc;
   requireValue(createHash("sha256").update(canonical(body)).digest("hex")===reportHash,"report hash");

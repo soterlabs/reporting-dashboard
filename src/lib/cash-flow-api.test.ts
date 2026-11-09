@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { validateCashFlow,cashFlowApiCsv } from "./cash-flow-api.ts";
+import { validateCashFlow,cashFlowApiCsv,validateCashSubtotal } from "./cash-flow-api.ts";
 import { metricAmount } from "./financial.ts";
 import { numberConfidence } from "./number-confidence.ts";
 const raw=()=>JSON.parse(readFileSync(new URL("./fixtures/spark-cash-flow-api.json",import.meta.url),"utf8"));
@@ -67,4 +67,15 @@ test("reviewed cash selections retain their policy and reject a substituted lega
  validateCashFlow(rehash(doc),"spark",2026,doc.selection);
  const stale=raw();stale.policy_version="spark-cash-flow.events.v2";
  assert.throws(()=>validateCashFlow(rehash(stale),"spark",2026),/selected perimeter/);
+});
+
+
+test("reviewed cash arithmetic accepts Python-rounded MTD accruals without tolerating changed amounts",()=>{
+ const values=["434113.3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333", "-2000000.12345678901234567890123456789", "591191.6354774727593748501886562866644"];
+ const expected="-974695.154645982919637495379244947892266666666666666666666666666666666666666666666666666666666666667";
+ // Values/result calculated by the backend's 100-digit half-even Decimal sum.
+ const metric=(value:string)=>({value,known_value:null,status:"available"} as Parameters<typeof validateCashSubtotal>[0]);
+ validateCashSubtotal(metric(expected),values.map(metric),"spark-cash-flow.events.v2");
+ assert.throws(()=>validateCashSubtotal(metric(expected),values.map(metric),"spark-cash-flow.events.v1"),/subtotal/);
+ assert.throws(()=>validateCashSubtotal(metric(expected.replace(/.$/,"9")),values.map(metric),"spark-cash-flow.events.v2"),/subtotal/);
 });
