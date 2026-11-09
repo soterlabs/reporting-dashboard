@@ -695,6 +695,11 @@ export function validateStatement(
                   (sparkReconciledPolicies.includes(v.policy_version) && l.id.startsWith("revaluation.")) ||
                   l.id.startsWith("gains.") ||
                   l.id.startsWith("investment.venue.") ||
+                  (v.policy_version === sparkReviewPolicy &&
+                    ((l.id === "investment.steakhouse_usdc" && cell.recognition === "accrual" &&
+                      cell.basis === "ERC4626_net_claim_change_less_verified_capital_flows") ||
+                     (l.id === "investment.sky_staking" && cell.recognition === "receipt" &&
+                      cell.basis === "verified_Lockstake_USDS_rewards_receipt_basis"))) ||
                   (completeSpark &&
                     (l.id.startsWith("funding.savings.venue.") ||
                       l.id.startsWith("investment.susds.") ||
