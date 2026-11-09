@@ -180,7 +180,7 @@ async function financialRead<T>(
 
 export async function cashFlowReport(prime: Prime, year: number, revision?: string) {
   return financialRead<CashFlowReport>(
-    `/v3/reporting/cash-flow?${new URLSearchParams({prime,year:String(year),...(revision ? {revision} : {review:"true"})})}`,
+    `/v3/reporting/cash-flow?${new URLSearchParams({prime,year:String(year),...(revision ? {revision} : prime === "spark" ? {review:"true"} : {})})}`,
     value => validateCashFlow(value,prime,year,revision),
   );
 }

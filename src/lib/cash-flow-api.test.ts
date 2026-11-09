@@ -56,3 +56,15 @@ test("cumulative reconciliation and MSC balances cannot bypass arithmetic valida
  const doc=raw();doc.methodology.opening_msc_receivable="0";
  assert.throws(()=>validateCashFlow(rehash(doc),"spark",2026),/opening MSC/);
 });
+
+
+test("reviewed cash selections retain their policy and reject a substituted legacy selection",()=>{
+ const doc=raw();
+ doc.policy_version="spark-cash-flow.events.v2";
+ const selection=JSON.parse(Buffer.from(doc.selection,"base64url").toString());
+ selection.policy_version=doc.policy_version;
+ doc.selection=Buffer.from(JSON.stringify(selection)).toString("base64url");
+ validateCashFlow(rehash(doc),"spark",2026,doc.selection);
+ const stale=raw();stale.policy_version="spark-cash-flow.events.v2";
+ assert.throws(()=>validateCashFlow(rehash(stale),"spark",2026),/selected perimeter/);
+});

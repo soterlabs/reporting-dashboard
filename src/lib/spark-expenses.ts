@@ -27,6 +27,7 @@ const check = (ok: unknown, message: string) => { if (!ok) throw new Error(`Expe
 export function validateExpenseSnapshot(input: unknown): ExpenseSnapshot {
   const s = input as ExpenseSnapshot;
   check(s?.schema_version === 1 && ["spark","grove"].includes(s.prime) && s.year === 2026 && s.currency === "USD", "invalid perimeter");
+  check(s.includes_contributor_compensation === undefined || typeof s.includes_contributor_compensation === "boolean", "invalid contributor inclusion flag");
   check(s.quality === "estimate" && s.status === "provisional_unverified", "must remain provisional");
   check(typeof s.id === "string" && new RegExp(`^${s.prime}-expenses-2026\\.v\\d+$`).test(s.id), "invalid snapshot version");
   check(s.operating_basis && Object.keys(s.operating_basis).length === 12 && months.every(m => m in s.operating_basis), "missing operating basis");
