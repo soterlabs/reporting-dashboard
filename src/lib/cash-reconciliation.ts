@@ -9,7 +9,6 @@ export const cashReconciliationRows = [
   { id: "net-cash-change", label: "Net cash change per statement", level: 0 },
   { id: "reconciliation-gap", label: "Gap: measured change minus statement", level: 0 },
   { id: "reconciliation-percentage", label: "Reconciliation gap (%)", level: 0 },
-  { id: "reconciliation-status", label: "Status", level: 0 },
 ];
 
 export function cashReconciliationPercentage(report: CashFlowReport, month: string) {
