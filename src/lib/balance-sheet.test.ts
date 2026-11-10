@@ -43,6 +43,8 @@ test("hashes, cross-month amounts, invalid subtotal and summed stocks fail close
  assert.throws(()=>validateBalanceSheet(rehash(total),'spark',2026),/latest stock/);
  const subtotal=fixture();subtotal.lines.find(r=>r.id==='total_assets')!.values['2026-10'].known_value='1';
  assert.throws(()=>validateBalanceSheet(rehash(subtotal),'spark',2026),/subtotal/);
+ const duplicate=fixture();duplicate.lines.find(r=>r.id==='total_assets')!.components.push({id:'position.S1',sign:1});
+ assert.throws(()=>validateBalanceSheet(rehash(duplicate),'spark',2026),/component perimeter/);
  const source=fixture();source.lines.find(r=>r.id==='position.S1')!.values['2026-10'].source_refs=Object.values(source.periods[0].sources);
  assert.throws(()=>validateBalanceSheet(rehash(source),'spark',2026),/closing cutoffs/);
 });

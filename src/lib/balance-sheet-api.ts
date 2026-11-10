@@ -57,6 +57,9 @@ export function validateBalanceSheet(value:unknown,prime:Prime,year:number,revis
   requireValue(typeof row.label==="string"&&Number.isInteger(row.depth)&&row.depth>=0&&row.aggregation==="last"&&[null,"section","subtotal","total"].includes(row.kind),"row metadata");
   requireValue(row.parent===null ? row.depth===0 : seen.has(row.parent)&&row.depth===byId.get(row.parent)!.depth+1,"hierarchy");seen.add(row.id);
   requireValue(Array.isArray(row.components)&&new Set(row.components.map(c=>c.id)).size===row.components.length&&row.components.every(c=>byId.has(c.id)&&c.id!==row.id&&c.sign===1),"components");
+  const sectionForTotal:Record<string,string>={total_assets:"assets",total_liabilities:"liabilities",total_equity:"equity"};
+  const expectedComponents=row.kind==="subtotal"?doc.lines.filter(r=>r.parent===row.id).map(r=>r.id):sectionForTotal[row.id]?doc.lines.filter(r=>r.parent===sectionForTotal[row.id]).map(r=>r.id):row.id==="liabilities_equity"?["total_liabilities","total_equity"]:[];
+  requireValue(row.components.map(c=>c.id).join()===expectedComponents.join(),"component perimeter");
   for(const p of doc.periods){
    const cell=row.values[p.key];metric(cell);requireValue((cell.status==="future")===(p.state==="future"),"future values");
    requireValue(cell.source_refs!.every(ref=>used.has(ref)&&doc.source_manifest[ref].cutoff<=(p.expected_cutoff||"")),"amount provenance");
