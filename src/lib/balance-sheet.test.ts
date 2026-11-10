@@ -67,3 +67,13 @@ test("a pinned cutoff needs a real source and canonical date",()=>{
   assert.throws(()=>validateBalanceSheet(rehash(d),'spark',2026),/source cutoff/);
  }
 });
+
+test("CSV retains provisional quality, partial coverage and actual cutoffs alongside exact amounts",()=>{
+ const d=fixture(),csv=balanceSheetCsv(d),header=csv[0];
+ const reward=csv.find(r=>r[14]==='reward_advance.S68')!;
+ assert.equal(JSON.parse(String(reward[header.indexOf('Monthly quality')]))['2026-10'],d.lines.find(r=>r.id==='reward_advance.S68')!.values['2026-10'].quality);
+ assert.equal(JSON.parse(String(reward[header.indexOf('Actual closing cutoffs UTC')]))['2026-11'],'2026-11-08');
+ const total=csv.find(r=>r[14]==='total_assets')!;
+ assert.equal(total[header.indexOf('Latest coverage')],'partial');
+ assert.ok(csv.every(r=>r.length===header.length));
+});
