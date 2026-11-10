@@ -16,7 +16,7 @@ import {
 export const API_DOC_URL =
   "https://github.com/soterlabs/settlement-cycle/blob/main/docs/pipeline/settlement-reporting-api.md";
 export type Scope = "individual" | "group" | "combined";
-export type View = "income" | "positions" | "cash-flow" | "reconciliation";
+export type View = "income" | "positions" | "cash-flow" | "balance-sheet" | "reconciliation";
 // Consolidated scopes are deliberately unavailable until attribution is supported.
 export function individualScope(): Scope {
   return "individual";

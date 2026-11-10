@@ -1101,7 +1101,7 @@ footer {
   padding-top: 17px;
   padding-bottom: 17px;
 }
-.financial-table tr.total:is([data-row-id="net-income"], [data-row-id="net-cash-change"]) > :is(th, td) {
+.financial-table tr.total:is([data-row-id="net-income"], [data-row-id="net-cash-change"], [data-row-id="liabilities_equity"]) > :is(th, td) {
   border-top: 16px solid #fff;
 }
 .financial-table .year-total {
