@@ -53,7 +53,7 @@ export async function GET(request: Request) {
   const months = yearMonths(year);
   const month = chooseMonth(months, q.get("month") || undefined);
   if (q.get("view") === "balance-sheet") {
-    if (prime !== "spark" || year !== 2026) return Response.json({error:"Balance sheet supports Spark 2026"},{status:404});
+    if (prime !== "spark" || year !== 2026 || (q.has("prime") && q.get("prime") !== "spark") || (q.has("year") && q.get("year") !== "2026") || q.has("dataset")) return Response.json({error:"Balance sheet supports Spark 2026"},{status:404});
     const selection=q.get("balance_sheet_selection");
     if (selection === "none") return Response.json({error:"No balance sheet publication selected"},{status:503});
     const read=await balanceSheetReport(prime,year,selection||undefined);
