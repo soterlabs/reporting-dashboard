@@ -77,3 +77,20 @@ test("CSV retains provisional quality, partial coverage and actual cutoffs along
  assert.equal(total[header.indexOf('Latest coverage')],'partial');
  assert.ok(csv.every(r=>r.length===header.length));
 });
+
+test("chain-stock v2 publications fill missing venues, debt, and cross-chain savings without changing v1 exports",()=>{
+ const doc=JSON.parse(gunzipSync(readFileSync(new URL('./fixtures/spark-balance-sheet-v2.json.gz',import.meta.url))).toString());
+ const d=validateBalanceSheet(doc,'spark',2026);
+ assert.equal(d.policy_version,'spark-balance-sheet.closing-stocks.v2');
+ const cell=(id:string)=>d.lines.find(r=>r.id===id)!.values['2026-10'];
+ for(const id of ['position.S70','position.S72','position.sparklend_weth','position.psm.base','position.pau_susdc','savings.xlayer_usdc','sky_debt']) {
+  assert.equal(cell(id).status,'available');
+  assert.ok(new Decimal(cell(id).value!).gt(0));
+ }
+ assert.ok(new Decimal(cell('position.S62').value!).lt('10000000')); // prime leg, not gross Sky-funded USDT
+ assert.equal(cell('position.S23').status,'unavailable');
+ assert.equal(cell('opening_earnings').status,'unavailable');
+ const csv=balanceSheetCsv(d);
+ assert.equal(csv.find(row=>row[14]==='position.S72')![10],cell('position.S72').value);
+ assert.equal(validateBalanceSheet(fixture(),'spark',2026).policy_version,'spark-balance-sheet.closing-stocks.v1');
+});

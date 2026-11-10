@@ -5,7 +5,7 @@ import type {Prime} from "./reporting.ts";
 import type {StatementLine} from "./prime-reports.ts";
 const D=Decimal.clone({precision:100,rounding:Decimal.ROUND_HALF_EVEN});
 export interface BalanceSheetReport {
- schema_version:"balance-sheet.v1";policy_version:"spark-balance-sheet.closing-stocks.v1";prime:"spark";year:number;as_of:string;
+ schema_version:"balance-sheet.v1";policy_version:"spark-balance-sheet.closing-stocks.v1"|"spark-balance-sheet.closing-stocks.v2";prime:"spark";year:number;as_of:string;
  periods:{key:string;state:"complete"|"partial"|"future";expected_cutoff:string|null;actual_cutoff:string|null;stale:boolean;sources:Record<string,string>}[];
  lines:{id:string;label:string;parent:string|null;depth:number;kind:NonNullable<StatementLine["kind"]>|null;aggregation:"last";components:{id:string;sign:number}[];values:Record<string,Metric>;total:Metric}[];
  source_manifest:Record<string,{kind:string;revision:string;cutoff:string;source_hash:string}>;
@@ -26,10 +26,11 @@ function metric(c:Metric){
 }
 export function validateBalanceSheet(value:unknown,prime:Prime,year:number,revision?:string):BalanceSheetReport {
  const doc=value as BalanceSheetReport;
- requireValue(doc?.schema_version==="balance-sheet.v1"&&doc.policy_version==="spark-balance-sheet.closing-stocks.v1"&&doc.prime===prime&&prime==="spark"&&doc.year===year&&year===2026,"identity");
+ requireValue(doc?.schema_version==="balance-sheet.v1"&&["spark-balance-sheet.closing-stocks.v1","spark-balance-sheet.closing-stocks.v2"].includes(doc.policy_version)&&doc.prime===prime&&prime==="spark"&&doc.year===year&&year===2026,"identity");
  const {report_hash:reportHash,...body}=doc;
  requireValue(hash(reportHash)&&balanceSheetHash(body)===reportHash,"report hash");
  requireValue(/^2026-\d\d-\d\d$/.test(doc.as_of)&&new Date(doc.as_of+"T00:00:00Z").toISOString().slice(0,10)===doc.as_of,"date");
+ const families=doc.policy_version.endsWith(".v2")?["cash","components","stocks","venues"]:["cash","components","venues"];
  const selected=JSON.parse(Buffer.from(doc.selection,"base64url").toString());
  requireValue((!revision||revision===doc.selection)&&selected.policy_version===doc.policy_version&&selected.prime===prime&&selected.year===year&&selected.as_of===doc.as_of&&Array.isArray(selected.months)&&selected.months.length===12,"selection");
  requireValue(doc.total_label==="Latest"&&doc.periods?.length===12&&Array.isArray(doc.lines)&&doc.lines.length>0&&doc.source_manifest,"structure");
@@ -42,9 +43,9 @@ export function validateBalanceSheet(value:unknown,prime:Prime,year:number,revis
   requireValue(p.key===key&&p.state===state&&p.expected_cutoff===expected,"period calendar");
   const s=selected.months[i];
   requireValue(p.actual_cutoff===(s?.cutoff??null)&&p.stale===Boolean(p.actual_cutoff&&expected&&p.actual_cutoff<expected),"cutoff");
-  if(s)requireValue(Object.keys(s).sort().join() === "cash,components,cutoff,venues"&&expected&&/^2026-\d\d-\d\d$/.test(s.cutoff)&&new Date(s.cutoff+"T00:00:00Z").toISOString().slice(0,10)===s.cutoff&&s.cutoff.startsWith(key+"-")&&s.cutoff<=expected&&(state!=="complete"||s.cutoff===last)&&[s.cash,s.venues,s.components].some(Boolean),"source cutoff");
+  if(s)requireValue(Object.keys(s).sort().join() === [...families,"cutoff"].sort().join()&&expected&&/^2026-\d\d-\d\d$/.test(s.cutoff)&&new Date(s.cutoff+"T00:00:00Z").toISOString().slice(0,10)===s.cutoff&&s.cutoff.startsWith(key+"-")&&s.cutoff<=expected&&(state!=="complete"||s.cutoff===last)&&families.some(k=>s[k]),"source cutoff");
   const refs=Object.entries(s||{}).filter(([k,v])=>k!=="cutoff"&&v).map(([k,v])=>`${k}:${v}`).sort();
-  requireValue(Object.keys(p.sources).every(k=>["cash","venues","components"].includes(k))&&Object.values(p.sources).sort().join()===refs.join(),"period sources");
+  requireValue(Object.keys(p.sources).every(k=>families.includes(k))&&Object.values(p.sources).sort().join()===refs.join(),"period sources");
   for(const [kind,ref] of Object.entries(p.sources)){
    const source=doc.source_manifest[ref];requireValue(source&&source.kind===kind&&hash(source.revision)&&ref===kind+":"+source.revision&&hash(source.source_hash)&&source.cutoff===p.actual_cutoff,"source identity");
   }
