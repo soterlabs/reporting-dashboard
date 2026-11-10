@@ -1,3 +1,5 @@
+import {balanceSheetCsv} from "@/lib/balance-sheet";
+import {balanceSheetReport} from "@/lib/api";
 import { cashFlowApiCsv } from "@/lib/cash-flow-api";
 import { financialPortfolioRows } from "@/lib/financial";
 import { cashFlowCsvRows, cashFlowSnapshot, cashFlowCalendar } from "@/lib/cash-flow";
@@ -50,6 +52,14 @@ export async function GET(request: Request) {
   const year = reportingYear(q.get("year") || undefined);
   const months = yearMonths(year);
   const month = chooseMonth(months, q.get("month") || undefined);
+  if (q.get("view") === "balance-sheet") {
+    if (prime !== "spark" || year !== 2026) return Response.json({error:"Balance sheet supports Spark 2026"},{status:404});
+    const selection=q.get("balance_sheet_selection");
+    if (selection === "none") return Response.json({error:"No balance sheet publication selected"},{status:503});
+    const read=await balanceSheetReport(prime,year,selection||undefined);
+    if (!read.report) return Response.json({error:read.message||"Balance sheet unavailable"},{status:503});
+    return new Response("\uFEFF"+balanceSheetCsv(read.report).map(row=>row.map(cell).join(",")).join("\r\n"),{headers:{"Content-Type":"text/csv; charset=utf-8","Content-Disposition":`attachment; filename="spark-balance-sheet-${year}.csv"`,"Cache-Control":"no-store"}});
+  }
   const positions = q.get("view") === "positions";
   const source = q.get("dataset") === "source";
   const offchain = q.get("dataset") === "offchain";

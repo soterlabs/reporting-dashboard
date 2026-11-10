@@ -1,3 +1,4 @@
+import {validateBalanceSheet,type BalanceSheetReport} from "./balance-sheet-api.ts";
 import { validateCashFlow, type CashFlowReport } from "./cash-flow-api.ts";
 import {
   validateStatement,
@@ -183,4 +184,8 @@ export async function cashFlowReport(prime: Prime, year: number, revision?: stri
     `/v3/reporting/cash-flow?${new URLSearchParams({prime,year:String(year),...(revision ? {revision} : prime === "spark" ? {review:"true"} : {})})}`,
     value => validateCashFlow(value,prime,year,revision),
   );
+}
+
+export async function balanceSheetReport(prime:Prime,year:number,revision?:string){
+ return financialRead<BalanceSheetReport>(`/v3/reporting/balance-sheet?${new URLSearchParams({prime,year:String(year),...(revision?{revision}:{})})}`,v=>validateBalanceSheet(v,prime,year,revision));
 }

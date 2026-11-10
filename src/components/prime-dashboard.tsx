@@ -3,7 +3,8 @@ import {
   positionAccruedIncome,
   metricAmount,
 } from "@/lib/financial";
-import { financialStatements, financialPortfolio, cashFlowReport } from "@/lib/api";
+import { financialStatements, financialPortfolio, cashFlowReport, balanceSheetReport } from "@/lib/api";
+import {BalanceSheetStatement} from "./balance-sheet-statement";
 import { ReportingShell } from "./reporting-shell";
 import { CashFlowStatement } from "./cash-flow-statement";
 
@@ -66,7 +67,7 @@ export function reportHref(
   const query = new URLSearchParams({
     prime,
     scope: "individual",
-    view,
+    view: view === "balance-sheet" && prime !== "spark" ? "income" : view,
     year: String(year),
     month,
   });
@@ -83,9 +84,12 @@ export async function PrimeDashboard({
 }) {
   const scope: Scope = individualScope();
   const view: View =
+    prime === "spark" && param(search, "view") === "balance-sheet" ? "balance-sheet" :
     param(search, "view") === "reconciliation" ? "reconciliation" :
     param(search, "view") === "cash-flow" ? "cash-flow" :
     param(search, "view") === "positions" ? "positions" : "income";
+  const balanceView = view === "balance-sheet";
+  const balanceSheet = balanceView ? await balanceSheetReport(prime,2026) : null;
   const cashView = view === "cash-flow" || view === "reconciliation";
   const year = 2026;
   const months = yearMonths(year);
@@ -98,7 +102,7 @@ export async function PrimeDashboard({
       ? await annualReports(prime, year)
       : [];
   const fromAnnual = annual.find((r) => r.month.key === month.key);
-  const portfolios = cashView ? [] : fromAnnual
+  const portfolios = cashView || balanceView ? [] : fromAnnual
     ? [{ prime, ...fromAnnual }]
     : await portfolioReports(prime, scope, month);
   const apiFinancial =
@@ -130,6 +134,7 @@ export async function PrimeDashboard({
     year: String(year),
     month: month.key,
   });
+  if (balanceView) query.set("balance_sheet_selection",balanceSheet?.report?.selection||"none");
   if (cashView) {
     query.set("cash_flow_selection",cashFlow?.report?.selection || "none");
   }
@@ -215,7 +220,7 @@ export async function PrimeDashboard({
               <h1>{title}</h1>
               <p>
                 {scope === "individual"
-                  ? "Income, cash flow and reconciliation."
+                  ? prime === "spark" ? "Income, cash flow, balance sheet and reconciliation." : "Income, cash flow and reconciliation."
                   : scope === "group"
                     ? "Prime and controlled entities · Consolidation scope TBD."
                     : "Prime agents combined · Inter-prime eliminations TBD."}
@@ -223,7 +228,7 @@ export async function PrimeDashboard({
             </div>
             {(!cashView || (prime === "spark" && year === 2026)) ? <a className="button export" href={`/api/export?${query}`}>
               <ArrowDownToLine size={15} />
-              {cashView ? "Cash flow CSV" : view === "income" ? "Statement CSV" : "Positions CSV"}
+              {cashView ? "Cash flow CSV" : view === "income" ? "Statement CSV" : balanceView ? "Balance sheet CSV" : "Positions CSV"}
             </a> : <span className="button export export-placeholder" aria-hidden="true" />}
           </div>
 
@@ -234,7 +239,7 @@ export async function PrimeDashboard({
                 className={view === "income" ? "selected" : ""}
                 aria-current={view === "income" ? "page" : undefined}
               >
-                Income statement
+                Income Statement
               </Link>
               <Link
                 href={reportHref(prime, scope, "cash-flow", year, month.key)}
@@ -243,6 +248,7 @@ export async function PrimeDashboard({
               >
                 Cash Flow Statement
               </Link>
+              {prime === "spark" && <Link href={reportHref(prime, scope, "balance-sheet", year, month.key)} className={balanceView ? "selected" : ""} aria-current={balanceView ? "page" : undefined}>Balance Sheet Statement</Link>}
               <Link
                 href={reportHref(prime, scope, "reconciliation", year, month.key)}
                 className={view === "reconciliation" ? "selected" : ""}
@@ -270,7 +276,7 @@ export async function PrimeDashboard({
             </p>
           )}
           <FinancialLegend />
-          {view === "reconciliation" ? <CashFlowStatement reconciliationOnly key={`reconciliation:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
+          {balanceView ? <BalanceSheetStatement key={`balance-sheet:${prime}:${year}`} months={months} report={balanceSheet?.report} retained={balanceSheet?.retained} message={balanceSheet?.message}/> : view === "reconciliation" ? <CashFlowStatement reconciliationOnly key={`reconciliation:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
             <>
               <IncomeStatement
                 key={`${prime}:${year}`}
