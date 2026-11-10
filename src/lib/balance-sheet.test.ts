@@ -56,3 +56,14 @@ test("all-zero known rows can be hidden; missing values and unknown ownership st
  assert.ok(balanceSheetRows(d).some(r=>r.id===row.id));
  assert.ok(balanceSheetRows(d).some(r=>r.id==='sky_debt'));
 });
+
+test("a pinned cutoff needs a real source and canonical date",()=>{
+ for(const mode of ['missing','date']){
+  const d=fixture(),s=JSON.parse(Buffer.from(d.selection,'base64url').toString());
+  if(mode==='missing'){
+   Object.assign(s.months[0],{cash:null,venues:null,components:null});d.periods[0].sources={};
+  }else{s.months[0].cutoff='20260131';d.periods[0].actual_cutoff='20260131';}
+  d.selection=Buffer.from(JSON.stringify(s)).toString('base64url');
+  assert.throws(()=>validateBalanceSheet(rehash(d),'spark',2026),/source cutoff/);
+ }
+});

@@ -42,7 +42,7 @@ export function validateBalanceSheet(value:unknown,prime:Prime,year:number,revis
   requireValue(p.key===key&&p.state===state&&p.expected_cutoff===expected,"period calendar");
   const s=selected.months[i];
   requireValue(p.actual_cutoff===(s?.cutoff??null)&&p.stale===Boolean(p.actual_cutoff&&expected&&p.actual_cutoff<expected),"cutoff");
-  if(s)requireValue(expected&&s.cutoff.startsWith(key+"-")&&s.cutoff<=expected&&(state!=="complete"||s.cutoff===last),"source cutoff");
+  if(s)requireValue(Object.keys(s).sort().join() === "cash,components,cutoff,venues"&&expected&&/^2026-\d\d-\d\d$/.test(s.cutoff)&&new Date(s.cutoff+"T00:00:00Z").toISOString().slice(0,10)===s.cutoff&&s.cutoff.startsWith(key+"-")&&s.cutoff<=expected&&(state!=="complete"||s.cutoff===last)&&[s.cash,s.venues,s.components].some(Boolean),"source cutoff");
   const refs=Object.entries(s||{}).filter(([k,v])=>k!=="cutoff"&&v).map(([k,v])=>`${k}:${v}`).sort();
   requireValue(Object.keys(p.sources).every(k=>["cash","venues","components"].includes(k))&&Object.values(p.sources).sort().join()===refs.join(),"period sources");
   for(const [kind,ref] of Object.entries(p.sources)){
