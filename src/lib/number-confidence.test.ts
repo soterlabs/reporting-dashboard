@@ -206,3 +206,10 @@ test("published override follows its actual dependency, not unavailable template
     /Component confidence/,
   );
 });
+
+test("supported balance-sheet stocks are described as closing balances, not unconfirmed income",()=>{
+ const evidence={status:"available" as const,recognition:"closing_balance",basis:"saved_closing_stock",quality:"supported" as const};
+ assert.deepEqual(numberConfidence("100",evidence),{tone:"balance",reason:"Supported closing balance"});
+ assert.equal(numberConfidence("100",{...evidence,quality:"estimate"}).tone,"uncertain");
+ assert.equal(numberConfidence("100",{...evidence,status:"partial"}).tone,"uncertain");
+});

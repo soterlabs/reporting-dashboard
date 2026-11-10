@@ -8,6 +8,7 @@ import type { Venue } from "./reporting.ts";
 export type NumberTone =
   | "accrual"
   | "cash"
+  | "balance"
   | "uncertain"
   | "missing"
   | "future";
@@ -53,6 +54,8 @@ export function numberConfidence(
       tone: "uncertain",
       reason: "Confidence or income basis is not established",
     };
+  if (evidence.recognition === "closing_balance")
+    return { tone: "balance", reason: "Supported closing balance" };
   if (["accrual", "investment_return"].includes(evidence.recognition || ""))
     return {
       tone: "accrual",
