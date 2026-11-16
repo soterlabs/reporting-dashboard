@@ -38,3 +38,9 @@ test('expense outage preserves income without silently composing local expenses'
  assert.equal(result?.dashboard_composition,undefined);
  assert.equal(result?.lines.find(l=>l.id==='statement.net_revenue'),statement.lines.find(l=>l.id==='statement.net_revenue'));
 });
+
+test('pinned margins reject a different source selection',()=>{
+ const doc=fixture();
+ assert.equal(validateMargins(doc,'spark',2026,doc.selection),doc);
+ assert.throws(()=>validateMargins(doc,'spark',2026,'another-selection'));
+});

@@ -202,7 +202,7 @@ export async function balanceSheetReport(prime:Prime,year:number,revision?:strin
 }
 
 export async function marginsReport(prime: Prime, year:number, revision?:string){
- return financialRead<MarginReport>(`/v3/reporting/margins?${new URLSearchParams({prime,year:String(year),...(revision?{revision}:{})})}`,v=>validateMargins(v,prime,year));
+ return financialRead<MarginReport>(`/v3/reporting/margins?${new URLSearchParams({prime,year:String(year),...(revision?{revision}:{})})}`,v=>validateMargins(v,prime,year,revision));
 }
 
 export async function sharedExpenseInput(revision?:string){

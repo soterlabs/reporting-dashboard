@@ -30,8 +30,9 @@ function metric(v:MarginMetric){
  if(v.value!==null)requireValue(typeof v.value==="string" && new Decimal(v.value).isFinite());
  if(v.known_value!==undefined && v.known_value!==null)requireValue(typeof v.known_value==="string" && new Decimal(v.known_value).isFinite());
 }
-export function validateMargins(input:unknown,prime:string,year:number):MarginReport{
+export function validateMargins(input:unknown,prime:string,year:number,revision?:string):MarginReport{
  const v=input as MarginReport;
+ if(revision)requireValue(v?.selection===revision);
  requireValue(v?.schema_version==="reporting-margins.v1" && v.policy_version==="spark-reporting-margins.v1" && v.prime===prime && prime==="spark" && v.year===year && v.provisional===true);
  requireValue(typeof v.selection==="string" && v.selection.length>0 && /^\d{4}-\d\d-\d\d$/.test(v.as_of));
  for(const hash of [v.report_hash,v.statement_report_hash,v.expense_revision])requireValue(/^[a-f0-9]{64}$/.test(hash));
