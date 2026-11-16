@@ -114,7 +114,7 @@ export async function PrimeDashboard({
       ? await financialStatements(prime, year)
       : null;
   const financial = apiFinancial
-    ? { ...apiFinancial, report: withPrimeExpenses(prime, year, apiFinancial.report, months, undefined, undefined, expenseReportingCutoff(prime)) || null }
+    ? { ...apiFinancial, report: withPrimeExpenses(prime, year, apiFinancial.report, months, undefined, undefined, expenseReportingCutoff(prime, apiFinancial.report)) || null }
     : null;
   const sourcePortfolio = portfolios[0];
   const positionFinancial =

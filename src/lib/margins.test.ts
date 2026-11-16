@@ -29,3 +29,12 @@ test('shared backend expenses retain exact old snapshot and reject hash mismatch
  assert.deepEqual(remote!.lines,legacy!.lines);
  assert.deepEqual(remote!.dashboard_composition,legacy!.dashboard_composition);
 });
+
+test('expense outage preserves income without silently composing local expenses',()=>{
+ const statement=validateStatement(JSON.parse(readFileSync(new URL('./fixtures/spark-history-v3.9.json',import.meta.url),'utf8')),'spark',2026);
+ const failed={...statement,shared_expense_error:'Unavailable'};
+ const result=withPrimeExpenses('spark',2026,failed);
+ assert.equal(result,failed);
+ assert.equal(result?.dashboard_composition,undefined);
+ assert.equal(result?.lines.find(l=>l.id==='statement.net_revenue'),statement.lines.find(l=>l.id==='statement.net_revenue'));
+});

@@ -103,6 +103,9 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
     if (revision !== undefined) throw new Error("Expense snapshot is unavailable for this prime/year");
     return input;
   }
+  // A missing shared source is not authorization to substitute the old workbook.
+  // Preserve API income/funding and its missing-expense markers.
+  if (input?.shared_expense_error) return input;
   revision=revision ?? input?.shared_expense_input?.revision_id ?? expenseRevisionFor(prime);
   if(!revision) throw new Error("Expense snapshot selection is unavailable");
   const policy=prime==="spark" ? POLICY : "dashboard.grove-expenses.v1";
@@ -122,7 +125,7 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
   if (totalsThrough) {
     check(prime === "spark" && (totalsThrough === "2025-12-31" || /^2026-\d{2}-\d{2}$/.test(totalsThrough)) &&
       totalsThrough === new Date(Date.UTC(Number(totalsThrough.slice(0, 4)), Number(totalsThrough.slice(5, 7)), 0)).toISOString().slice(0, 10) &&
-      totalsThrough <= (expenseReportingCutoff(prime) || ""), "invalid YTD expense cutoff");
+      totalsThrough <= (expenseReportingCutoff(prime, input) || ""), "invalid YTD expense cutoff");
     const limit = totalsThrough < report.as_of ? totalsThrough : report.as_of;
     const end = new Date(Date.UTC(Number(limit.slice(0, 4)), Number(limit.slice(5, 7)), 0)).toISOString().slice(0, 10);
     totalsThrough = limit === end ? end : new Date(Date.UTC(Number(limit.slice(0, 4)), Number(limit.slice(5, 7)) - 1, 0)).toISOString().slice(0, 10);
@@ -220,9 +223,10 @@ export const withSparkExpenses=withPrimeExpenses;
 
 // Last supplied expense month for comparable Spark YTD totals. Monthly cells
 // retain the live API cutoff; advancing the sheet advances comparable totals.
-export function expenseReportingCutoff(prime: Prime): string | undefined {
+export function expenseReportingCutoff(prime: Prime, input?: FinancialStatement | null): string | undefined {
   if (prime !== "spark") return undefined;
-  const available = months.filter(m=>snapshot.lines.filter(l=>l.id!=="expenses.total").every(l=>l.values[m]!==null));
+  const data = input?.shared_expense_input?.snapshot || snapshot;
+  const available = months.filter(m=>data.lines.filter(l=>l.id!=="expenses.total").every(l=>l.values[m]!==null));
   const last=available.at(-1);
   return last ? new Date(Date.UTC(2026,Number(last.slice(5)),0)).toISOString().slice(0,10) : undefined;
 }

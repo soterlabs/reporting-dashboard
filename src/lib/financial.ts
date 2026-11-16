@@ -64,6 +64,7 @@ export interface Metric {
   };
 }
 export interface FinancialStatement {
+  shared_expense_error?: string;
   shared_expense_input?: {revision_id:string; snapshot:import("./spark-expenses.ts").ExpenseSnapshot};
   schema_version: "3.0";
   policy_version: string;
