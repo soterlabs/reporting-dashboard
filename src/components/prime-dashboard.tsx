@@ -90,12 +90,12 @@ export async function PrimeDashboard({
     param(search, "view") === "reconciliation" ? "reconciliation" :
     param(search, "view") === "cash-flow" ? "cash-flow" :
     param(search, "view") === "positions" ? "positions" : "income";
+  const year = 2026;
   const marginView = view === "margins";
-  const margins = marginView ? await marginsReport(prime,2026) : null;
+  const margins = marginView ? await marginsReport(prime,year) : null;
   const balanceView = view === "balance-sheet";
   const balanceSheet = balanceView ? await balanceSheetReport(prime,2026) : null;
   const cashView = view === "cash-flow" || view === "reconciliation";
-  const year = 2026;
   const months = yearMonths(year);
   const month = chooseMonth(months, param(search, "month"));
   const title = scopeTitle(prime, scope);
@@ -262,7 +262,7 @@ export async function PrimeDashboard({
               </Link>
               {prime === "spark" && <Link href={reportHref(prime, scope, "margins", year, month.key)} className={marginView ? "selected" : ""} aria-current={marginView ? "page" : undefined}>Margins</Link>}
             </nav>
-            {(view === "positions" || marginView) && <ReportingMonthSelect months={months} value={month.key} />}
+            {view === "positions" && <ReportingMonthSelect months={months} value={month.key} />}
           </div>
           {scope !== "individual" && (
             <div className="notice">
@@ -281,7 +281,7 @@ export async function PrimeDashboard({
             </p>
           )}
           <FinancialLegend />
-          {marginView ? <MarginsStatement report={margins?.report} month={month.key} message={margins?.message} retained={margins?.retained}/> : balanceView ? <BalanceSheetStatement key={`balance-sheet:${prime}:${year}`} months={months} report={balanceSheet?.report} retained={balanceSheet?.retained} message={balanceSheet?.message}/> : view === "reconciliation" ? <CashFlowStatement reconciliationOnly key={`reconciliation:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
+          {marginView ? <MarginsStatement report={margins?.report} months={months} message={margins?.message} retained={margins?.retained}/> : balanceView ? <BalanceSheetStatement key={`balance-sheet:${prime}:${year}`} months={months} report={balanceSheet?.report} retained={balanceSheet?.retained} message={balanceSheet?.message}/> : view === "reconciliation" ? <CashFlowStatement reconciliationOnly key={`reconciliation:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "cash-flow" ? <CashFlowStatement key={`cash-flow:${prime}:${year}`} prime={prime} year={year} months={months} report={cashFlow?.report} retained={cashFlow?.retained} message={cashFlow?.message} /> : view === "income" ? (
             <>
               <IncomeStatement
                 key={`${prime}:${year}`}
