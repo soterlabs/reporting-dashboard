@@ -1,0 +1,2705 @@
+{
+  "schema_version": "reporting-margins.v1",
+  "policy_version": "spark-reporting-margins.v1",
+  "prime": "spark",
+  "year": 2026,
+  "scope": "individual_operational_prime_matching_reviewed_statement",
+  "as_of": "2026-09-30",
+  "provisional": true,
+  "months": [
+    {
+      "month": "2026-01",
+      "period": {
+        "key": "2026-01",
+        "state": "complete",
+        "expected_cutoff": "2026-01-31"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "0.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "532024.2377",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "1200017.00005",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "1100.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-530924.2377",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1730941.23775",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "estimated_grant_run_rate"
+    },
+    {
+      "month": "2026-02",
+      "period": {
+        "key": "2026-02",
+        "state": "complete",
+        "expected_cutoff": "2026-02-28"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "100000.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "480538.0257",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "1200017.00005",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "-98900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-579438.0257",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1779455.02575",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "estimated_grant_run_rate"
+    },
+    {
+      "month": "2026-03",
+      "period": {
+        "key": "2026-03",
+        "state": "complete",
+        "expected_cutoff": "2026-03-31"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "100000.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "532024.2377",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "1200017.00005",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "-98900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-630924.2377",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1830941.23775",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "estimated_grant_run_rate"
+    },
+    {
+      "month": "2026-04",
+      "period": {
+        "key": "2026-04",
+        "state": "complete",
+        "expected_cutoff": "2026-04-30"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "100000.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "502485.8273",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "1321427.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "-98900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-601385.8273",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1922812.8273",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "reported_actual_unverified"
+    },
+    {
+      "month": "2026-05",
+      "period": {
+        "key": "2026-05",
+        "state": "complete",
+        "expected_cutoff": "2026-05-31"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "100000.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "481152.5324",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "1012215.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "-98900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-580052.5324",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1592267.5324",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "reported_actual_unverified"
+    },
+    {
+      "month": "2026-06",
+      "period": {
+        "key": "2026-06",
+        "state": "complete",
+        "expected_cutoff": "2026-06-30"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "100000.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "465631.483",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "903114.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "-98900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-564531.483",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1467645.483",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "reported_actual_unverified"
+    },
+    {
+      "month": "2026-07",
+      "period": {
+        "key": "2026-07",
+        "state": "complete",
+        "expected_cutoff": "2026-07-31"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "120000.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "481152.5324",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "1155299.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "-118900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-600052.5324",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1755351.5324",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "budget"
+    },
+    {
+      "month": "2026-08",
+      "period": {
+        "key": "2026-08",
+        "state": "complete",
+        "expected_cutoff": "2026-08-31"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "120000.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "186252.5932",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "1155299.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "-118900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-305152.5932",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1460451.5932",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "budget"
+    },
+    {
+      "month": "2026-09",
+      "period": {
+        "key": "2026-09",
+        "state": "complete",
+        "expected_cutoff": "2026-09-30"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": "120000.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "user_incentives": {
+          "value": "0.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": "1155299.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": "-118900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "nrm_after_incentives": {
+          "value": "-118900.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        },
+        "net_income": {
+          "value": "-1274199.0",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": null,
+          "source_paths": [],
+          "missing_components": [],
+          "source_refs": [
+            "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae"
+          ],
+          "quality": "estimate"
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": "1000",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "partial",
+        "reason": "covered_allocations_only_not_statement_perimeter",
+        "included_venues": [
+          "S1",
+          "S2"
+        ],
+        "excluded_venues": [
+          {
+            "venue": "S56",
+            "reason": "missing_amount_or_noninvestment_row"
+          }
+        ],
+        "amounts": {
+          "assets": {
+            "value": "1000",
+            "known_value": null,
+            "unit": "USD",
+            "status": "available",
+            "recognition": "accrual",
+            "basis": "unclassified",
+            "reason": null,
+            "source_paths": []
+          },
+          "revenue": {
+            "value": "28",
+            "known_value": null,
+            "unit": "USD",
+            "status": "available",
+            "recognition": "accrual",
+            "basis": "unclassified",
+            "reason": null,
+            "source_paths": []
+          },
+          "cost": {
+            "value": "12",
+            "known_value": null,
+            "unit": "USD",
+            "status": "available",
+            "recognition": "accrual",
+            "basis": "unclassified",
+            "reason": null,
+            "source_paths": []
+          }
+        },
+        "metrics": {
+          "yield_": {
+            "value": "0.028",
+            "status": "available",
+            "unit": "monthly_fraction",
+            "reason": null
+          },
+          "cost_on_assets": {
+            "value": "0.012",
+            "status": "available",
+            "unit": "monthly_fraction",
+            "reason": null
+          },
+          "nim": {
+            "value": "0.016",
+            "status": "available",
+            "unit": "monthly_fraction",
+            "reason": null
+          }
+        },
+        "allocation_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reconciliation": {
+          "comparison_difference_after_financing_usd": "126444"
+        },
+        "limitations": []
+      },
+      "expense_basis": "budget"
+    },
+    {
+      "month": "2026-10",
+      "period": {
+        "key": "2026-10",
+        "state": "future",
+        "expected_cutoff": "2026-10-31"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "user_incentives": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "monthly_expense_after_selected_cutoff",
+          "source_paths": [],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "monthly_expense_after_selected_cutoff",
+          "source_paths": [],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.incentives",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "net_income": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.total"
+          ],
+          "source_refs": []
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": "budget_30_percent_reduction_scenario"
+    },
+    {
+      "month": "2026-11",
+      "period": {
+        "key": "2026-11",
+        "state": "future",
+        "expected_cutoff": "2026-11-30"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "user_incentives": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "monthly_expense_after_selected_cutoff",
+          "source_paths": [],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "monthly_expense_after_selected_cutoff",
+          "source_paths": [],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.incentives",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "net_income": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.total"
+          ],
+          "source_refs": []
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": null
+    },
+    {
+      "month": "2026-12",
+      "period": {
+        "key": "2026-12",
+        "state": "future",
+        "expected_cutoff": "2026-12-31"
+      },
+      "numerators": {
+        "investment_income": {
+          "value": "1000",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "funding_expense": {
+          "value": "300",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "net_interest": {
+          "value": "700",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "other_income": {
+          "value": "400",
+          "known_value": null,
+          "unit": "USD",
+          "status": "available",
+          "recognition": "accrual",
+          "basis": "unclassified",
+          "reason": null,
+          "source_paths": []
+        },
+        "direct_expenses": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "user_incentives": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "monthly_expense_after_selected_cutoff",
+          "source_paths": [],
+          "quality": "estimate"
+        },
+        "operating_expenses": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "monthly_expense_after_selected_cutoff",
+          "source_paths": [],
+          "quality": "estimate"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.distribution",
+            "expenses.incentives",
+            "expenses.other"
+          ],
+          "source_refs": []
+        },
+        "net_income": {
+          "value": null,
+          "known_value": "1100",
+          "unit": "USD",
+          "status": "partial",
+          "recognition": "accrual",
+          "basis": "explicit_signed_management_components",
+          "reason": "missing_components",
+          "source_paths": [],
+          "missing_components": [
+            "expenses.total"
+          ],
+          "source_refs": []
+        }
+      },
+      "denominators": {
+        "average_allocated_assets": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "statement_perimeter_average_assets_not_published",
+          "source_paths": []
+        },
+        "average_funding": {
+          "value": null,
+          "known_value": null,
+          "unit": "USD",
+          "status": "unavailable",
+          "recognition": "unknown",
+          "basis": "unclassified",
+          "reason": "average_actual_Sky_debt_plus_savings_liabilities_not_published",
+          "source_paths": []
+        }
+      },
+      "metrics": {
+        "allocation_yield": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "cost_on_assets": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "funding_rate": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nis": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "matching_average_assets_and_funding_missing"
+        },
+        "nim": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_before_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nrm_after_incentives": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        },
+        "nm": {
+          "value": null,
+          "status": "unavailable",
+          "unit": "monthly_fraction",
+          "reason": "incomplete_numerator_or_denominator"
+        }
+      },
+      "allocation_slice": {
+        "status": "unavailable",
+        "reason": "allocation_publication_missing",
+        "included_venues": [],
+        "excluded_venues": [],
+        "metrics": {}
+      },
+      "expense_basis": null
+    }
+  ],
+  "selection": "eyJhbGxvY2F0aW9ucyI6W251bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCwiYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYSIsbnVsbCxudWxsLG51bGxdLCJleHBlbnNlcyI6IjBhODg2MjAwZDU2YmVkYzNmYmY1MzNmMGJkMmFjYzU1ZjBjYTk4MTY1NDIxNTk0Y2VlMzA0MzQwMWZjYzE1YWUiLCJwb2xpY3kiOiJzcGFyay1yZXBvcnRpbmctbWFyZ2lucy52MSIsInByaW1lIjoic3BhcmsiLCJzdGF0ZW1lbnQiOiJzdGF0ZW1lbnQtc2VsZWN0aW9uIiwieWVhciI6MjAyNn0",
+  "statement_report_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "statement_selection": "statement-selection",
+  "expense_revision": "0a886200d56bedc3fbf533f0bd2acc55f0ca98165421594cee3043401fcc15ae",
+  "source_manifest": {},
+  "methodology": {
+    "frequency": "monthly_not_annualized",
+    "expense_status": "provisional_unverified",
+    "expense_classification": "direct = distribution + other; incentives separate; operating includes contributor compensation once",
+    "net_margin": "management_net_return_on_assets_not_revenue_margin_or_tax_certification",
+    "reconciliation": "deferred_not_redistributed; full Spark numerators use statement funding, not allocation cost subtotal",
+    "denominator": "covered venue averages disclosed separately; not certified full Spark average assets or average funding"
+  },
+  "report_hash": "a410e0399f47ff96935496888c89d003d0b2190145bfaf69051b74ea7938d264"
+}

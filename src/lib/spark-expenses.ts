@@ -103,10 +103,10 @@ export function withPrimeExpenses(prime: Prime, year: number, input: FinancialSt
     if (revision !== undefined) throw new Error("Expense snapshot is unavailable for this prime/year");
     return input;
   }
-  revision=revision ?? expenseRevisionFor(prime);
+  revision=revision ?? input?.shared_expense_input?.revision_id ?? expenseRevisionFor(prime);
   if(!revision) throw new Error("Expense snapshot selection is unavailable");
   const policy=prime==="spark" ? POLICY : "dashboard.grove-expenses.v1";
-  const selectedData = snapshots.get(revision);
+  const selectedData = input?.shared_expense_input?.revision_id === revision ? validateExpenseSnapshot(input.shared_expense_input.snapshot) : snapshots.get(revision);
   if (!selectedData) throw new Error("Expense snapshot is unavailable; refresh the dashboard");
   const data: ExpenseSnapshot = structuredClone(selectedData);
   // Contributor compensation is supplied once by the API's approved expense input.

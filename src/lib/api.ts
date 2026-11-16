@@ -1,3 +1,4 @@
+import {validateMargins, validateSharedExpenses, type MarginReport} from "./margins.ts";
 import {validateBalanceSheet,type BalanceSheetReport} from "./balance-sheet-api.ts";
 import { validateCashFlow, type CashFlowReport } from "./cash-flow-api.ts";
 import {
@@ -137,10 +138,18 @@ export async function financialStatements(
   revision?: string,
   cutoff?: string,
 ) {
-  return financialRead<FinancialStatement>(
+  const result = await financialRead<FinancialStatement>(
     `/v3/reporting/statements?${new URLSearchParams({ prime, year: String(year), ...(revision ? { revision } : {}), ...(!revision && prime === "spark" ? {accounting:"true",review:"true"} : {}), ...(!revision && cutoff ? {cutoff} : {}) })}`,
     (v) => validateStatement(v, prime, year, revision),
   );
+  if (prime === "spark" && year === 2026 && !revision && result.report) {
+    const expense = await financialRead(`/v3/reporting/expenses?prime=spark&year=2026`, validateSharedExpenses);
+    if (!expense.report) return {report:null,retained:false,message:expense.message || "Shared expense input unavailable"};
+    result.report = {...result.report, shared_expense_input:expense.report};
+    result.retained ||= expense.retained;
+    if (expense.retained) result.message = "Refresh failed; showing retained expense publication";
+  }
+  return result;
 }
 export async function financialPortfolio(
   prime: Prime,
@@ -188,4 +197,8 @@ export async function cashFlowReport(prime: Prime, year: number, revision?: stri
 
 export async function balanceSheetReport(prime:Prime,year:number,revision?:string){
  return financialRead<BalanceSheetReport>(`/v3/reporting/balance-sheet?${new URLSearchParams({prime,year:String(year),...(revision?{revision}:{})})}`,v=>validateBalanceSheet(v,prime,year,revision));
+}
+
+export async function marginsReport(prime: Prime, year:number, revision?:string){
+ return financialRead<MarginReport>(`/v3/reporting/margins?${new URLSearchParams({prime,year:String(year),...(revision?{revision}:{})})}`,v=>validateMargins(v,prime,year));
 }
