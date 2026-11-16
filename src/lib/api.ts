@@ -1,3 +1,4 @@
+import {validateMargins, validateSharedExpenses, type MarginReport} from "./margins.ts";
 import {validateBalanceSheet,type BalanceSheetReport} from "./balance-sheet-api.ts";
 import { validateCashFlow, type CashFlowReport } from "./cash-flow-api.ts";
 import {
@@ -136,11 +137,21 @@ export async function financialStatements(
   year: number,
   revision?: string,
   cutoff?: string,
+  expenseRevision?: string,
 ) {
-  return financialRead<FinancialStatement>(
+  const result = await financialRead<FinancialStatement>(
     `/v3/reporting/statements?${new URLSearchParams({ prime, year: String(year), ...(revision ? { revision } : {}), ...(!revision && prime === "spark" ? {accounting:"true",review:"true"} : {}), ...(!revision && cutoff ? {cutoff} : {}) })}`,
     (v) => validateStatement(v, prime, year, revision),
   );
+  if (prime === "spark" && year === 2026 && (!revision || expenseRevision) && result.report) {
+    const expense = await sharedExpenseInput(expenseRevision);
+    if (!expense.report) return {...result, report:{...result.report,shared_expense_error:expense.message || "Shared expense input unavailable"},
+      message:"Expense input unavailable; retaining statement income and funding without the expense overlay"};
+    result.report = {...result.report, shared_expense_input:expense.report};
+    result.retained ||= expense.retained;
+    if (expense.retained) result.message = "Refresh failed; showing retained expense publication";
+  }
+  return result;
 }
 export async function financialPortfolio(
   prime: Prime,
@@ -188,4 +199,16 @@ export async function cashFlowReport(prime: Prime, year: number, revision?: stri
 
 export async function balanceSheetReport(prime:Prime,year:number,revision?:string){
  return financialRead<BalanceSheetReport>(`/v3/reporting/balance-sheet?${new URLSearchParams({prime,year:String(year),...(revision?{revision}:{})})}`,v=>validateBalanceSheet(v,prime,year,revision));
+}
+
+export async function marginsReport(prime: Prime, year:number, revision?:string){
+ return financialRead<MarginReport>(`/v3/reporting/margins?${new URLSearchParams({prime,year:String(year),...(revision?{revision}:{})})}`,v=>validateMargins(v,prime,year,revision));
+}
+
+export async function sharedExpenseInput(revision?:string){
+ return financialRead(`/v3/reporting/expenses?${new URLSearchParams({prime:"spark",year:"2026",...(revision?{revision}:{})})}`,v=>{
+   const value=validateSharedExpenses(v);
+   if(revision && value.revision_id!==revision)throw new Error("Expense revision mismatch");
+   return value;
+ });
 }

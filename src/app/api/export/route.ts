@@ -3,7 +3,7 @@ import {balanceSheetReport} from "@/lib/api";
 import { cashFlowApiCsv } from "@/lib/cash-flow-api";
 import { financialPortfolioRows } from "@/lib/financial";
 import { cashFlowCsvRows, cashFlowSnapshot, cashFlowCalendar } from "@/lib/cash-flow";
-import { withPrimeExpenses } from "@/lib/spark-expenses";
+import { withPrimeExpenses, expenseSnapshotRevision } from "@/lib/spark-expenses";
 import { financialStatements, financialPortfolio, report, cashFlowReport } from "@/lib/api";
 import {
   FINANCIAL_EXPORT_HEADERS,
@@ -319,9 +319,11 @@ export async function GET(request: Request) {
         (selected === "none" && (!expenseRevision || !expenseAsOf)) ||
         (displayHash && (!expenseRevision || !/^[a-f0-9]{64}$/.test(displayHash))))
       return Response.json({ error: "Invalid expense selection" }, { status: 400 });
-    const financial = selected === "none" ? null : await financialStatements(prime, year, selected || undefined);
+    const financial = selected === "none" ? null : await financialStatements(prime, year, selected || undefined, undefined, prime === "spark" && expenseRevision && expenseRevision !== expenseSnapshotRevision ? expenseRevision : undefined);
     if (selected && selected !== "none" && !financial?.report)
       return Response.json({ error: financial?.message || "Retained financial report unavailable" }, { status: 503 });
+    if (expenseRevision && financial?.report?.shared_expense_error)
+      return Response.json({error:"Selected expense revision unavailable"},{status:503});
     let statement = financial?.report;
     // Old saved API-only exports have no expense revision and stay API-only.
     // New screen downloads pin both their API input (including absence) and

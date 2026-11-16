@@ -338,3 +338,19 @@ the card. Older API responses continue to render without it. No production
 backfill or publication is performed by the dashboard.
 
 Spark live income requests use `accounting=true` and the last supplied expense month as cutoff. The opt-in keeps older deployed dashboard clients compatible while the API and UI roll out. October DR remains TBD until published. Contributor SPK compensation comes from the independently versioned API expense input; staff functions still contribute to totals but are hidden below the two displayed expense levels.
+
+## Spark margins
+
+`/primes/spark?view=margins&year=2026&month=2026-09` adds a monthly Margins tab.
+It reads `/v3/reporting/margins` for the reviewed statement dollar numerators,
+expense inputs, denominator coverage and a separately labelled covered-allocation
+slice. Monthly percentages are not APYs. Full Spark margins remain TBD until
+matching average assets/funding are published; the covered slice is not presented
+as a Prime-wide result. Reconciliation differences remain deferred.
+
+New Spark income screens fetch `/v3/reporting/expenses`, the same versioned input
+used by the margins backend. The existing local copy is retained for historical
+pinned exports and parity tests. Missing backend expenses never silently become
+zero or an unlabelled fallback. Contributor compensation is included once. Grove
+is unchanged. Deploy the settlement-cycle API PR first; this frontend does not
+trigger replays or change settlement figures. No margins CSV is offered in v1.
