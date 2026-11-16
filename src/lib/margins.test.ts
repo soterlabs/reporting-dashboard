@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {validateMargins,marginText,validateSharedExpenses} from './margins.ts';
+import {hasPortfolioMargins,validateMargins,marginText,validateSharedExpenses} from './margins.ts';
 import {expenseSnapshotRevision,withPrimeExpenses} from './spark-expenses.ts';
 import {validateStatement} from './financial.ts';
 const fixture=()=>JSON.parse(readFileSync(new URL('./fixtures/margins.json',import.meta.url),'utf8'));
@@ -43,4 +43,13 @@ test('pinned margins reject a different source selection',()=>{
  const doc=fixture();
  assert.equal(validateMargins(doc,'spark',2026,doc.selection),doc);
  assert.throws(()=>validateMargins(doc,'spark',2026,'another-selection'));
+});
+
+test('portfolio availability responds to published metrics, excluding future months',()=>{
+ const doc=fixture();
+ assert.equal(hasPortfolioMargins(doc),false);
+ doc.months[11].metrics.nim={value:"0.01",status:"available",reason:null};
+ assert.equal(hasPortfolioMargins(doc),false);
+ doc.months[8].metrics.nim={value:"0.01",status:"available",reason:null};
+ assert.equal(hasPortfolioMargins(doc),true);
 });

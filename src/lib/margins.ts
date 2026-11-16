@@ -59,3 +59,7 @@ export function marginText(cell:MarginMetric|undefined,spread=false):string{
  if(!cell || cell.status!=="available" || cell.value===null)return cell?.status==="not_applicable" ? "N/A" : "TBD";
  return `${new Decimal(cell.value).times(100).toFixed(4)}${spread ? " pp" : "%"}`;
 }
+
+export function hasPortfolioMargins(report:MarginReport):boolean {
+ return report.months.some(m=>m.period.state!=="future" && Object.values(m.metrics).some(c=>c.status==="available"));
+}
