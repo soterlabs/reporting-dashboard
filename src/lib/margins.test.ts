@@ -10,7 +10,7 @@ test('margins keep partial scope separate from overall returns',()=>{
  assert.equal(marginText(m.metrics.nim),'TBD');
  assert.equal(marginText(m.allocation_slice.metrics.nim),'1.6000%');
  assert.equal(m.allocation_slice.reconciliation!.comparison_difference_after_financing_usd,'126444');
- assert.equal(marginText({value:'-0.0012',status:'available',reason:null},true),'-0.1200 pp');
+ assert.equal(marginText({value:'-0.0012',status:'available',reason:null},'nis'),'-12.00 bps');
 });
 test('reject another prime, missing month, nonfinite amount and fabricated available null',()=>{
  assert.throws(()=>validateMargins(fixture(),'grove',2026));
@@ -52,4 +52,19 @@ test('portfolio availability responds to published metrics, excluding future mon
  assert.equal(hasPortfolioMargins(doc),false);
  doc.months[8].metrics.nim={value:"0.01",status:"available",reason:null};
  assert.equal(hasPortfolioMargins(doc),true);
+});
+
+
+test('NIS and all subsequent margins use basis points without annualization',()=>{
+ const cell={value:'0.001234',status:'available',reason:null};
+ for(const key of ['nis','nim','nrm_before_incentives','nrm_after_incentives','nm']){
+  assert.equal(marginText(cell,key),'12.34 bps');
+  assert.equal(marginText({...cell,value:'0'},key),'0.00 bps');
+  assert.equal(marginText({...cell,value:'-0.001234'},key),'-12.34 bps');
+  assert.equal(marginText({...cell,value:null,status:'partial',known_value:'0.001234'},key),'TBD');
+  assert.equal(marginText({...cell,value:null,status:'not_applicable'},key),'N/A');
+ }
+ for(const key of ['allocation_yield','cost_on_assets','funding_rate'])
+  assert.equal(marginText(cell,key),'0.1234%');
+ assert.equal(marginText({value:'0.000001',status:'available',reason:null},'nim'),'0.01 bps');
 });
