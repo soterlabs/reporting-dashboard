@@ -19,9 +19,9 @@ export interface MarginReport {
   expense_revision:string; months:MarginMonth[]; provisional:true;
 }
 export const marginLabels: Record<string,string> = {
-  allocation_yield:"Allocation yield", cost_on_assets:"Funding cost / assets", funding_rate:"Average funding rate",
-  nis:"NIS — investment spread", nim:"NIM — net investment margin", nrm_before_incentives:"NRM before user incentives",
-  nrm_after_incentives:"NRM after user incentives", nm:"NM — net return after operating expenses",
+  allocation_yield:"Average yield", cost_on_assets:"Average cost of capital", funding_rate:"Average funding rate",
+  nis:"NIS — spread", nim:"NIM — net interest margin", nrm_before_incentives:"NRM before user incentives",
+  nrm_after_incentives:"NRM after user incentives", nm:"NM — net margin",
 };
 const requireValue=(v:unknown)=>{if(!v)throw new Error("Invalid margins publication");};
 function metric(v:MarginMetric){
