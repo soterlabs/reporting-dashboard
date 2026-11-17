@@ -1391,3 +1391,9 @@ footer {
 .margin-formula-card th, .margin-formula-card td { padding: 6px 12px 6px 0; text-align: left; }
 .margin-formula-card tbody th { font-weight: 400; }
 .margin-formula-card td { white-space: nowrap; }
+
+.margin-input-caption {
+  text-align: left;
+  font-weight: 600;
+  padding: 12px 14px;
+}

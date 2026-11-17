@@ -36,7 +36,7 @@ export function MarginsStatement({report,months,message,retained}:{report?:Margi
  return <section className="panel statement-panel">
   <div className="panel-heading"><h2 className="statement-title">Spark margins</h2></div>
   {(retained||message)&&<p className="panel-note" role="status">{message || "Showing retained publication"}</p>}
-  <p className="panel-note">Monthly, not annualized. Expenses are provisional; TBD means an input is missing.</p>
+  <p className="panel-note">Monthly, not annualized; pp = percentage points. Expenses are provisional; TBD means an input is missing.</p>
   <div className="table-wrap financial-wrap" tabIndex={0} role="region" aria-label="Spark margins statement; scroll horizontally for all months"><table className="financial-table">
    <StatementTableHeader months={calendar} label="Metric" totalLabel={latest?`Latest (${latest.month})`:"Latest"}/>
    <tbody>
@@ -50,6 +50,7 @@ export function MarginsStatement({report,months,message,retained}:{report?:Margi
    </table>
   </section>
   <div className="table-wrap financial-wrap" tabIndex={0} role="region" aria-label="Monthly margin inputs in USD"><table className="financial-table">
+   <caption className="margin-input-caption">Monthly inputs (USD)</caption>
    <StatementTableHeader months={calendar} label="Inputs (USD)" totalLabel={latest?`Latest (${latest.month})`:"Latest"}/>
    <tbody>
     {row("assets","A — Average allocated assets",m=>m.denominators.average_allocated_assets,money)}
