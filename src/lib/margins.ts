@@ -55,9 +55,11 @@ export function validateSharedExpenses(v:unknown){
  requireValue(createHash("sha256").update(JSON.stringify(snapshot)).digest("hex")===x.revision_id);
  return {...x,snapshot};
 }
-export function marginText(cell:MarginMetric|undefined,spread=false):string{
+const basisPointMetrics = new Set(["nis", "nim", "nrm_before_incentives", "nrm_after_incentives", "nm"]);
+export function marginText(cell:MarginMetric|undefined,metricId="allocation_yield"):string{
  if(!cell || cell.status!=="available" || cell.value===null)return cell?.status==="not_applicable" ? "N/A" : "TBD";
- return `${new Decimal(cell.value).times(100).toFixed(4)}${spread ? " pp" : "%"}`;
+ const bps = basisPointMetrics.has(metricId);
+ return `${new Decimal(cell.value).times(bps ? 10000 : 100).toFixed(bps ? 2 : 4)}${bps ? " bps" : "%"}`;
 }
 
 export function hasPortfolioMargins(report:MarginReport):boolean {

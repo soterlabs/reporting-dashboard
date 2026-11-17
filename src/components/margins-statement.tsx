@@ -39,10 +39,10 @@ export function MarginsStatement({report,months,message,retained}:{report?:Margi
   <div className="table-wrap financial-wrap" tabIndex={0} role="region" aria-label="Spark margins statement; scroll horizontally for all months"><table className="financial-table">
    <StatementTableHeader months={calendar} label="Metric" totalLabel={latest?`Latest (${latest.month})`:"Latest"}/>
    <tbody>
-    {Object.keys(formulas).map(key=>row(key,marginLabels[key],m=>m.metrics[key],c=>marginText(c,key==="nis")))}
+    {Object.keys(formulas).map(key=>row(key,marginLabels[key],m=>m.metrics[key],c=>marginText(c,key)))}
    </tbody>
   </table></div>
-  <p className="panel-note">Monthly, not annualized; pp = percentage points. Expenses are provisional; TBD means an input is missing.</p>
+  <p className="panel-note">Monthly, not annualized. Yield and cost in %; NIS and subsequent margins in bps (1 bp = 0.01%). Expenses are provisional; TBD means an input is missing.</p>
   <section className="margin-formula-card" aria-label="Metric formulas">
    <h3>Formulas</h3>
    <table className="financial-table margin-formula-table"><thead><tr><th scope="col">Metric</th><th scope="col">Formula used</th></tr></thead>
